@@ -40,8 +40,8 @@ const langs = {
 	"index-srt": "#",
 	"info": "info",
 	"input-move-time-error": "Subtitle move time must be greater than 0 and less than or equal to 1000.",
-	"language": "Language",
-	"memo-smi": "Memo",
+		"language": "Language",
+		"memo-smi": "Memo",
 	"memo-srt": "Memo",
 	"milli": "Milliseconds",
 	"minute": "Minute",
@@ -52,6 +52,7 @@ const langs = {
 	"new-file-contents": "Your work will be erased. <br /> Do you want to start editing new subtitles?",
 	"next": "Next",
 	"next-row-move": "Move Next Timeline",
+	"no": "No",
 	"not-support-file-format": "Not Supported File Format.",
 	"not-support-shortkey1": "Not Supported Key.",
 	"not-support-shortkey2": "Single character can not be used as a shortcut",
@@ -73,6 +74,7 @@ const langs = {
 	"redo": "Redo",
 	"remove-style": "Remove Style",
 	"reset": "Initialize",
+	"save": "Save",
 	"second": "Seconds",
 	"sheet-edit": "Edit Content",
 	"sheet-edit-off": "Edit Subtitles OFF",
@@ -116,7 +118,8 @@ const langs = {
 	"video-next": "10 Seconds Forward",
 	"video-prev": "10 Seconds Back",
 	"volume-down": "Volume Down",
-	"volume-up": "Volume Up"
+	"volume-up": "Volume Up",
+	"yes": "Yes"
 };
 
 export default langs;

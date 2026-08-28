@@ -52,6 +52,7 @@ const langs = {
 	"new-file-contents": "작업 중 이던 내용은 지워집니다. <br />새로운 자막 편집을 시작하시겠습니까?",
 	"next": "다음",
 	"next-row-move": "다음 열 이동",
+	"no": "아니오",
 	"not-support-file-format" : "지원되지 않는 파일 형식입니다.",
 	"not-support-shortkey1": "지원되지 않는 키입니다.",
 	"not-support-shortkey2": "단일 문자는 단축키로 사용할 수 없습니다.",
@@ -73,6 +74,7 @@ const langs = {
 	"redo": "재실행",
 	"remove-style": "스타일 제거",
 	"reset": "초기화",
+	"save": "저장",
 	"second": "초",
 	"sheet-edit": "내용 편집",
 	"sheet-edit-off": "자막편집 OFF",
@@ -116,7 +118,8 @@ const langs = {
 	"video-next": "10초 앞으로",
 	"video-prev": "10초 뒤로",
 	"volume-down": "볼륨 감소",
-	"volume-up": "볼륨 증가"
+	"volume-up": "볼륨 증가",
+	"yes": "예"
 }
 
 export default langs;

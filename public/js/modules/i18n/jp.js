@@ -52,6 +52,7 @@ const langs = {
 	"new-file-contents": "内容が消去されます. <br />新し字幕を作りますか？",
 	"next": "次",
 	"next-row-move": "次の列に移動",
+	"no": "いいえ",
 	"not-support-file-format" : "非対応ファイルです.",
 	"not-support-shortkey1": "非対応キーです.",
 	"not-support-shortkey2": "キーを組み合わせしてください.",
@@ -73,6 +74,7 @@ const langs = {
 	"redo": "やり直し",
 	"remove-style": "スタイル削除",
 	"reset": "リセット",
+	"save": "保存",
 	"second": "秒",
 	"sheet-edit": "シート編集",
 	"sheet-edit-off": "シート編集 OFF",
@@ -116,7 +118,8 @@ const langs = {
 	"video-next": "10秒進む",
 	"video-prev": "10秒戻る",
 	"volume-down": "音量小さく",
-	"volume-up": "音量大きく"
+	"volume-up": "音量大きく",
+	"yes": "はい"
 };
 
 export default langs;

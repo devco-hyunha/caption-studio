@@ -174,7 +174,7 @@
 			<li><a href="javascript:void(0)" id="font-underline" class="i18n btn-text-controls btn-multiple-controls" data-title="font-underline">
 				<span>U</span>
 			</a></li>
-			<li><a href="javascript:void(0)" id="font-italic" class="i18n btn-text-controls btn-multiple-controls" title="기울임" data-title="font-italic">
+			<li><a href="javascript:void(0)" id="font-italic" class="i18n btn-text-controls btn-multiple-controls" title="" data-title="font-italic">
 				<span>I</span>
 			</a></li>
 			<li class="ui-toggle">
@@ -277,7 +277,7 @@
 		<div class="panel tcp">
 			<div class="dialog">
 				<div class="dialog-head">
-					<h2 class="title">aaa</h2>
+					<h2 class="title"></h2>
 					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
 				</div>
 				<div class="dialog-body">
@@ -534,7 +534,7 @@
 									</label>
 								</li>
 								<li>
-									<span class="i18n i-title" data-text="signature">서명</span>
+									<span class="i18n i-title" data-text="signature"></span>
 									<textarea name="signature" class="i-text signature i18n" data-placeholder="signature"></textarea>
 								</li>
 								<li class="none">
@@ -686,12 +686,12 @@
 							<ul class="config-list">
 								<li><dl>
 									<dt class="i18n" data-text="language"></dt>
-									<dd><div class="ui-select" data-callback="Fn.Language" data-key="language"><!-- class on : select 열림 -->
-										<a href="javascript:void(0)" class="trigger">Korean</a>
+									<dd><div class="ui-select" data-callback="Fn.Language" data-key="language">
+										<a href="javascript:void(0)" class="trigger"></a>
 										<ul class="option">
-											<li><a href="javascript:void(0)" data-value="KRCC">Korean</a></li>
+											<li><a href="javascript:void(0)" data-value="KRCC">한국어</a></li>
 											<li><a href="javascript:void(0)" data-value="ENCC">English</a></li>
-											<li><a href="javascript:void(0)" data-value="JPCC">Japanese</a></li>
+											<li><a href="javascript:void(0)" data-value="JPCC">日本語</a></li>
 										</ul>
 									</div></dd>
 								</dl></li>
@@ -707,10 +707,10 @@
 								</dl></li>
 								<li><form class="subtitle-move-time" autocomplete="off">
 									<dl>
-										<dt><span class="i18n" data-text="subtitle-move-time"></span><button id="jump_time_change" class="btn-change"><span>변경</span></button></dt>
+										<dt><span class="i18n" data-text="subtitle-move-time"></span><button id="jump_time_change" class="btn-change"><span class="i18n" data-text="change"></span></button></dt>
 										<dd><div class="ms-jump-label">
 											<input type="number" name="jump_time_config_value" id="jump_time_config_value" min="1" max="1000" step="1" class="i-text jump_time_config_value" placeholder="1 ~ 1000" readonly="" disabled="">
-											<span class="tcp">millisecond</span>
+											<span class="i18n tcp" data-text="milli"></span>
 										</div></dd>
 									</dl>
 								</form></li>
@@ -734,7 +734,7 @@
 							</ul>
 							<dl>
 								<dt>version</dt>
-								<dd>2.1.1</dd>
+								<dd>2.1.2</dd>
 								<dt>developer</dt>
 								<dd>지현하 / Ji Hyunha</dd>
 								<dt>contact</dt>

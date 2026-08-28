@@ -224,8 +224,8 @@ const i18n = i18nModule();
 		var opt = {
 			title : false,
 			content : false,
-			successBtn : 'yes',
-			cancelBtn : 'no',
+			successBtn : i18n.t('yes'),
+			cancelBtn : i18n.t('no'),
 			bgDismiss : false,
 			success : null,
 			cancel : null
@@ -421,6 +421,13 @@ const i18n = i18nModule();
 					case 'placeholder': ui.attr('placeholder', i18n.t(kA[k]));break;
 				}
 			};
+		});
+		$('.ui-select').each(function(eq, select, value, option){
+			select = $(select);
+			value = select.data('value');
+			if (!value) return;
+			option = select.find('.option [data-value="'+value+'"]');
+			if (option.length) select.find('.trigger').text(option.text());
 		});
 	});
 
@@ -1623,7 +1630,7 @@ const i18n = i18nModule();
 				me = $(this);
 				if (!me.hasClass('on')){
 					me.addClass('on');
-					me.children().text('저장');
+					me.children().text(i18n.t('save'));
 					Sheet.Config.InputJump.prop({
 						'disabled':false,
 						'readonly':false
@@ -3090,6 +3097,8 @@ const i18n = i18nModule();
 
 				if (!format || format == '') format = Sheet.Format;
 				if (!language || language == '' || !i18n.getLocale(language)) language = Sheet.Language;
+				i18n.setLanguage(language);
+				Interface.I18n();
 				Interface.Select.Trigger('language',language);
 				Interface.Select.Trigger('format',format);
 				$('#nav-trigger').on('click',function(){
