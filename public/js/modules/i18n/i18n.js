@@ -2,6 +2,32 @@ import KRCC from './kr.js';
 import ENCC from './en.js';
 import JPCC from './jp.js';
 
-const i18N = { KRCC, ENCC, JPCC };
+const i18n = () => {
+	const locales = {
+		KRCC, ENCC, JPCC
+	};
+	
+	let currentLanguage = 'KRCC';
+	
+	const getLanguage = () => currentLanguage;
+	
+	const setLanguage = (lang) => {
+		if (locales[lang]) currentLanguage = lang;
+		return currentLanguage;
+	}
 
-export default i18N;
+	const getLocale = (lang = currentLanguage) => locales[lang];
+
+	const t = (key, lang = currentLanguage) => {
+		const locale = getLocale(lang);
+		return locale?.[key] || key;
+	};
+
+	return {
+		getLanguage,
+		setLanguage,
+		getLocale,
+		t
+	};
+};
+export default i18n;

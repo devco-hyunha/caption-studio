@@ -1,4 +1,6 @@
-import i18N from './modules/i18n/i18n.js';
+import i18nModule from './modules/i18n/i18n.js';
+
+const i18n = i18nModule();
 
 //;(function($,Do,Wn,WebFont,Shortkey,Player,Video,Interface,Ev,Fn,Sheet,SheetTrigger,Subtitle){
 	var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Subtitle={},Ev={};
@@ -29,7 +31,7 @@ import i18N from './modules/i18n/i18n.js';
 			Player.Element.prop('src',src);
 			Player.Interface = videojs(Player.Target);
 		} else {
-			Interface.Alert(i18N[Sheet.Language]['not-support-file-format']);
+			Interface.Alert(i18n.t('not-support-file-format'));
 			Player.Refresh();
 		}
 	});
@@ -41,16 +43,16 @@ import i18N from './modules/i18n/i18n.js';
 			Player.Element.prop('src',src);
 			Player.Interface = videojs(Player.Target);
 		} else if (file && format == ''){
-			Interface.Alert(i18N[Sheet.Language]['not-support-file-format']);
+			Interface.Alert(i18n.t('not-support-file-format'));
 			return false;
 		}
 	});
 	Player.Empty = function(type, result){
 		switch (type){
-			case 'youtube' : result = i18N[Sheet.Language]['please-input-youtube-url'];break;
-			case 'vimeo' : result = i18N[Sheet.Language]['please-input-vimeo-url'];break;
-			case 'url' : result = i18N[Sheet.Language]['please-input-video-url'];break;
-			case 'file' : result = i18N[Sheet.Language]['please-select-video-file'];break;
+			case 'youtube' : result = i18n.t('please-input-youtube-url');break;
+			case 'vimeo' : result = i18n.t('please-input-vimeo-url');break;
+			case 'url' : result = i18n.t('please-input-video-url');break;
+			case 'file' : result = i18n.t('please-select-video-file');break;
 		}
 		
 		return result;
@@ -132,7 +134,7 @@ import i18N from './modules/i18n/i18n.js';
 			input.addClass('empty');
 			input.find('input[type="file"]').val('');
 			input.find('.i-filename').text('');
-			Interface.Alert(i18N[Sheet.Language]['not-support-file-format']);
+			Interface.Alert(i18n.t('not-support-file-format'));
 		}
 	});
 	Video.Input = (function(type, src){
@@ -407,21 +409,19 @@ import i18N from './modules/i18n/i18n.js';
 			});
 		});
 	});
-	Interface.I18n = (function(langs){
-		langs = i18N[langs];
-		if (langs){
-			$('.i18n').each(function(eq, ui, kA, k){
-				ui = $(ui);
-				kA = ui.data();
-				for (k in kA){
-					switch (k){
-						case 'text': ui.text(langs[kA[k]]);break;
-						case 'title': ui.attr('title',langs[kA[k]]);break;
-						case 'placeholder': ui.attr('placeholder',langs[kA[k]]);break;
-					}
-				};
-			});
-		}
+	Interface.I18n = (function(){
+		if (!i18n.getLocale()) return;
+		$('.i18n').each(function(eq, ui, kA, k){
+			ui = $(ui);
+			kA = ui.data();
+			for (k in kA){
+				switch (k){
+					case 'text': ui.text(i18n.t(kA[k]));break;
+					case 'title': ui.attr('title', i18n.t(kA[k]));break;
+					case 'placeholder': ui.attr('placeholder', i18n.t(kA[k]));break;
+				}
+			};
+		});
 	});
 
 	Ev={
@@ -894,9 +894,9 @@ import i18N from './modules/i18n/i18n.js';
 			rowItem += '<form class="custom-shortkey" data-key="' + keyIndex + '">';
 			rowItem += '<dl>';
 			rowItem += '<dt>';
-			rowItem += '<span class="i18n" data-text="'+ keyData.placeholder +'">' + i18N[Sheet.Language][keyData.placeholder] + '</span>';
-			rowItem += '<button class="btn-change"><span class="i18n" data-text="change">'+ i18N[Sheet.Language]['change'] +'</span></button>';
-			rowItem += '<a href="javascript:void(0)" class="btn-cancel"><span class="i18n" data-text="cancel">'+ i18N[Sheet.Language]['cancel'] +'</span></a>';
+			rowItem += '<span class="i18n" data-text="'+ keyData.placeholder +'">' + i18n.t(keyData.placeholder) + '</span>';
+			rowItem += '<button class="btn-change"><span class="i18n" data-text="change">'+ i18n.t('change') +'</span></button>';
+			rowItem += '<a href="javascript:void(0)" class="btn-cancel"><span class="i18n" data-text="cancel">'+ i18n.t('cancel') +'</span></a>';
 			rowItem += '</dt>';
 			rowItem += '<dd><kbd>' + keyData.mask.replace(/\+/gi,' + ') + '</kbd><input type="text" class="i-text"/></dd>';
 			rowItem += '</dl>';
@@ -909,7 +909,7 @@ import i18N from './modules/i18n/i18n.js';
 			if (keyData.placeholder){
 				rowItem = '<li>';
 				rowItem += '<dl>';
-				rowItem += '<dt><span class="i18n" data-text="'+ keyData.placeholder +'">' + i18N[Sheet.Language][keyData.placeholder] + '</span></dt>';
+				rowItem += '<dt><span class="i18n" data-text="'+ keyData.placeholder +'">' + i18n.t(keyData.placeholder) + '</span></dt>';
 				rowItem += '<dd><kbd>' + keyData.mask.replace(/\+/gi,' + ') + '</kbd></dd>';
 				rowItem += '</dl>';
 				rowItem += '</li>';
@@ -934,7 +934,7 @@ import i18N from './modules/i18n/i18n.js';
 		}).off(keyEvent).on(keyEvent,'.i-text',function(e, mask){
 			e.preventDefault();
 			if (e.which == 229 || e.which == 0 || e.key == 'unidentified'){
-				Interface.Alert(i18N[Sheet.Language]['not-support-shortkey1']);
+				Interface.Alert(i18n.t('not-support-shortkey1'));
 				$(this).val('');
 				return false;
 			}
@@ -947,10 +947,10 @@ import i18N from './modules/i18n/i18n.js';
 			key = form.data('key');
 			mask = form.find('.i-text').val();
 			if ($.trim(mask) == ''){
-				Interface.Alert(i18N[Sheet.Language]['please-input-shortkey']);
+				Interface.Alert(i18n.t('please-input-shortkey'));
 				input.trigger('focus');
 			} else if ($.trim(mask).length == 1){
-				Interface.Alert(i18N[Sheet.Language]['not-support-shortkey2']);
+				Interface.Alert(i18n.t('not-support-shortkey2'));
 				input.trigger('focus');
 			} else if($.Shortcuts.search(mask)){
 				Shortkey.Custom[key].mask = mask;
@@ -958,9 +958,9 @@ import i18N from './modules/i18n/i18n.js';
 				$.Shortcuts.removeAll();
 				Shortkey.Init();
 				form.removeClass('on');
-				Interface.Success(i18N[Sheet.Language]['config-saved']);
+				Interface.Success(i18n.t('config-saved'));
 			} else {
-				Interface.Alert(i18N[Sheet.Language]['duplecation-shortkey']);
+				Interface.Alert(i18n.t('duplecation-shortkey'));
 				input.trigger('focus');
 			}
 			return false;
@@ -1222,7 +1222,7 @@ import i18N from './modules/i18n/i18n.js';
 			Subtitle.Import.Btn.off('click').on('click',function(data){
 				data = $('#subtitle-text').val();
 				if (data == ''){
-					Interface.Alert(i18N[Sheet.Language]['please-input-contents']);
+					Interface.Alert(i18n.t('please-input-contents'));
 				} else {
 					Sheet.Current.row = 0;
 					Sheet.Current.col = 0;
@@ -1246,7 +1246,7 @@ import i18N from './modules/i18n/i18n.js';
 					fileFormat = fileData.name.split('.').pop();
 					fileReader = new FileReader();
 					if (fileFormat.search(/smi/i) < 0){
-						Interface.Alert(i18N[Sheet.Language]['not-support-file-format']);
+						Interface.Alert(i18n.t('not-support-file-format'));
 						iFile.val('').trigger('change');
 					} else {
 						fileReader.readAsText(fileData,encode);
@@ -1261,7 +1261,7 @@ import i18N from './modules/i18n/i18n.js';
 					}
 					ga("send",{hitType:"event",eventCategory:"Subtitle",eventAction:"SMI Import",eventLabel:"Subtitle Import"});
 				} else {
-					Interface.Alert(i18N[Sheet.Language]['please-select-smi-file']);
+					Interface.Alert(i18n.t('please-select-smi-file'));
 				}
 				return false;
 			});
@@ -1278,7 +1278,7 @@ import i18N from './modules/i18n/i18n.js';
 					fileFormat = fileData.name.split('.').pop();
 					fileReader = new FileReader();
 					if (fileFormat.search(/srt/i) < 0){
-						Interface.Alert(i18N[Sheet.Language]['not-support-file-format']);
+						Interface.Alert(i18n.t('not-support-file-format'));
 						iFile.val('').trigger('change');
 					} else {
 						fileReader.readAsText(fileData,encode);
@@ -1293,7 +1293,7 @@ import i18N from './modules/i18n/i18n.js';
 					}
 					ga("send",{hitType:"event",eventCategory:"Subtitle",eventAction:"SRT Import",eventLabel:"Subtitle Import"});
 				} else {
-					Interface.Alert(i18N[Sheet.Language]['please-select-srt-file']);
+					Interface.Alert(i18n.t('please-select-srt-file'));
 				}
 				return false;
 			});
@@ -1454,8 +1454,8 @@ import i18N from './modules/i18n/i18n.js';
 	Fn.Format = (function(format,optionArray){
 		if (format != Sheet.Format){
 			Interface.Confirm({
-				title:i18N[Sheet.Language]['subtitle-format-change'],
-				content :i18N[Sheet.Language]['subtitle-format-change-contents'],
+				title:i18n.t('subtitle-format-change'),
+				content :i18n.t('subtitle-format-change-contents'),
 				bgDismiss:true,
 				success:function(){
 					Fn.Data('set','format',format);
@@ -1478,12 +1478,13 @@ import i18N from './modules/i18n/i18n.js';
 		}
 	});
 	Fn.Language = (function(language){
+		i18n.setLanguage(language);
 		Fn.Data('set','language',language);
 		Sheet.Set({
 			Language : language,
 			Header : Subtitle.Header[Sheet.Format]
 		});
-		Interface.I18n(language);
+		Interface.I18n();
 		$('.nav-open').removeClass('nav-open');
 	});
 	Fn.EncodeSmi = (function(encodeType){
@@ -1635,14 +1636,14 @@ import i18N from './modules/i18n/i18n.js';
 				jump = $.trim(Sheet.Config.InputJump.val());
 				btn = $('#jump_time_change');
 				if (jump == ''){
-					Interface.Alert(i18N[Sheet.Language]['please-input-move-time']);
+					Interface.Alert(i18n.t('please-input-move-time'));
 				} else if (jump <= 0 || jump > 1000){
-					Interface.Alert(i18N[Sheet.Language]['input-move-time-error']);
+					Interface.Alert(i18n.t('input-move-time-error'));
 				} else {
 					btn.removeClass('on');
-					btn.children().text(i18N[Sheet.Language]['change']);
+					btn.children().text(i18n.t('change'));
 					Fn.Data('set','jump_val',jump);
-					Interface.Success(i18N[Sheet.Language]['config-saved']);
+					Interface.Success(i18n.t('config-saved'));
 					Sheet.Config.SetJump();
 					Sheet.Config.InputJump.prop({
 						'disabled':true,
@@ -2855,7 +2856,7 @@ import i18N from './modules/i18n/i18n.js';
 		Sheet.Head.children('.sheet-panel')[0].innerHTML = (function(h,c,t){
 			t = '<div class="sheet-row">';
 			for (c in h){
-				if (typeof h[c] === 'string') t += '<div class="'+ h[c] + ' col"><div class="cell">'+ i18N[Sheet.Language][h[c]+ '-' +Sheet.Format] +'</div></div>';
+				if (typeof h[c] === 'string') t += '<div class="'+ h[c] + ' col"><div class="cell">'+ i18n.t(h[c]+ '-' +Sheet.Format) +'</div></div>';
 			}
 			t += '</div>';
 			return t;
@@ -3045,8 +3046,8 @@ import i18N from './modules/i18n/i18n.js';
 		$('#new-sheet').off('click').on('click',function(){
 			$('#nav-trigger').trigger('click');
 			Interface.Confirm({
-				title:i18N[Sheet.Language]['new-file'],
-				content:i18N[Sheet.Language]['new-file-contents'],
+				title:i18n.t('new-file'),
+				content:i18n.t('new-file-contents'),
 				bgDismiss:true,
 				success:function(){
 					Sheet.Set({
@@ -3088,7 +3089,7 @@ import i18N from './modules/i18n/i18n.js';
 				data		= Fn.Data('get','SUBTITLE_TEMP');
 
 				if (!format || format == '') format = Sheet.Format;
-				if (!language || language == '' || !i18N[language]) language = Sheet.Language;
+				if (!language || language == '' || !i18n.getLocale(language)) language = Sheet.Language;
 				Interface.Select.Trigger('language',language);
 				Interface.Select.Trigger('format',format);
 				$('#nav-trigger').on('click',function(){
