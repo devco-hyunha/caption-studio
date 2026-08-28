@@ -2992,29 +2992,7 @@ var i18N = {
 					attr = 'foreColor';
 					value = Sheet.Edit.Color.List[cmd.replace('color','')];
 				} else if (cmd == 'enter'){
-					if ($.browser.msie || navigator.userAgent.search('Trident') > 0) {
-						try {
-							document.execCommand("ms-beginUndoUnit", false, null);
-						} catch (e) {}
-						if (document.selection) {
-							textRange = document.selection.createRange();
-						} else if (window.getSelection) {
-							range = window.getSelection().getRangeAt(0);
-							tempEl = document.createElement("span");
-							tempEl.innerHTML = "&#FEFF;";
-							range.deleteContents();
-							range.insertNode(tempEl);
-							textRange = document.body.createTextRange();
-							textRange.moveToElementText(tempEl);
-							tempEl.parentNode.removeChild(tempEl);
-						}
-						textRange.text = "\r\n";
-						textRange.collapse(false);
-						textRange.select();
-						try {
-							document.execCommand("ms-endUndoUnit", false, null);
-						} catch (e) {}
-					} else if ($.browser.mozilla){
+					if ($.browser.mozilla){
 						attr = 'insertHTML';
 						value = "<br />";
 					} else {
