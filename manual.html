@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<title>Caption Studio</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" id="viewport" content="width=900px,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta name="google-site-verification" content="OCN1QGNR2AcgTLe2Zvl8-EACXWsDoX6kn1xapTYq8QQ" />
+	<meta name="naver-site-verification" content="8d49614cc6608b1ccda3b781a71168bba92deb91"/>
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Caption Studio">
+	<meta property="og:description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta property="og:url" content="http://caption.devco.kr">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Caption Studio">
+	<meta name="twitter:description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta name="twitter:domain" content="http://caption.devco.kr">
+
+	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/favicon/manifest.json">
+	<meta name="msapplication-TileColor" content="transparent">
+	<meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+	<meta name="theme-color" content="transparent">
+	<link rel="canonical" href="http://caption.devco.kr">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,400italic,700,700italic">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/nanumgothic.css">
+	<link rel="stylesheet" type="text/css" href="/public/css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/manual.css" />
+	<script defer src="/public/js/lib/jquery/jquery-1.11.1.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery-ui-1.12.0.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery.ui.touch-punch.min.js"></script>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<script>
+	(adsbygoogle = window.adsbygoogle || []).push({
+		google_ad_client: "ca-pub-5713218026854731",
+		enable_page_level_ads: true
+	});
+	</script>
+</head>
+<body>
+<div id="wrap">
+	<div id="header">
+		<div class="hgroup">
+			<h1 class="logo"><strong>DEVCO</strong><span>web</span></h1>
+			<h2 class="title"><strong>Caption</strong> Studio - <small>Manual 작업 중입니다.</small></h2>
+		</div>
+	</div>
+	<div id="nav">
+		<ul>
+			<li><a href="#menu-guide">메뉴 설명</a></li>
+			<li><a href="http://blog.naver.com/pmr0622/220969022807" target="_blank">시트 편집(임시)</a></li>
+			<li><a href="http://blog.naver.com/pmr0622/220969122266" target="_blank">싱크 편집(임시)</a></li>
+		</ul>
+	</div>
+	<div id="container">
+		<div id="intro" style="position:absolute;top:-10000000000%;left:-10000000000%;width:100%;z-index:-1">
+			HTML5, Javascript로 Caption Studio 라는 이름으로 웹에서 사용할 수 있는 자막 제작 프로그램을 만들어 보았습니다.
+			<ul>
+				<li>- MP4 H.264 플레이 가능(오페라 브라우저 제외)</li>
+				<li>- SMI 파일 불러오기</li>
+				<li>- SMI, JSON, EXCEL 파일 저장</li>
+				<li>- 단축키/설정 변경, 저장</li>
+				<li>- 최종 작업 중인 자막 Storage저장으로 사이트 접속 시 마지막 작업된 내용 불어오기</li>
+				<li>- 위지윅 기능 (단축키)</li>
+			</ul>
+			<p>가로 910px 이상 화면에 최적화 되어 있습니다.</p>
+			<p>이전에 만들었던 온라인 자막 프로그램. <br />
+			Caption Studio를 개선 하였습니다.<br />
+			단순 개선이라기 보다는 거의 새로 만들다 시피해서 버전업이라고 해야 할 것 같습니다.<br />
+			<br />
+			1. 속도 개선<br />
+			- 자막 로딩 속도, 동영상 플레이 시 렉 발생 등을 일정 부분 해결 하였습니다.<br />
+			<br />
+			2. UI 변경<br />
+			- 색상을 모노톤으로 변경하였고, 일부 UI를 변경 하였습니다.<br />
+			<br />
+			3. 메모, 검색 기능 추가<br />
+			- 자막 제작 시 편의성을 위해 각 타임라인 별 메모와 전체 검색 기능을 추가 하였습니다.<br />
+			<br />
+			4. SRT 자막 불러오기<br />
+			- SMI 자막 뿐 아니라 SRT파일도 불러와서 편집 저장 하실수 있습니다.<br />
+			<br />
+			5. SRT, VTT 다운로드 추가<br />
+			- 작업한 내용을 SRT 파일 또는 웹상에서 사용하는 WebVTT 포멧으로도 다운 받을 수 있습니다.<br />
+			<br />
+			6. SRT 형식 편집 추가<br />
+			- SRT 형식의 편집 방식을 추가 하였습니다. (한방에 프로그램 방식 ↔ subtitle edit) 방식 상호 변환<br />
+			<br />
+			7. Youtube, Vimeo 동영상 플레이 추가<br />
+			-  Youtube나 Vimeo 동영상의 공유 URL을 입력하여 동영상을 재상 할 수 있습니다.<br />
+			<br />
+			8. 기타 오류 개선<br />
+			- 그 밖의 자막 제작시에 있던 오류를 개선하였습니다.<br />
+			<br />
+			<br />
+			<br />
+			개선이 불가능한 부분도 몇몇 있었는데,<br />
+			<br />
+			1. IE의 성능저하<br />
+			- IE에서는 Chrome의 1/10 정도의 성능으로 Chrome을 사용 하실 때, 더욱 빠른 성능을 보여줍니다.<br />
+			<br />
+			2. 브라우저별 사용가능 동영상의 제약<br />
+			- 브라우저별플레이를 지원하는 포멧이 달라서, 가장 보편적인 포멧은 MP4 H.264 인것 같습니다.<br />
+			<br />
+			3. 일부 사용 불가능한 단축키<br />
+			- 마찬가지로 브라우저 기본적인 단축키라서 사용이 불가능한 것들도 있었습니다. 이를테면<br />
+			탭을 닫을 때 쓰는 Ctrl + W 같은 단축키는 자막 프로그램을 닫아버려 쓸 수 없었습니다.</p>
+		</div>
+		<div id="menu-guide">
+			<div class="header">
+				<h3 class="subject">메뉴 설명</h3>
+				<p>왼쪽 상단의 {menu} 버튼을 눌러 메뉴를 열고 닫을 수 있습니다. <br />메뉴는 5개 메뉴로 구성되어 있습니다.</p>
+				<ul>
+					<li><a href="#menu-guide-1">새로 만들기</a></li>
+					<li><a href="#menu-guide-2">동영상 가져오기</a></li>
+					<li><a href="#menu-guide-3">자막 가져오기</a></li>
+					<li><a href="#menu-guide-4">자막 내려받기</a></li>
+					<li><a href="#menu-guide-5">설정</a></li>
+				</ul>
+			</div>
+			<div id="menu-guide-1" class="section">
+				<h4 class="title">새로만들기</h4>
+				<p>기존에 작업 중이던 내용과 히스토리는 삭제 시키고 새로운 자막을 작업하기 위한 메뉴입니다. <br />
+				<strong>{새로 만들기}</strong> 메뉴를 클릭하고 확인 창에서 YES 를 누르면, 새로운 자막 작업을 할 수 있습니다.</p>
+			</div>
+			<div id="menu-guide-2" class="section">
+				<div class="header">
+					<h4 class="title">동영상 가져오기</h4>
+					<p>동영상 플레이를 위해 동영상을 불러오는 메뉴입니다. <br />해당 메뉴는 4가지 방법으로 동영상을 불러옵니다.</p>
+					<ul>
+						<li>(FILE)내 컴퓨터(기기 저장장치)에 있는 파일</li>
+						<li>(URL)외부 동영상 주소</li>
+						<li>YOUTUBE 동영상 주소</li>
+						<li>VIMEO 동영상 주소</li>
+					</ul>
+				</div>
+				<div class="article">
+					<h5 class="title">내 컴퓨터(기기 저장장치)에 있는 파일 불러오기</h5>
+					<!-- <img src="" alt="로컬파일 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 File 탭에서 "로컬에서 동영상 찾기" 를 클릭히여 동영상 파일을 찾아 선택합니다. <br />동영상 파일을 선택한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">외부 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="로컬동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 URL 탭에서 동영상 URL 입력을 클릭하여 mp4 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">YOUTUBE 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="YOUTUBE 동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 YOUTUBE 탭에서 동영상 URL 입력을 클릭하여 YOUTUBE 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">VIMEO 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="VIMEO 동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 VIMEO 탭에서 동영상 URL 입력을 클릭하여 VIMEO 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+					<dl>
+						<dt>권장 동영상 파일 형식 / 코덱</dt>
+						<dd>
+							<table>
+								<thead>
+									<tr>
+										<th scope="row">브라우저</th>
+										<th scope="row">파일 형식</th>
+										<th scope="row">코덱</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th scope="col">Chrome</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">Firefox</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">Safari</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">Edge</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">iOS & Android</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+								</tbody>
+							</table>
+							<p>권장 형식/코덱은 <strong>MP4 / H.264</strong> 입니다. WebM·Ogg는 브라우저 지원 여부에 따라 재생될 수 있습니다.</p>
+						</dd>
+					</dl>
+				</div>
+			</div>
+			<div id="menu-guide-3" class="section">
+				<div class="header">
+					<h4 class="title">자막 가져오기</h4>
+					<p>기존 자막을 불러오는 메뉴입니다. <br />해당 메뉴는 3가지 방법으로 동영상을 불러옵니다.</p>
+					<ul>
+						<li>TEXT를 직접 입력</li>
+						<li>SMI 파일 불러오기</li>
+						<li>SRT 파일 불러오기</li>
+					</ul>
+				</div>
+				<div class="article">
+					<h5 class="title">TEXT를 직접 입력하기</h5>
+					<p>자막 가져오기 창의 TEXT 탭에서 "자막 내용 입력" 영역에 자막 내용을 입력합니다. <br />해당 탭은 자막의 내용에만 입력 됩니다.</p>
+					<!-- <img src="" alt="TEXT 자막 가져오기 GIF" /> -->
+					<p>줄바꿈(Enter)은 하나의 타임라인으로 인식합니다. <br />2줄 이상의 자막을 하나의 타임라인으로 하고 싶으면  &lt;br&gt; 태그를 사용합니다. <br />TEXT를 입력할때 자막 태그들도 적용 가능합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SMI 파일 불러오기</h5>
+					<!-- <img src="" alt="SMI 자막 가져오기 GIF" /> -->
+					<p>자막 가져오기 창의 SMI 탭에서 "SMI 파일 찾기" 를 클릭히여 SMI 자막 파일을 찾아 선택합니다. <br />SMI 자막 파일을 선택한 후, 자막 가져오기를 클릭하면 시트에 해당 자막 내용이 출력 됩니다.</p>
+					<p>이때, 선택 되어 있는 인코딩과 자막의 인코딩이 다를 경우 출력 된 내용의 글자들이 깨지게 됩니다. <br />자막의 인코딩은 자막 가져오기 창의 우측 상단에서 변경이 가능합니다. <br />자막 파일의 인코딩은 UTF-8, EUC-KR, EUC-CN, EUC-TW, EUC-JP 중 하나를 선택 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SRT 파일 불러오기</h5>
+					<!-- <img src="" alt="SRT 자막 가져오기 GIF" /> -->
+					<p>자막 가져오기 창의 SRT 탭에서 "SRT 파일 찾기" 를 클릭히여 SRT 자막 파일을 찾아 선택합니다. <br />SRT 자막 파일을 선택한 후, 자막 가져오기를 클릭하면 시트에 해당 자막 내용이 출력 됩니다.</p>
+
+					<p>이때, 선택 되어 있는 인코딩과 자막의 인코딩이 다를 경우 출력 된 내용의 글자들이 깨지게 됩니다. <br />자막의 인코딩은 자막 가져오기 창의 우측 상단에서 변경이 가능합니다. <br />자막 파일의 인코딩은 UTF-8, EUC-KR, EUC-CN, EUC-TW, EUC-JP 중 하나를 선택 할 수 있습니다.</p>
+				</div>
+			</div>
+			<div id="menu-guide-4" class="section">
+				<div class="header">
+					<h4 class="title">자막 내려받기</h4>
+					<p>작업한 자막을 내려받는 메뉴 입니다. <br />해당 메뉴는 SMI, SRT, VTT, JSON, EXCEL의 5가지 형식의 파일 중 선택하여 다운 받을 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SMI 파일로 내려받기</h5>
+					<!-- <img src="" alt="SMI 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 SMI 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다. <br />"파일 명", "서명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>여기서 서명이란, 동영상 플레이 할 때 표기 되지 않으면서 자막 파일 내에 원하는 내용를 남기는 기능입니다. <br />서명은 주로 자막 제작자의 정보나 저작권등을 표기합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SRT 파일로 내려받기</h5>
+					<!-- <img src="" alt="SRT 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 SRT 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다.</p>
+					<p>선택사항으로, "스타일 제거"라는 기능이 있습니다. <br />"스타일 제거"를 체크 한 상태로 자막을 내려 받으면 font color, bold, underline, italic등의 스타일이 제거된 상태로 자막이 저장 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">VTT 파일로 내려받기</h5>
+					<!-- <img src="" alt="VTT 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 VTT 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>선택사항으로, "스타일 제거"라는 기능이 있습니다. <br />"스타일 제거"를 체크 한 상태로 자막을 내려 받으면 font color, bold, underline, italic등의 스타일이 제거된 상태로 자막이 저장 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">JSON 파일로 내려받기</h5>
+					<!-- <img src="" alt="JSON 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 JSON 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단의 Select에서 JSON 파일의 구조를 SMI 또는 SRT로 선택할 수 있습니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>JSON 파일의 SMI 구조는 싱크(시작 시간)만 있고, SRT 구조는 시작 시간과 종료시간이 함께 있는 차이점을 가집니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">EXCEL 파일로 내려받기</h5>
+					<!-- <img src="" alt="EXCEL 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 EXCEL 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단의 Select에서 EXCEL 파일의 테이블을 SMI 또는 SRT로 선택할 수 있습니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>EXCEL 파일의 SMI 구조는 싱크(시작 시간)만 있고, SRT 구조는 시작 시간과 종료시간이 함께 있는 차이점을 가집니다.</p>
+				</div>
+			</div>
+			<div id="menu-guide-5" class="section">
+				<div class="header">
+					<h4 class="title">설정</h4>
+					<p>Caption Studio의 언어, 자막 형식, 자막 이동 시간, 단축키를 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">언어 설정</h5>
+					<p>설정창의 기본설정에서 변경 가능합니다. <br />한국어, 영어, 일본어를 지원합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">자막 형식 설정</h5>
+					<p>편집하는 시트의 형식을 SMI나 SRT형식으로 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">자막 이동 시간 설정</h5>
+					<p>자막 싱크 변경 하는 단위 시간을 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">단축키 설정</h5>
+					<p>기존의 단축키를 확인 할 수 있고, 일부 사용자 지정 단축키를 변경 할 수 있습니다.</p>
+				</div>
+			</div>
+			<div class="aside">
+				<a href="http://blog.naver.com/pmr0622/220968233578">Caption Studio 블로그 설명서 1</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-58132688-2', 'auto');
+	ga('send', 'pageview');
+</script>
+<script type="text/javascript" src="http://wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript"> if(!wcs_add) var wcs_add = {}; wcs_add["wa"] = "2eb57550a65190"; wcs_do(); </script>
+</body>
+</html>

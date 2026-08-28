@@ -1,0 +1,22 @@
+body {font-family: 'Nanum Gothic', sans-serif;}
+
+#wrap {padding-top:80px;padding-left:200px;}
+#header {position:fixed;width:100%;top:0;left:0;border-bottom:1px solid #ddd;background-color:#fff;z-index:10;}
+#header .hgroup {padding:10px 20px;}
+#header h1.logo {display:inline-block;margin-right:10px;padding-top:23px;width:60px;height:60px;font-family:'Ubuntu';font-size:12px;font-weight:500;line-height:14px;color:#fff;text-align:center;border-radius:50%;background-color:#222;}
+#header h1.logo span {display:block;font-weight:500;}
+#header h2.title {display:inline-block;font-size:18px;font-weight:400;color:#333;}
+#header h2.title strong {font-weight:900;}
+
+#nav {position:fixed;top:80px;left:0;width:200px;height:calc(100% - 80px);border-right:1px solid #ddd;background-color:#f8f8f8;}
+#nav li {border-bottom:1px solid #ddd;}
+#nav li a {display:block;padding:10px 20px;color:#333;}
+
+#container {padding:40px;}
+#container .section {padding:80px 0 0;font-size:16px;line-height:24px;color:#333;}
+#container .section p {line-height:1.5em;}
+#container .section > .title,
+#container .section .header > .title {padding-bottom:20px;margin-bottom:20px;font-size:30px;font-weight:700;line-height:40px;border-bottom:1px solid #ddd;}
+#container .article {padding:20px 0;}
+#container .article > .title {margin-bottom:10px;font-size:20px;font-weight:700;line-height:34px;}
+#container #menu-guide {position:relative;z-index:1;background-color:#fff;}

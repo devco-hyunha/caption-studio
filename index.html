@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<title>Caption Studio</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" id="viewport" content="width=900px,user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="apple-mobile-web-app-capable" content="no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta name="google-site-verification" content="OCN1QGNR2AcgTLe2Zvl8-EACXWsDoX6kn1xapTYq8QQ" />
+	<meta name="naver-site-verification" content="8d49614cc6608b1ccda3b781a71168bba92deb91"/>
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Caption Studio">
+	<meta property="og:description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta property="og:url" content="//caption.devco.kr">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Caption Studio">
+	<meta name="twitter:description" content="Subtitle Edit Online, 온라인 자막 편집 프로그램">
+	<meta name="twitter:domain" content="//caption.devco.kr">
+
+	<link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/favicon/manifest.json">
+	<meta name="msapplication-TileColor" content="transparent">
+	<meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+	<meta name="theme-color" content="transparent">
+	<link rel="canonical" href="//caption.devco.kr">
+	<link rel="stylesheet" type="text/css" href="/public/css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/common.css" />
+	<link rel="stylesheet" type="text/css" href="/public/css/video-js.css" />
+	<script defer src="/public/js/lib/webfont.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery-1.11.1.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery-ui-1.12.0.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
+	<script defer src="/public/js/lib/jquery/jquery.ui.touch-punch.min.js"></script>
+	<script defer src="/public/js/lib/html5-video/video-js.min.js"></script>
+	<script defer src="/public/js/lib/html5-video/Youtube.min.js"></script>
+	<script defer src="/public/js/lib/html5-video/Vimeo.min.js"></script>
+	<script defer src="/public/js/plugin/jquery.scrollbar.js"></script>
+	<script defer src="/public/js/plugin/jquery.shortcuts.js"></script>
+	<script defer src="/public/js/plugin/colorpicker.js"></script>
+	<script defer src="/public/js/caption.js"></script>
+	<!--[if lt IE 9]>
+	<script defer src="//ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+	<script defer src="/public/js/plugin/selectivizr-min.js"></script>
+	<![endif]-->
+</head>
+<body>
+<div id="wrap" class="empty">
+	<div id="header">
+		<div class="hgroup">
+			<h1 class="logo"><strong>C<span>aption</span></strong> S<span>tudio</span></h1>
+			<a href="javascript:void(0)" id="nav-trigger"><span>menu</span></a>
+		</div>
+	</div>
+	<div id="nav">
+		<h2 class="none">menu</h2>
+		<div class="group tcp">
+			<ul class="util">
+				<li><a href="javascript:void(0)" id="new-sheet">
+					<i class="mt icon-insert_drive_file"></i>
+					<span class="i18n" data-text="new-file"></span>
+				</a></li>
+				<li><a href="javascript:void(0)" class="dialog-trigger" data-target="video-import">
+					<i class="mt icon-video_library"></i>
+					<span class="i18n" data-text="video-library"></span>
+				</a></li>
+				<li><a href="javascript:void(0)" class="dialog-trigger" data-target="subtitle-import">
+					<i class="mt icon-subtitles"></i>
+					<span class="i18n" data-text="import-subtitle"></span>
+				</a></li>
+				<li><a href="javascript:void(0)" class="dialog-trigger" data-target="subtitle-export">
+					<i class="mt icon-get_app"></i>
+					<span class="i18n" data-text="export-subtitle"></span>
+				</a></li>
+				<li><a href="javascript:void(0)" class="dialog-trigger" data-target="cs-setting">
+					<i class="mt icon-settings"></i>
+					<span class="i18n" data-text="cs-setting"></span>
+				</a></li>
+				<li><a href="/manual.html" class="dialog-trigger">
+					<i class="mt icon-info_outline"></i>
+					<span class="i18n" data-text="cs-manual"></span>
+				</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="video" class="overlap">
+		<div class="contain">
+			<a href="javascript:void(0)" class="video-import dialog-trigger tcp" data-target="video-import">
+				<i class="mt icon-video_library"></i>
+				<span class="i18n" data-text="video-library"></span>
+			</a>
+		</div>
+		<div id="subtitle">
+			<div class="header">
+				<dl class="info">
+					<dt class="none i18n" data-text="timeline-index"></dt>
+					<dd class="current-line">0</dd>
+					<dt class="none i18n" data-text="timeline-start"></dt>
+					<dd class="current-start">00:00:00,000</dd>
+					<dt class="none i18n" data-text="timeline-end"></dt>
+					<dd class="current-end">00:00:00,000</dd>
+				</dl>
+				<ul class="util">
+					<li><a href="javascript:void(0)" class="i18n move-current" data-title="move-current" title="">
+						<i class="mt icon-reply reverse-h"></i>
+						<span class="i18n" data-text="move-current"></span>
+					</a></li>
+					<li><a href="javascript:void(0)" class="i18n move-prev" data-title="move-prev" title="">
+						<i class="mt icon-keyboard_arrow_left"></i>
+						<span class="i18n" data-text="move-prev"></span>
+					</a></li>
+					<li><a href="javascript:void(0)" class="i18n move-next" data-title="move-next" title="">
+						<i class="mt icon-keyboard_arrow_right"></i>
+						<span class="i18n" data-text="move-next"></span>
+					</a></li>
+					<li><a href="javascript:void(0)" class="i18n subtitle-visible" data-title="subtitle-visible" title="">
+						<i class="mt icon-layers"></i>
+						<span class="i18n" data-text="subtitle-visible"></span>
+					</a></li>
+				</ul>
+			</div>
+			<div class="section">
+				<p class="print"></p>
+			</div>
+		</div>
+	</div>
+	<div id="controller">
+		<ul class="subtitle-util ui-left">
+			<li class="ui-toggle">
+				<a href="javascript:void(0)" id="sheet-search" class="trigger i18n" data-title="sheet-search">
+					<i class="mt icon-search"></i>
+					<span class="i18n tir" data-text="sheet-search"></span>
+				</a>
+				<div id="sheet-search-panel" class="panel">
+					<form class="form-sheet-search" autocomplete="off">
+						<input type="search" class="i18n i-sheet-search" autocomplete="off" name="key" data-placeholder="sheet-search-input" />
+						<button type="search" class="btn-sheet-search"><i class="mt icon-search"></i></button>
+					</form>
+					<input type="checkbox" id="error-search" name="error-search" class="none" />
+					<label for="error-search" class="error-label">
+						<i class="mt icon-error_outline"></i>
+						<strong class="error-count"></strong><span class="i18n" data-text="error-search"></span>
+					</label>
+					<span class="result">0/0</span>
+					<a href="javascript:void(0)" class="btn-prev disabled i18n" data-title="prev"><i class="mt icon-keyboard_arrow_up"></i><span class="i18n tir" data-text="prev"></span></a>
+					<a href="javascript:void(0)" class="btn-next disabled i18n" data-title="next"><i class="mt icon-keyboard_arrow_down"></i><span class="i18n tir" data-text="next"></span></a>
+				</div>
+			</li>
+		</ul>
+		<ul class="time-util ui-left">
+			<li><a href="javascript:void(0)" id="time-edit" class="i18n btn-time-controls btn-multiple-controls" data-title="time-edit">
+				<i class="mt icon-update"></i>
+				<span class="i18n tir" data-text="time-edit"></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="time-plus" class="i18n btn-time-controls btn-multiple-controls" data-title="time-plus">
+				<span>+<strong></strong><small>ms</small></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="time-minus" class="i18n btn-time-controls btn-multiple-controls" data-title="time-minus">
+				<span>-<strong></strong><small>ms</small></span>
+			</a></li>
+		</ul>
+		<ul class="text-util ui-right">
+			<li><a href="javascript:void(0)" id="font-bold" class="i18n btn-text-controls btn-multiple-controls" data-title="font-bold">
+				<span>B</span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="font-underline" class="i18n btn-text-controls btn-multiple-controls" data-title="font-underline">
+				<span>U</span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="font-italic" class="i18n btn-text-controls btn-multiple-controls" title="기울임" data-title="font-italic">
+				<span>I</span>
+			</a></li>
+			<li class="ui-toggle">
+				<a href="javascript:void(0)" id="font-color" class="trigger i18n" data-title="font-color">
+					<i class="mt icon-palette"></i>
+					<span class="i18n tir" data-text="font-color"></span>
+				</a>
+				<div id="font-color-list">
+					<ul class="color-list">
+						<li class="color-panel"><a href="javascript:void(0)" id="color-1" class="i18n btn-text-controls btn-multiple-controls" data-title="color-1">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-2" class="i18n btn-text-controls btn-multiple-controls" data-title="color-2">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-3" class="i18n btn-text-controls btn-multiple-controls" data-title="color-3">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-4" class="i18n btn-text-controls btn-multiple-controls" data-title="color-4">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-5" class="i18n btn-text-controls btn-multiple-controls" data-title="color-5">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-6" class="i18n btn-text-controls btn-multiple-controls" data-title="color-6">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-7" class="i18n btn-text-controls btn-multiple-controls" data-title="color-7">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+						<li class="color-panel"><a href="javascript:void(0)" id="color-8" class="i18n btn-text-controls btn-multiple-controls" data-title="color-8">
+							<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+							<span class="hex tup">#000000</span>
+						</a></li>
+					</ul>
+					<ul class="color-util">
+						<li><a href="javascript:void(0)" id="color-select" class="i18n" data-title="color-select">
+							<i class="mt icon-colorize"></i>
+							<span class="i18n tir" data-text="color-select"></span>
+						</a></li>
+						<li><a href="javascript:void(0)" id="color-reset" class="i18n btn-text-controls btn-multiple-controls" data-title="color-reset">
+							<i class="mt icon-format_color_reset"></i>
+							<span class="i18n tir" data-text="color-reset"></span>
+						</a></li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+		<ul class="sheet-util ui-right">
+			<li><a href="javascript:void(0)" id="sheet-edit" class="i18n btn-text-controls btn-single-controls" data-title="sheet-edit">
+				<i class="mt icon-keyboard"></i>
+				<span class="i18n tir" data-text="sheet-edit"></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="sheet-insert" class="i18n btn-sheet-controls btn-single-controls" data-title="sheet-insert">
+				<i class="mt icon-add_box"></i>
+				<span class="i18n tir" data-text="sheet-insert"></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="sheet-remove" class="i18n btn-sheet-controls btn-single-controls" data-title="sheet-remove">
+				<i class="mt icon-indeterminate_check_box"></i>
+				<span class="i18n tir" data-text="sheet-remove"></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="sheet-multiple" class="i18n btn-sheet-selector btn-multiple-controls" data-title="sheet-multiple">
+				<i class="mt icon-check_box"></i>
+				<span class="i18n tir" data-text="sheet-multiple"></span>
+			</a></li>
+		</ul>
+		<ul class="history">
+			<li><a href="javascript:void(0)" id="undo" class="i18n disabled btn-single-controls" data-title="undo">
+				<i class="mt icon-undo"></i>
+				<span class="i18n tir" data-text="undo"></span>
+			</a></li>
+			<li><a href="javascript:void(0)" id="redo" class="i18n disabled btn-single-controls" data-title="redo">
+				<i class="mt icon-redo"></i>
+				<span class="i18n tir" data-text="redo"></span>
+			</a></li>
+		</ul>
+	</div>
+	<div id="sheet">
+		<div class="sheet-head">
+			<div class="sheet-panel tcp"></div>
+		</div>
+		<div class="sheet-body scrollbar-macosx">
+			<div class="sheet-contain">
+				<div class="sheet-trigger" tabindex="-1">
+					<div class="sheet-input" tabindex="-1" contenteditable="true"></div>
+				</div>
+				<div class="sheet-panel"></div>
+			</div>
+		</div>
+	</div>
+	<div id="layout">
+		<div class="overlay"></div>
+		<div class="panel tcp">
+			<div class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">aaa</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body">
+					<div class="contain"></div>
+				</div>
+			</div>
+			<div id="time-editor" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt icon-update"></i>
+						<span class="i18n" data-text="time-edit"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body form">
+					<form class="contain" autocomplete="off">
+						<dl class="time-slider">
+							<dt class="i18n" data-text="hour"></dt>
+							<dd><div class="slider hour" data-target="hour" data-min="0" data-max="12" data-step="1" data-zf="2"></div></dd>
+							<dt class="i18n" data-text="minute"></dt>
+							<dd><div class="slider minute" data-target="minute" data-min="0" data-max="59" data-step="1" data-zf="2"></div></dd>
+							<dt class="i18n" data-text="second"></dt>
+							<dd><div class="slider second" data-target="second" data-min="0" data-max="59" data-step="1" data-zf="2"></div></dd>
+							<dt class="i18n" data-text="milli"></dt>
+							<dd><div class="slider milli" data-target="milli" data-min="0" data-max="999" data-step="10" data-zf="3"></div></dd>
+						</dl>
+						<dl class="time-positive">
+							<dt class="i18n tir" data-text="sync-ctrl"></dt>
+							<dd>
+								<label class="radio-label">
+									<input type="radio" name="time-positive" class="plus" checked value="plus" />
+									<span class="i18n" data-text="positive-plus"></span>
+								</label>
+								<label class="radio-label">
+									<input type="radio" name="time-positive" class="minus" value="minus" />
+									<span class="i18n" data-text="positive-minus"></span>
+								</label>
+							</dd>
+						</dl>
+						<dl class="time-form">
+							<dt class="i18n tir" data-text="sync-ctrl-time"></dt>
+							<dd>
+							<ul class="time-part">
+								<li class="hour">
+									<input type="number" min="0" max="12" maxlength="2" step="1" value="0" data-min="0" data-max="12" data-target="hour" data-zf="2" />
+									<span class="visible" data-value="00">00</span>
+								</li>
+								<li class="minute">
+									<input type="number" min="0" max="59" maxlength="2" step="1" value="0" data-min="0" data-max="59" data-target="minute" data-zf="2" />
+									<span class="visible" data-value="00">00</span>
+								</li>
+								<li class="second">
+									<input type="number" min="0" max="59" maxlength="2" step="1" value="0" data-min="0" data-max="59" data-target="second" data-zf="2" />
+									<span class="visible" data-value="00">00</span>
+								</li>
+								<li class="milli">
+									<input type="number" min="0" max="999" maxlength="3" step="10" value="0" data-min="0" data-max="999" data-target="milli" data-zf="3" />
+									<span class="visible" data-value="000">000</span>
+								</li>
+							</ul>
+							</dd>
+							<dd><input type="number" min="-46799999" max="46799999" step="10" id="millisecond" value="0" data-min="-46799999" data-max="46799999" />ms</dd>
+						</dl>
+						<div class="btn-group">
+							<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+							<button class="btn btn-submit time-apply"><span class="i18n tcp" data-text="apply"></span></button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="color-selector" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt icon-palette"></i>
+						<span class="i18n" data-text="color-select"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body">
+					<div class="contain">
+						<ul class="color-list">
+							<li class="color-panel"><a href="javascript:void(0)" id="color-1" class="i18n btn-color" data-title="color-1">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-2" class="i18n btn-color" data-title="color-2">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-3" class="i18n btn-color" data-title="color-3">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-4" class="i18n btn-color" data-title="color-4">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-5" class="i18n btn-color" data-title="color-5">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-6" class="i18n btn-color" data-title="color-6">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-7" class="i18n btn-color" data-title="color-7">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+							<li class="color-panel"><a href="javascript:void(0)" id="color-8" class="i18n btn-color" data-title="color-8">
+								<span class="color" style="background-color: rgb(0, 0, 0);"></span>
+								<span class="hex tup">#000000</span>
+							</a></li>
+						</ul>
+						<div class="picker">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="video-import" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt icon-video_library"></i>
+						<span class="i18n tcp" data-text="video-library"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body ui-tab form">
+					<ul class="tab-header tcp">
+						<li><a href="javascript:void(0)" data-value="file"><span>file</span></a></li>
+						<li><a href="javascript:void(0)" data-value="url"><span>url</span></a></li>
+						<li><a href="javascript:void(0)" data-value="youtube"><span>youtube</span></a></li>
+						<li><a href="javascript:void(0)" data-value="vimeo"><span>vimeo</span></a></li>
+					</ul>
+					<form class="contain tab-body" autocomplete="off">
+						<div id="video-import-file" class="tab-panel">
+							<label class="i-text file empty" data-callback="Video.FileCheck">
+								<input type="file" id="video-file" accept="video/mp4, video/ogg, video/webm" class="none" />
+								<span class="i-filename"></span>
+								<span class="i-placeholder i18n" data-text="video-import-file"></span>
+							</label>
+						</div>
+						<div id="video-import-url" class="tab-panel">
+							<input type="text" id="video-url" class="i-text i18n" data-placeholder="video-import-url" />
+						</div>
+						<div id="video-import-youtube" class="tab-panel">
+							<input type="text" id="video-youtube" class="i-text i18n" data-placeholder="video-import-youtube" />
+						</div>
+						<div id="video-import-vimeo" class="tab-panel">
+							<input type="text" id="video-vimeo" class="i-text i18n" data-placeholder="video-import-vimeo" />
+						</div>
+						<div class="btn-group">
+							<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+							<a href="javascript:void(0)" class="btn btn-submit video-load"><span class="i18n tcp" data-text="video-library"></span></a>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="subtitle-import" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt icon-subtitles"></i>
+						<span class="i18n" data-text="import-subtitle"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body ui-tab form">
+					<ul class="tab-header tcp">
+						<li><a href="javascript:void(0)" data-value="text" data-callback="Subtitle.Import.TEXT()"><span>text</span></a></li>
+						<li><a href="javascript:void(0)" data-value="smi" data-callback="Subtitle.Import.SMI()"><span>smi</span></a></li>
+						<li><a href="javascript:void(0)" data-value="srt" data-callback="Subtitle.Import.SRT()"><span>srt</span></a></li>
+					</ul>
+					<form class="contain tab-body" autocomplete="off">
+						<div id="subtitle-import-text" class="tab-panel">
+							<textarea name="subtitle-text" id="subtitle-text" class="i-text i18n" data-placeholder="subtitle-import-text" placeholder=""></textarea>
+						</div>
+						<div id="subtitle-import-smi" class="tab-panel">
+							<div class="ui-select i18n" data-callback="Fn.EncodeSmi" data-key="smiEncode" data-title="subtitle-file-encode">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-KR">한국어<small>(EUC-KR)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-CN">中国<small>(EUC-CN)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-TW">中国传统<small>(EUC-TW)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
+								</ul>
+							</div>
+							<label class="i-text file empty" data-callback="Subtitle.FileCheck">
+								<input type="file" id="smi-file" class="none">
+								<span class="i-filename"></span>
+								<span class="i-placeholder i18n" data-text="subtitle-import-smi"></span>
+							</label>
+						</div>
+						<div id="subtitle-import-srt" class="tab-panel">
+							<div class="ui-select i18n" data-callback="Fn.EncodeSrt" data-key="srtEncode" data-title="subtitle-file-encode">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-KR">한국어<small>(EUC-KR)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-CN">中国<small>(EUC-CN)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-TW">中国传统<small>(EUC-TW)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
+								</ul>
+							</div>
+							<label class="i-text file empty" data-callback="Subtitle.FileCheck">
+								<input type="file" id="srt-file" class="none">
+								<span class="i-filename"></span>
+								<span class="i-placeholder i18n" data-text="subtitle-import-srt"></span>
+							</label>
+						</div>
+						<div class="btn-group">
+							<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+							<a href="javascript:void(0)" class="btn btn-submit subtitle-load"><span class="i18n" data-text="import-subtitle"></span></a>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="subtitle-export" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt mt icon-get_app"></i>
+						<span class="i18n" data-text="export-subtitle"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body ui-tab form">
+					<ul class="tab-header tcp">
+						<li><a href="javascript:void(0)" data-value="smi" data-callback="Subtitle.Export.SMI()"><span>smi</span></a></li>
+						<li><a href="javascript:void(0)" data-value="srt" data-callback="Subtitle.Export.SRT()"><span>srt</span></a></li>
+						<li><a href="javascript:void(0)" data-value="vtt" data-callback="Subtitle.Export.VTT()"><span>vtt</span></a></li>
+						<li><a href="javascript:void(0)" data-value="json" data-callback="Subtitle.Export.JSON()"><span>json</span></a></li>
+						<li><a href="javascript:void(0)" data-value="excel" data-callback="Subtitle.Export.EXCEL()"><span>excel</span></a></li>
+					</ul>
+					<div class="contain tab-body">
+						<form action="download/smi.php" method="post" id="subtitle-export-smi" class="tab-panel" autocomplete="off">
+							<input type="hidden" name="lang_key" class="lang_key" />
+							<input type="hidden" name="lang_value" class="lang_value" />
+							<input type="hidden" name="encode_smi_file" class="encode_smi_file" />
+							<div class="ui-select i18n" data-callback="Fn.EncodeSmiFile" data-key="smiEncodeFile" data-title="subtitle-file-encode">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-KR">한국어<small>(EUC-KR)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-CN">中国<small>(EUC-CN)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-TW">中国传统<small>(EUC-TW)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
+								</ul>
+							</div>
+							<ul class="entry">
+								<li>
+									<label>
+										<span class="i18n i-title" data-text="filename"></span>
+										<input type="text" name="filename" id="smi-file" class="i-text filename i18n" data-placeholder="filename">
+									</label>
+								</li>
+								<li>
+									<span class="i18n i-title" data-text="signature">서명</span>
+									<textarea name="signature" class="i-text signature i18n" data-placeholder="signature"></textarea>
+								</li>
+								<li class="none">
+									<textarea name="caption" class="caption"></textarea>
+								</li>
+							</ul>
+							<div class="btn-group">
+								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
+							</div>
+						</form>
+						<form action="download/srt.php" method="post" id="subtitle-export-srt" class="tab-panel" autocomplete="off">
+							<input type="hidden" name="encode_srt_file" class="encode_srt_file" />
+							<div class="ui-select i18n" data-callback="Fn.EncodeSrtFile" data-key="srtEncodeFile" data-title="subtitle-file-encode">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-KR">한국어<small>(EUC-KR)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-CN">中国<small>(EUC-CN)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-TW">中国传统<small>(EUC-TW)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
+								</ul>
+							</div>
+							<ul class="entry">
+								<li>
+									<label class="i-checkbox">
+										<input type="checkbox" name="is-style" id="is-style" class="none">
+										<span class="mt i18n" data-text="remove-style"></span>
+									</label>
+								</li>
+								<li>
+									<label>
+										<span class="i18n i-title" data-text="filename"></span>
+										<input type="text" name="filename" id="srt-file" class="i-text filename i18n" data-placeholder="filename">
+									</label>
+								</li>
+								<li class="none">
+									<textarea name="caption" class="caption"></textarea>
+								</li>
+							</ul>
+							<div class="btn-group">
+								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
+							</div>
+						</form>
+						<form action="download/vtt.php" method="post" id="subtitle-export-vtt" class="tab-panel" autocomplete="off">
+							<input type="hidden" name="encode_vtt_file" class="encode_vtt_file" />
+							<div class="ui-select i18n" data-callback="Fn.EncodeVttFile" data-key="vttEncodeFile" data-title="subtitle-file-encode">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-KR">한국어<small>(EUC-KR)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-CN">中国<small>(EUC-CN)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-TW">中国传统<small>(EUC-TW)</small></a></li>
+									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
+								</ul>
+							</div>
+							<ul class="entry">
+								<li>
+									<label class="i-checkbox">
+										<input type="checkbox" name="is-style" id="is-style" class="none">
+										<span class="mt i18n" data-text="remove-style"></span>
+									</label>
+								</li>
+								<li>
+									<label>
+										<span class="i18n i-title" data-text="filename"></span>
+										<input type="text" name="filename" id="vtt-file" class="i-text filename i18n" data-placeholder="filename">
+									</label>
+								</li>
+								<li class="none">
+									<textarea name="caption" class="caption"></textarea>
+								</li>
+							</ul>
+							<div class="btn-group">
+								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
+							</div>
+						</form>
+						<form action="download/json.php" method="post" id="subtitle-export-json" class="tab-panel" autocomplete="off">
+							<input type="hidden" name="format" class="json-format" />
+							<div class="ui-select i18n" data-callback="Fn.JsonFormat" data-key="jsonFormat" data-title="subtitle-format">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>
+									<li><a href="javascript:void(0)" data-value="srt">SRT</a></li>
+								</ul>
+							</div>
+							<ul class="entry">
+								<li>
+									<label>
+										<span class="i18n i-title" data-text="filename"></span>
+										<input type="text" name="filename" id="json-file" class="i-text filename i18n" data-placeholder="filename">
+									</label>
+								</li>
+								<li class="none">
+									<textarea name="caption" class="caption"></textarea>
+								</li>
+							</ul>
+							<div class="btn-group">
+								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
+							</div>
+						</form>
+						<form action="download/excel.php" method="post" id="subtitle-export-excel" class="tab-panel" autocomplete="off">
+							<input type="hidden" name="format" class="excel-format" />
+							<div class="ui-select i18n" data-callback="Fn.ExcelFormat" data-key="excelFormat" data-title="subtitle-format">
+								<a href="javascript:void(0)" class="trigger"></a>
+								<ul class="option">
+									<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>
+									<li><a href="javascript:void(0)" data-value="srt">SRT</a></li>
+								</ul>
+							</div>
+							<ul class="entry">
+								<li>
+									<label>
+										<span class="i18n i-title" data-text="filename"></span>
+										<input type="text" name="filename" id="json-file" class="i-text filename i18n" data-placeholder="filename">
+									</label>
+								</li>
+								<li class="none">
+									<textarea name="caption" class="caption"></textarea>
+								</li>
+							</ul>
+							<div class="btn-group">
+								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
+								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div id="cs-setting" class="dialog">
+				<div class="dialog-head">
+					<h2 class="title">
+						<i class="mt icon-settings"></i>
+						<span class="i18n" data-text="cs-setting"></span>
+					</h2>
+					<a href="javascript:void(0)" class="btn-close"><i class="mt icon-close"></i><span class="i18n tir" data-text="dialog-close"></span></a>
+				</div>
+				<div class="dialog-body ui-tab form">
+					<ul class="tab-header tcp">
+						<li><a href="javascript:void(0)" data-value="default"><span class="i18n" data-text="default-settings"></span></a></li>
+						<li><a href="javascript:void(0)" data-value="shortkey" data-callback="Shortkey.Switching()"><span class="i18n" data-text="shortkey"></span></a></li>
+						<li><a href="javascript:void(0)" data-value="info" ><span class="i18n" data-text="info"></span></a></li>
+					</ul>
+					<div class="contain tab-body">
+						<div id="default-settings" class="tab-panel">
+							<ul class="config-list">
+								<li><dl>
+									<dt class="i18n" data-text="language"></dt>
+									<dd><div class="ui-select" data-callback="Fn.Language" data-key="language"><!-- class on : select 열림 -->
+										<a href="javascript:void(0)" class="trigger">Korean</a>
+										<ul class="option">
+											<li><a href="javascript:void(0)" data-value="KRCC">Korean</a></li>
+											<li><a href="javascript:void(0)" data-value="ENCC">English</a></li>
+											<li class="none"><a href="javascript:void(0)" data-value="CNCC">Chinese</a></li>
+											<li><a href="javascript:void(0)" data-value="JPCC">Japanese</a></li>
+										</ul>
+									</div></dd>
+								</dl></li>
+								<li><dl>
+									<dt class="i18n" data-text="subtitle-format"></dt>
+									<dd><div class="ui-select i18n" data-callback="Fn.Format" data-key="format" data-title="subtitle-format">
+										<a href="javascript:void(0)" class="trigger"></a>
+										<ul class="option">
+											<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>
+											<li><a href="javascript:void(0)" data-value="srt">SRT</a></li>
+										</ul>
+									</div></dd>
+								</dl></li>
+								<li><form class="subtitle-move-time" autocomplete="off">
+									<dl>
+										<dt><span class="i18n" data-text="subtitle-move-time"></span><button id="jump_time_change" class="btn-change"><span>변경</span></button></dt>
+										<dd><div class="ms-jump-label">
+											<input type="number" name="jump_time_config_value" id="jump_time_config_value" min="1" max="1000" step="1" class="i-text jump_time_config_value" placeholder="1 ~ 1000" readonly="" disabled="">
+											<span class="tcp">millisecond</span>
+										</div></dd>
+									</dl>
+								</form></li>
+							</ul>
+						</div>
+						<div id="shortkey-settings" class="tab-panel">
+							<div class="key-panel">
+								<h3 class="data-title i18n" data-text="custom-shortkey"></h3>
+								<ul id="custom-shortkey-list" class="key-list"></ul>
+							</div>
+							<div class="key-panel">
+								<h3 class="data-title i18n" data-text="default-shortkey"></h3>
+								<ul id="default-shortkey-list" class="key-list"></ul>
+							</div>
+						</div>
+						<div id="about-site" class="tab-panel">
+							<ul>
+								<li><strong>HTML, JAVASCRIPT로 제작</strong>되어, 최신의 <strong>웹브라우저로 쉽게 접속</strong>하여 자막을 제작 할 수 있습니다.</li>
+								<li><strong>WYSIWYG 방식</strong>으로 자막에서 사용하는 태그를 알지 못하더라도 <strong>워드나 엑셀을 작성하듯 자막을 쉽게 편집</strong> 할 수 있습니다.</li>
+								<li>작업 중인 내용이 <strong>실시간으로 브라우저에 자동 저장</strong>되어, 사이트 <strong>재 접속시에 마지막 작업된 내용을 불러와 자막 편집</strong>을 이어 할 수 있습니다.</li>
+							</ul>
+							<dl>
+								<dt>version</dt>
+								<dd>2.0.0</dd>
+								<dt>developer</dt>
+								<dd>지현하 / Ji Hyunha</dd>
+								<dt>contact</dt>
+								<dd><a href="mailto:hyunha.ji@devco.kr">hyunha.ji@devco.kr</a></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-58132688-2', 'auto');
+	  ga('send', 'pageview');
+	</script>
+	<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+	<script type="text/javascript"> if(!wcs_add) var wcs_add = {}; wcs_add["wa"] = "2eb57550a65190"; wcs_do(); </script>
+</div>
+	<div id="container" style="position:absolute;top:-10000000000%;left:-10000000000%;width:100%;z-index:-1">
+		<div id="intro">
+			HTML5, Javascript로 Caption Studio 라는 이름으로 웹에서 사용할 수 있는 자막 제작 프로그램을 만들어 보았습니다.
+			<ul>
+				<li>- MP4 H.264 플레이 가능(오페라 브라우저 제외)</li>
+				<li>- SMI 파일 불러오기</li>
+				<li>- SMI, JSON, EXCEL 파일 저장</li>
+				<li>- 단축키/설정 변경, 저장</li>
+				<li>- 최종 작업 중인 자막 Storage저장으로 사이트 접속 시 마지막 작업된 내용 불어오기</li>
+				<li>- 위지윅 기능 (단축키)</li>
+			</ul>
+			<p>가로 910px 이상 화면에 최적화 되어 있습니다.</p>
+			<p>이전에 만들었던 온라인 자막 프로그램. <br />
+			Caption Studio를 개선 하였습니다.<br />
+			단순 개선이라기 보다는 거의 새로 만들다 시피해서 버전업이라고 해야 할 것 같습니다.<br />
+			<br />
+			1. 속도 개선<br />
+			- 자막 로딩 속도, 동영상 플레이 시 렉 발생 등을 일정 부분 해결 하였습니다.<br />
+			<br />
+			2. UI 변경<br />
+			- 색상을 모노톤으로 변경하였고, 일부 UI를 변경 하였습니다.<br />
+			<br />
+			3. 메모, 검색 기능 추가<br />
+			- 자막 제작 시 편의성을 위해 각 타임라인 별 메모와 전체 검색 기능을 추가 하였습니다.<br />
+			<br />
+			4. SRT 자막 불러오기<br />
+			- SMI 자막 뿐 아니라 SRT파일도 불러와서 편집 저장 하실수 있습니다.<br />
+			<br />
+			5. SRT, VTT 다운로드 추가<br />
+			- 작업한 내용을 SRT 파일 또는 웹상에서 사용하는 WebVTT 포멧으로도 다운 받을 수 있습니다.<br />
+			<br />
+			6. SRT 형식 편집 추가<br />
+			- SRT 형식의 편집 방식을 추가 하였습니다. (한방에 프로그램 방식 ↔ subtitle edit) 방식 상호 변환<br />
+			<br />
+			7. Youtube, Vimeo 동영상 플레이 추가<br />
+			-  Youtube나 Vimeo 동영상의 공유 URL을 입력하여 동영상을 재상 할 수 있습니다.<br />
+			<br />
+			8. 기타 오류 개선<br />
+			- 그 밖의 자막 제작시에 있던 오류를 개선하였습니다.<br />
+			<br />
+			<br />
+			<br />
+			개선이 불가능한 부분도 몇몇 있었는데,<br />
+			<br />
+			1. IE의 성능저하<br />
+			- IE에서는 Chrome의 1/10 정도의 성능으로 Chrome을 사용 하실 때, 더욱 빠른 성능을 보여줍니다.<br />
+			<br />
+			2. 브라우저별 사용가능 동영상의 제약<br />
+			- 브라우저별플레이를 지원하는 포멧이 달라서, 가장 보편적인 포멧은 MP4 H.264 인것 같습니다.<br />
+			<br />
+			3. 일부 사용 불가능한 단축키<br />
+			- 마찬가지로 브라우저 기본적인 단축키라서 사용이 불가능한 것들도 있었습니다. 이를테면<br />
+			탭을 닫을 때 쓰는 Ctrl + W 같은 단축키는 자막 프로그램을 닫아버려 쓸 수 없었습니다.</p>
+		</div>
+		<div id="menu-guide">
+			<div class="header">
+				<h3 class="subject">메뉴 설명</h3>
+				<p>왼쪽 상단의 {menu} 버튼을 눌러 메뉴를 열고 닫을 수 있습니다. <br />메뉴는 5개 메뉴로 구성되어 있습니다.</p>
+				<ul>
+					<li><a href="#menu-guide-1">새로 만들기</a></li>
+					<li><a href="#menu-guide-2">동영상 가져오기</a></li>
+					<li><a href="#menu-guide-3">자막 가져오기</a></li>
+					<li><a href="#menu-guide-4">자막 내려받기</a></li>
+					<li><a href="#menu-guide-5">설정</a></li>
+				</ul>
+			</div>
+			<div id="menu-guide-1" class="section">
+				<h4 class="title">새로만들기</h4>
+				<p>기존에 작업 중이던 내용과 히스토리는 삭제 시키고 새로운 자막을 작업하기 위한 메뉴입니다. <br />
+				<strong>{새로 만들기}</strong> 메뉴를 클릭하고 확인 창에서 YES 를 누르면, 새로운 자막 작업을 할 수 있습니다.</p>
+			</div>
+			<div id="menu-guide-2" class="section">
+				<div class="header">
+					<h4 class="title">동영상 가져오기</h4>
+					<p>동영상 플레이를 위해 동영상을 불러오는 메뉴입니다. <br />해당 메뉴는 4가지 방법으로 동영상을 불러옵니다.</p>
+					<ul> 
+						<li>(FILE)내 컴퓨터(기기 저장장치)에 있는 파일</li>
+						<li>(URL)외부 동영상 주소</li>
+						<li>YOUTUBE 동영상 주소</li>
+						<li>VIMEO 동영상 주소</li>
+					</ul>
+				</div>
+				<div class="article">
+					<h5 class="title">내 컴퓨터(기기 저장장치)에 있는 파일 불러오기</h5>
+					<!-- <img src="" alt="로컬파일 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 File 탭에서 "로컬에서 동영상 찾기" 를 클릭히여 동영상 파일을 찾아 선택합니다. <br />동영상 파일을 선택한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">외부 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="로컬동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 URL 탭에서 동영상 URL 입력을 클릭하여 mp4 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">YOUTUBE 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="YOUTUBE 동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 YOUTUBE 탭에서 동영상 URL 입력을 클릭하여 YOUTUBE 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">VIMEO 동영상 주소 불러오기</h5>
+					<!-- <img src="" alt="VIMEO 동영상 가져오기 GIF" /> -->
+					<p>동영상 가져오기 창의 VIMEO 탭에서 동영상 URL 입력을 클릭하여 VIMEO 동영상 주소를 입력한 후, 동영상 가져오기를 클릭하면 동영상 플레이어가 노출 됩니다.</p>
+					<dl>
+						<dt>브라우저별 플레이 가능한 동영상 파일 형식 / 코덱</dt>
+						<dd>
+							<table>
+								<thead>
+									<tr>
+										<th scope="row">브라우저</th>
+										<th scope="row">파일 형식</th>
+										<th scope="row">코덱</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th scope="col">Firefox 3.5+</th>
+										<td>ogg</td>
+										<td>테오라, Vorbis</td>
+									</tr>
+									<tr>
+										<th scope="col">Opera 10.5+</th>
+										<td>ogg</td>
+										<td>테오라, Vorbis</td>
+									</tr>
+									<tr>
+										<th scope="col">Safari</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">Chrome</th>
+										<td>ogg, mp4</td>
+										<td>테오라, Vorbis, H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">iPhone & Android</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+									<tr>
+										<th scope="col">Internet Explorer 9+</th>
+										<td>mp4</td>
+										<td>H.264, AAC</td>
+									</tr>
+								</tbody>
+							</table>
+							<p>브라우저별 플레이를 지원하는 가장 보편적인 형식/코덱은 MP4 / H.264 입니다.</p>
+						</dd>
+					</dl>
+				</div>
+			</div>
+			<div id="menu-guide-3" class="section">
+				<div class="header">
+					<h4 class="title">자막 가져오기</h4>
+					<p>기존 자막을 불러오는 메뉴입니다. <br />해당 메뉴는 3가지 방법으로 동영상을 불러옵니다.</p>
+					<ul>
+						<li>TEXT를 직접 입력</li>
+						<li>SMI 파일 불러오기</li>
+						<li>SRT 파일 불러오기</li>
+					</ul>
+				</div>
+				<div class="article">
+					<h5 class="title">TEXT를 직접 입력하기</h5>
+					<p>자막 가져오기 창의 TEXT 탭에서 "자막 내용 입력" 영역에 자막 내용을 입력합니다. <br />해당 탭은 자막의 내용에만 입력 됩니다.</p>
+					<!-- <img src="" alt="TEXT 자막 가져오기 GIF" /> -->
+					<p>줄바꿈(Enter)은 하나의 타임라인으로 인식합니다. <br />2줄 이상의 자막을 하나의 타임라인으로 하고 싶으면  &lt;br&gt; 태그를 사용합니다. <br />TEXT를 입력할때 자막 태그들도 적용 가능합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SMI 파일 불러오기</h5>
+					<!-- <img src="" alt="SMI 자막 가져오기 GIF" /> -->
+					<p>자막 가져오기 창의 SMI 탭에서 "SMI 파일 찾기" 를 클릭히여 SMI 자막 파일을 찾아 선택합니다. <br />SMI 자막 파일을 선택한 후, 자막 가져오기를 클릭하면 시트에 해당 자막 내용이 출력 됩니다.</p>
+					<p>이때, 선택 되어 있는 인코딩과 자막의 인코딩이 다를 경우 출력 된 내용의 글자들이 깨지게 됩니다. <br />자막의 인코딩은 자막 가져오기 창의 우측 상단에서 변경이 가능합니다. <br />자막 파일의 인코딩은 UTF-8, EUC-KR, EUC-CN, EUC-TW, EUC-JP 중 하나를 선택 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SRT 파일 불러오기</h5>
+					<!-- <img src="" alt="SRT 자막 가져오기 GIF" /> -->
+					<p>자막 가져오기 창의 SRT 탭에서 "SRT 파일 찾기" 를 클릭히여 SRT 자막 파일을 찾아 선택합니다. <br />SRT 자막 파일을 선택한 후, 자막 가져오기를 클릭하면 시트에 해당 자막 내용이 출력 됩니다.</p>
+
+					<p>이때, 선택 되어 있는 인코딩과 자막의 인코딩이 다를 경우 출력 된 내용의 글자들이 깨지게 됩니다. <br />자막의 인코딩은 자막 가져오기 창의 우측 상단에서 변경이 가능합니다. <br />자막 파일의 인코딩은 UTF-8, EUC-KR, EUC-CN, EUC-TW, EUC-JP 중 하나를 선택 할 수 있습니다.</p>
+				</div>
+			</div>
+			<div id="menu-guide-4" class="section">
+				<div class="header">
+					<h4 class="title">자막 내려받기</h4>
+					<p>작업한 자막을 내려받는 메뉴 입니다. <br />해당 메뉴는 SMI, SRT, VTT, JSON, EXCEL의 5가지 형식의 파일 중 선택하여 다운 받을 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SMI 파일로 내려받기</h5>
+					<!-- <img src="" alt="SMI 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 SMI 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다. <br />"파일 명", "서명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>여기서 서명이란, 동영상 플레이 할 때 표기 되지 않으면서 자막 파일 내에 원하는 내용를 남기는 기능입니다. <br />서명은 주로 자막 제작자의 정보나 저작권등을 표기합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">SRT 파일로 내려받기</h5>
+					<!-- <img src="" alt="SRT 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 SRT 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다.</p>
+					<p>선택사항으로, "스타일 제거"라는 기능이 있습니다. <br />"스타일 제거"를 체크 한 상태로 자막을 내려 받으면 font color, bold, underline, italic등의 스타일이 제거된 상태로 자막이 저장 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">VTT 파일로 내려받기</h5>
+					<!-- <img src="" alt="VTT 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 VTT 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단에서 원하는 파일 인코딩의 선택이 가능합니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>선택사항으로, "스타일 제거"라는 기능이 있습니다. <br />"스타일 제거"를 체크 한 상태로 자막을 내려 받으면 font color, bold, underline, italic등의 스타일이 제거된 상태로 자막이 저장 됩니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">JSON 파일로 내려받기</h5>
+					<!-- <img src="" alt="JSON 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 JSON 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단의 Select에서 JSON 파일의 구조를 SMI 또는 SRT로 선택할 수 있습니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>JSON 파일의 SMI 구조는 싱크(시작 시간)만 있고, SRT 구조는 시작 시간과 종료시간이 함께 있는 차이점을 가집니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">EXCEL 파일로 내려받기</h5>
+					<!-- <img src="" alt="EXCEL 자막 내려받기 GIF" /> -->
+					<p>자막 내려받기 창의 EXCEL 탭에서 자막을 내려 받을 수 있습니다. <br />자막 내려받기 창의 우측 상단의 Select에서 EXCEL 파일의 테이블을 SMI 또는 SRT로 선택할 수 있습니다. <br />파일 명"을 입력한 후 자막 내려받기를 클릭합니다.</p>
+					<p>EXCEL 파일의 SMI 구조는 싱크(시작 시간)만 있고, SRT 구조는 시작 시간과 종료시간이 함께 있는 차이점을 가집니다.</p>
+				</div>
+			</div>
+			<div id="menu-guide-5" class="section">
+				<div class="header">
+					<h4 class="title">설정</h4>
+					<p>Caption Studio의 언어, 자막 형식, 자막 이동 시간, 단축키를 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">언어 설정</h5>
+					<p>설정창의 기본설정에서 변경 가능합니다. <br />한국어, 영어, 일본어를 지원합니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">자막 형식 설정</h5>
+					<p>편집하는 시트의 형식을 SMI나 SRT형식으로 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">자막 이동 시간 설정</h5>
+					<p>자막 싱크 변경 하는 단위 시간을 변경 할 수 있습니다.</p>
+				</div>
+				<div class="article">
+					<h5 class="title">단축키 설정</h5>
+					<p>기존의 단축키를 확인 할 수 있고, 일부 사용자 지정 단축키를 변경 할 수 있습니다.</p>
+				</div>
+			</div>
+			<div class="aside">
+				<a href="//blog.naver.com/pmr0622/220968233578">Caption Studio 블로그 설명서 1</a>
+			</div>
+		</div>
+	</div>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<!-- 띠배너 100 -->
+	<ins class="adsbygoogle"
+		 style="display:inline-block;width:320px;height:100px"
+		 data-ad-client="ca-pub-5713218026854731"
+		 data-ad-slot="2730780809"></ins>
+	<script>
+	(adsbygoogle = window.adsbygoogle || []).push({});
+	</script>
+</body>
+</html>
