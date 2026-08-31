@@ -35,6 +35,12 @@ Git 저장소에 올리는 버전은 **2.0.0**부터 시작합니다.
 
 상세 변경: [changelog/2.2.md](./changelog/2.2.md)
 
+## [2.2.2] — 2026-08-31
+
+`caption.js` eval 제거 — 색상 파싱·UI handler(`data-action` + `runAction`).
+
+상세 변경: [changelog/2.2.md](./changelog/2.2.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
