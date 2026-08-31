@@ -414,7 +414,7 @@
 					</ul>
 					<form class="contain tab-body" autocomplete="off">
 						<div id="video-import-file" class="tab-panel">
-							<label class="i-text file empty" data-callback="Video.FileCheck">
+							<label class="i-text file empty" data-action="Video.FileCheck">
 								<input type="file" id="video-file" accept="video/mp4, video/ogg, video/webm" class="none" />
 								<span class="i-filename"></span>
 								<span class="i-placeholder i18n" data-text="video-import-file"></span>
@@ -446,16 +446,16 @@
 				</div>
 				<div class="dialog-body ui-tab form">
 					<ul class="tab-header tcp">
-						<li><a href="javascript:void(0)" data-value="text" data-callback="Subtitle.Import.TEXT()"><span>text</span></a></li>
-						<li><a href="javascript:void(0)" data-value="smi" data-callback="Subtitle.Import.SMI()"><span>smi</span></a></li>
-						<li><a href="javascript:void(0)" data-value="srt" data-callback="Subtitle.Import.SRT()"><span>srt</span></a></li>
+						<li><a href="javascript:void(0)" data-value="text" data-action="Subtitle.Import.TEXT"><span>text</span></a></li>
+						<li><a href="javascript:void(0)" data-value="smi" data-action="Subtitle.Import.SMI"><span>smi</span></a></li>
+						<li><a href="javascript:void(0)" data-value="srt" data-action="Subtitle.Import.SRT"><span>srt</span></a></li>
 					</ul>
 					<form class="contain tab-body" autocomplete="off">
 						<div id="subtitle-import-text" class="tab-panel">
 							<textarea name="subtitle-text" id="subtitle-text" class="i-text i18n" data-placeholder="subtitle-import-text" placeholder=""></textarea>
 						</div>
 						<div id="subtitle-import-smi" class="tab-panel">
-							<div class="ui-select i18n" data-callback="Fn.EncodeSmi" data-key="smiEncode" data-title="subtitle-file-encode">
+							<div class="ui-select i18n" data-action="Fn.EncodeSmi" data-key="smiEncode" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
@@ -465,14 +465,14 @@
 									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
 								</ul>
 							</div>
-							<label class="i-text file empty" data-callback="Subtitle.FileCheck">
+							<label class="i-text file empty">
 								<input type="file" id="smi-file" class="none">
 								<span class="i-filename"></span>
 								<span class="i-placeholder i18n" data-text="subtitle-import-smi"></span>
 							</label>
 						</div>
 						<div id="subtitle-import-srt" class="tab-panel">
-							<div class="ui-select i18n" data-callback="Fn.EncodeSrt" data-key="srtEncode" data-title="subtitle-file-encode">
+							<div class="ui-select i18n" data-action="Fn.EncodeSrt" data-key="srtEncode" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
@@ -482,7 +482,7 @@
 									<li><a href="javascript:void(0)" data-value="EUC-JP">日本語<small>(EUC-JP)</small></a></li>
 								</ul>
 							</div>
-							<label class="i-text file empty" data-callback="Subtitle.FileCheck">
+							<label class="i-text file empty">
 								<input type="file" id="srt-file" class="none">
 								<span class="i-filename"></span>
 								<span class="i-placeholder i18n" data-text="subtitle-import-srt"></span>
@@ -505,18 +505,18 @@
 				</div>
 				<div class="dialog-body ui-tab form">
 					<ul class="tab-header tcp">
-						<li><a href="javascript:void(0)" data-value="smi" data-callback="Subtitle.Export.SMI()"><span>smi</span></a></li>
-						<li><a href="javascript:void(0)" data-value="srt" data-callback="Subtitle.Export.SRT()"><span>srt</span></a></li>
-						<li><a href="javascript:void(0)" data-value="vtt" data-callback="Subtitle.Export.VTT()"><span>vtt</span></a></li>
-						<li><a href="javascript:void(0)" data-value="json" data-callback="Subtitle.Export.JSON()"><span>json</span></a></li>
-						<li><a href="javascript:void(0)" data-value="excel" data-callback="Subtitle.Export.EXCEL()"><span>excel</span></a></li>
+						<li><a href="javascript:void(0)" data-value="smi" data-action="Subtitle.Export.SMI"><span>smi</span></a></li>
+						<li><a href="javascript:void(0)" data-value="srt" data-action="Subtitle.Export.SRT"><span>srt</span></a></li>
+						<li><a href="javascript:void(0)" data-value="vtt" data-action="Subtitle.Export.VTT"><span>vtt</span></a></li>
+						<li><a href="javascript:void(0)" data-value="json" data-action="Subtitle.Export.JSON"><span>json</span></a></li>
+						<li><a href="javascript:void(0)" data-value="excel" data-action="Subtitle.Export.EXCEL"><span>excel</span></a></li>
 					</ul>
 					<div class="contain tab-body">
 						<form action="download/smi.php" method="post" id="subtitle-export-smi" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="lang_key" class="lang_key" />
 							<input type="hidden" name="lang_value" class="lang_value" />
 							<input type="hidden" name="encode_smi_file" class="encode_smi_file" />
-							<div class="ui-select i18n" data-callback="Fn.EncodeSmiFile" data-key="smiEncodeFile" data-title="subtitle-file-encode">
+							<div class="ui-select i18n" data-action="Fn.EncodeSmiFile" data-key="smiEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
@@ -548,7 +548,7 @@
 						</form>
 						<form action="download/srt.php" method="post" id="subtitle-export-srt" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="encode_srt_file" class="encode_srt_file" />
-							<div class="ui-select i18n" data-callback="Fn.EncodeSrtFile" data-key="srtEncodeFile" data-title="subtitle-file-encode">
+							<div class="ui-select i18n" data-action="Fn.EncodeSrtFile" data-key="srtEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
@@ -582,7 +582,7 @@
 						</form>
 						<form action="download/vtt.php" method="post" id="subtitle-export-vtt" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="encode_vtt_file" class="encode_vtt_file" />
-							<div class="ui-select i18n" data-callback="Fn.EncodeVttFile" data-key="vttEncodeFile" data-title="subtitle-file-encode">
+							<div class="ui-select i18n" data-action="Fn.EncodeVttFile" data-key="vttEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="UTF-8">UTF-8</a></li>
@@ -616,7 +616,7 @@
 						</form>
 						<form action="download/json.php" method="post" id="subtitle-export-json" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="format" class="json-format" />
-							<div class="ui-select i18n" data-callback="Fn.JsonFormat" data-key="jsonFormat" data-title="subtitle-format">
+							<div class="ui-select i18n" data-action="Fn.JsonFormat" data-key="jsonFormat" data-title="subtitle-format">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>
@@ -641,7 +641,7 @@
 						</form>
 						<form action="download/excel.php" method="post" id="subtitle-export-excel" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="format" class="excel-format" />
-							<div class="ui-select i18n" data-callback="Fn.ExcelFormat" data-key="excelFormat" data-title="subtitle-format">
+							<div class="ui-select i18n" data-action="Fn.ExcelFormat" data-key="excelFormat" data-title="subtitle-format">
 								<a href="javascript:void(0)" class="trigger"></a>
 								<ul class="option">
 									<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>
@@ -678,7 +678,7 @@
 				<div class="dialog-body ui-tab form">
 					<ul class="tab-header tcp">
 						<li><a href="javascript:void(0)" data-value="default"><span class="i18n" data-text="default-settings"></span></a></li>
-						<li><a href="javascript:void(0)" data-value="shortkey" data-callback="Shortkey.Switching()"><span class="i18n" data-text="shortkey"></span></a></li>
+						<li><a href="javascript:void(0)" data-value="shortkey" data-action="Shortkey.Switching"><span class="i18n" data-text="shortkey"></span></a></li>
 						<li><a href="javascript:void(0)" data-value="info" ><span class="i18n" data-text="info"></span></a></li>
 					</ul>
 					<div class="contain tab-body">
@@ -686,7 +686,7 @@
 							<ul class="config-list">
 								<li><dl>
 									<dt class="i18n" data-text="language"></dt>
-									<dd><div class="ui-select" data-callback="Fn.Language" data-key="language">
+									<dd><div class="ui-select" data-action="Fn.Language" data-key="language">
 										<a href="javascript:void(0)" class="trigger"></a>
 										<ul class="option">
 											<li><a href="javascript:void(0)" data-value="KRCC">한국어</a></li>
@@ -697,7 +697,7 @@
 								</dl></li>
 								<li><dl>
 									<dt class="i18n" data-text="subtitle-format"></dt>
-									<dd><div class="ui-select i18n" data-callback="Fn.Format" data-key="format" data-title="subtitle-format">
+									<dd><div class="ui-select i18n" data-action="Fn.Format" data-key="format" data-title="subtitle-format">
 										<a href="javascript:void(0)" class="trigger"></a>
 										<ul class="option">
 											<li><a href="javascript:void(0)" data-value="smi">SMI</a></li>

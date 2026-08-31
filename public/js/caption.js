@@ -14,7 +14,10 @@ const {
 	parseTimecode,
 	timePartsToMs,
 	normalizeElementColor,
+	runAction,
 } = utilsModule();
+
+const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 
 //;(function($,Do,Wn,WebFont,Shortkey,Player,Video,Interface,Ev,Fn,Sheet,SheetTrigger,Subtitle){
 	var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Subtitle={},Ev={};
@@ -322,7 +325,7 @@ const {
 	Interface.Tab = (function(){
 		$('.ui-tab').each(function(eq,ui){
 			$(ui)
-			.on('click','.tab-header > li > a',function(tab,file,trigger,active,value,callback,init){
+			.on('click','.tab-header > li > a',function(tab,file,trigger,active,value,action,init){
 				tab = $(ui);
 				if (tab.hasClass('form')){
 					tab.find('.btn-reset').trigger('click');
@@ -339,17 +342,11 @@ const {
 				active = trigger.parent().addClass('on').index();
 				tab.find('.tab-panel').eq(active).addClass('on');
 				value = trigger.data('value');
-				callback = trigger.data('callback');
-				init = tab.data('callback');
+				action = trigger.data('action');
+				init = tab.data('action');
 				tab.data('value',value);
-				if (callback){
-					callback = eval(callback);
-					if (typeof callback == 'function') callback(value);
-				}
-				if (init){
-					init = eval(init);
-					if (typeof init == 'function') init(value);
-				}
+				if (action) runAction(action, getActionContext(), value);
+				if (init) runAction(init, getActionContext(), value);
 			})
 			.find('.tab-header > li > a').eq(0).trigger('click');
 		});
@@ -372,7 +369,7 @@ const {
 				.on('click','.trigger',function(){
 					$(this).parent('.ui-select').toggleClass('on');
 				})
-				.on('click','.option > li > a',function(option,parent,select,value,callback){
+				.on('click','.option > li > a',function(option,parent,select,value,action){
 					option = $(this);
 					parent = option.parent();
 					select = option.parents('.ui-select');
@@ -381,11 +378,8 @@ const {
 					value = option.data('value');
 					select.find('.trigger').text(option.text());
 					select.data('value', value);
-					callback = select.data('callback');
-					if (callback){
-						callback = eval(callback);
-						if (typeof callback == 'function') callback(value);
-					}
+					action = select.data('action');
+					if (action) runAction(action, getActionContext(), value);
 					select.removeClass('on');
 					ga("send",{hitType:"event",eventCategory:"Selection",eventAction:select.data('key') + " : " + value,eventLabel:"Selection"});
 				})
@@ -404,11 +398,11 @@ const {
 	};
 	Interface.InputFile = (function(){
 		$('.i-text.file').each(function(eq,ui){
-			$(ui).find('input[type="file"]').off('change').on('change',function(parent,file,filename,callback){
+			$(ui).find('input[type="file"]').off('change').on('change',function(parent,file,filename,action){
 				parent = $(this).parent();
 				file = this.files[0];
 				filename = parent.find('.i-filename');
-				callback = parent.data('callback');
+				action = parent.data('action');
 				if (file){
 					parent.removeClass('empty');
 					filename.text(file.name);
@@ -416,10 +410,7 @@ const {
 					parent.addClass('empty');
 					filename.text('');
 				}
-				if (callback){
-					callback = eval(callback);
-					if (typeof callback == 'function') callback(parent, file);
-				}
+				if (action) runAction(action, getActionContext(), parent, file);
 			});
 		});
 	});
@@ -2689,7 +2680,7 @@ const {
 			}
 			return drawHtml;
 		}),
-		srt : (function(drawData,drawCount,drawHeight,drawTimeline,drawRange,drawHtml){
+		srt : (function(drawData,drawCount,drawHeight,drawTimeline,drawRange,drawHtml,drawTimelineInfo){
 			drawHtml='',
 			drawCount=Sheet.ArrayData.length,
 			drawHeight= 0,
@@ -2799,7 +2790,7 @@ const {
 		SheetTrigger.Init = null;
 		!Sheet.Format && !o.Format && (Sheet.Format = storage.get('format'));
 		if (!Sheet.Format || Sheet.Format == '') Sheet.Format = 'smi';
-		if (o.Format && o.format != Sheet.Format){
+		if (o.Format && o.Format != Sheet.Format){
 			Sheet.Format = o.Format;
 			if (Sheet.Format == 'smi' && Sheet.Current.col > 0) --Sheet.Current.col;
 			if (Sheet.Format == 'srt' && Sheet.Current.col > 0) ++Sheet.Current.col;
