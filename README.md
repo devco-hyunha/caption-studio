@@ -34,7 +34,8 @@
 ├── public/
 │   ├── css/                # 스타일
 │   └── js/
-│       ├── caption.js      # 핵심 로직 (단일 파일)
+│       ├── caption.js      # 핵심 로직
+│       ├── modules/        # ES module 분리 (i18n, utils)
 │       ├── lib/            # jQuery, Video.js 등
 │       └── plugin/         # 단축키, 컬러피커 등
 ├── download/               # 자막 내보내기(서버) 관련
@@ -48,6 +49,7 @@
 |------|------|
 | UI / 셸 | `index.html` |
 | 핵심 로직 | `public/js/caption.js` |
+| 모듈 | `public/js/modules/` (i18n, utils) |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
 
 ## 로컬에서 레거시 실행

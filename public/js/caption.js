@@ -1,4 +1,5 @@
 import i18nModule from './modules/i18n/i18n.js';
+import { clone, capitalize, extend, padZero } from './modules/utils/utils.js';
 
 const i18n = i18nModule();
 
@@ -152,7 +153,7 @@ const i18n = i18nModule();
 				target = Sheet.Current.target;
 				if (!Sheet.Multiple.State && target.indexOf('time') > 0){
 					original = Sheet.ArrayData[Sheet.Current.row];
-					timeline = Clone(original);
+					timeline = clone(original);
 					if (target == 'starttime'){
 						timeline.start = parseInt(Video.CurrentTime() * 1000);
 					} else if (target == 'endtime'){
@@ -1314,14 +1315,14 @@ const i18n = i18nModule();
 		},
 		Convert : function(format, data, subtitle, arraySize, arrayIndex, currentTimeline){
 			subtitle = [];
-			if (!data) data = Clone(Sheet.ArrayData);
+			if (!data) data = clone(Sheet.ArrayData);
 			if (Sheet.Format != format){
 				data = Subtitle['To'+format.toLocaleUpperCase()](Sheet.Format,data).ArrayData;
 			}
 			arraySize = data.length;
 			if (format && format == 'srt' || Sheet.Format == 'srt') {
 				for (arrayIndex = 0; arrayIndex < arraySize; arrayIndex++){
-					currentTimeline = Clone(data[arrayIndex]);
+					currentTimeline = clone(data[arrayIndex]);
 					subtitle[arrayIndex] = {
 						'start' : currentTimeline.start,
 						'starttime' : Fn.Hour(currentTimeline.start),
@@ -1333,7 +1334,7 @@ const i18n = i18nModule();
 				}
 			} else if (Sheet.Format == 'smi') {
 				for (arrayIndex = 0; arrayIndex < arraySize; arrayIndex++){
-					currentTimeline = Clone(data[arrayIndex]);
+					currentTimeline = clone(data[arrayIndex]);
 					subtitle[arrayIndex] = {
 						'start' : currentTimeline.start,
 						'starttime' : Fn.Hour(currentTimeline.start),
@@ -1435,7 +1436,7 @@ const i18n = i18nModule();
 			z = 0,
 			o = Log.ArrayData,
 			n = Log.Index;
-			return n != o.length - 1 && (o = o.slice(0, n + 1)), o.push(e), 0 !== z && o.length > z && (o = o.slice(o.length - z, o.length)), n = o.length - 1, Log.Index = n, Log.ArrayData = o, !1//Clone(o), !1
+			return n != o.length - 1 && (o = o.slice(0, n + 1)), o.push(e), 0 !== z && o.length > z && (o = o.slice(o.length - z, o.length)), n = o.length - 1, Log.Index = n, Log.ArrayData = o, !1//clone(o), !1
 		});
 		Log.Clear = (function(){
 			Log.Index = -1, Log.ArrayData= [];
@@ -1446,7 +1447,7 @@ const i18n = i18nModule();
 		msec=(msec/1000).toFixed(3).toString().split('.');
 		msec[0]=parseInt(msec[0]);
 		msec[1]||(msec[1]=0);
-		return Math.floor(msec[0]/3600).zf(2)+':'+Math.floor(msec[0]%3600/60).zf(2)+':'+Math.floor(msec[0]%60).zf(2)+','+msec[1].zf(3);
+		return padZero(Math.floor(msec[0]/3600), 2)+':'+padZero(Math.floor(msec[0]%3600/60), 2)+':'+padZero(Math.floor(msec[0]%60), 2)+','+padZero(msec[1], 3);
 	});
 	Fn.Second = (function(hour){
 		try{
@@ -1751,7 +1752,7 @@ const i18n = i18nModule();
 		Move : function(searchSize){
 			searchSize = Sheet.ArraySearch.length;
 			if (searchSize > 0){
-				Sheet.Current = Clone(Sheet.ArraySearch[Sheet.Search.Current]);
+				Sheet.Current = clone(Sheet.ArraySearch[Sheet.Search.Current]);
 				Sheet.Move.Event();
 			} else {
 				Sheet.Search.Current = -1;
@@ -1835,7 +1836,7 @@ const i18n = i18nModule();
 		}),
 		Update : (function(arrayData,position,arrayDataSize,arrayDataForIndex,arrayDataTimeline){
 			arrayDataSize = arrayData.length;
-			Extend(Sheet.Current,position);
+			extend(Sheet.Current,position);
 			for (arrayDataForIndex = 0; arrayDataForIndex < arrayDataSize; arrayDataForIndex++){
 				arrayDataTimeline = arrayData[arrayDataForIndex];
 				Sheet.ArrayData[arrayDataTimeline.index] = arrayDataTimeline.data;
@@ -1869,7 +1870,7 @@ const i18n = i18nModule();
 			result.index = arrayData.findIndex(function(row){return row.start>sec;});
 			result.visible = false;
 		}
-		result.timeline = Clone(arrayData[result.index]);
+		result.timeline = clone(arrayData[result.index]);
 		currentTimeline = Sheet.ArrayInfo[result.index];
 		currentTimeline && currentTimeline.starttime && (result.timeline.starttime = currentTimeline.starttime);
 		return result;
@@ -2024,9 +2025,9 @@ const i18n = i18nModule();
 	Sheet.UpdateTarget.srt.memo = Sheet.UpdateTarget.smi.memo;
 	Sheet.Update = (function(position, timeline, backup){
 		Sheet.Edit.State && Sheet.Edit.Off();
-		Extend(Sheet.Current,position);
+		extend(Sheet.Current,position);
 		Sheet.Current.target = Sheet.Move.Target[Sheet.Format][Sheet.Current.col];
-		backup = Clone(Sheet.ArrayData[position.row]);
+		backup = clone(Sheet.ArrayData[position.row]);
 		Sheet.ArrayData[position.row] = timeline;
 		Sheet.UpdateTarget[Sheet.Format][Sheet.Current.target](position, timeline);
 		Sheet.AutoSave();
@@ -2101,7 +2102,7 @@ const i18n = i18nModule();
 		Sheet.Height -= Sheet.ArrayHeight[position.row];
 		Sheet.Current.row	= position.row;
 		Sheet.Current.col	= position.col;
-		backup				= Clone(Sheet.ArrayData[position.row]);
+		backup				= clone(Sheet.ArrayData[position.row]);
 		Sheet.ArrayHeight.splice(position.row,1);
 		Sheet.ArrayInfo.splice(position.row,1);
 		Sheet.ArrayData.splice(position.row,1);
@@ -2147,7 +2148,7 @@ const i18n = i18nModule();
 			insert = [];
 			!current && (current = {row : Sheet.Current.row, col : Sheet.Current.col});
 			insert.index = current.row + 1, current.col && (Sheet.Current.col = current.col);
-			insert.data = Clone(Sheet.Empty);
+			insert.data = clone(Sheet.Empty);
 			Sheet.Edit.Log('i',insert.index,insert.data,null,current);
 			ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"insert",eventLabel:"Sheet Edit"});
 			Sheet.Insert(insert);
@@ -2155,7 +2156,7 @@ const i18n = i18nModule();
 		r : function(current,backup){
 			Sheet.Search.Panel && $('#sheet-search').trigger('click');
 			if (Sheet.DataSize == 0){
-				Sheet.Command.u(current,Clone(Sheet.Empty));
+				Sheet.Command.u(current,clone(Sheet.Empty));
 				ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"empty",eventLabel:"Sheet Edit"});
 			} else {
 				backup = Sheet.Remove(current);
@@ -2219,7 +2220,7 @@ const i18n = i18nModule();
 				value > timeOption.max && (value = timeOption.max, time.val(value));
 				
 				timeSliders.find('.'+timeOption.target).slider('option','value',value);
-				time.next().text(value.zf(timeOption.zf));
+				time.next().text(padZero(value, timeOption.zf));
 
 				milli = Number(timeParts.find('.milli > input').val());
 				milli += Number(timeParts.find('.second > input').val()) * 1000;
@@ -2245,10 +2246,10 @@ const i18n = i18nModule();
 				value = (value/1000).toFixed(3).toString().split('.');
 				value[0]=parseInt(value[0]);
 				value[1]||(value[1]=0);
-				hour =  Math.floor(value[0]/3600).zf(2);
-				minute = Math.floor(value[0]%3600/60).zf(2);
-				second = Math.floor(value[0]%60).zf(2);
-				milli = value[1].zf(3);
+				hour =  padZero(Math.floor(value[0]/3600), 2);
+				minute = padZero(Math.floor(value[0]%3600/60), 2);
+				second = padZero(Math.floor(value[0]%60), 2);
+				milli = padZero(value[1], 3);
 
 				timeParts.find('.hour > input').val(hour).trigger('change');
 				timeParts.find('.minute > input').val(minute).trigger('change');
@@ -2265,7 +2266,7 @@ const i18n = i18nModule();
 				milli = Math.abs(milliSecond.val());
 				if (milli){
 					if (!Sheet.Multiple.State){
-						Sheet.Edit['Time'+Capitalize(positive)](milli);
+						Sheet.Edit['Time'+capitalize(positive)](milli);
 					} else {
 						Sheet.Edit.MultiClip(positive,milli);
 					}
@@ -2285,7 +2286,7 @@ const i18n = i18nModule();
 				multiClipIndex = Sheet.ArrayMultiple[multiClipForIndex];
 					if (multiClipIndex >= 0){
 					multiClipTimeline = Sheet.ArrayData[multiClipIndex];
-					arrayBackup.push({index : multiClipIndex, data : Clone(multiClipTimeline)});
+					arrayBackup.push({index : multiClipIndex, data : clone(multiClipTimeline)});
 					if (cmd == 'plus'){
 						multiClipTimeline.start += jump;
 						multiClipTimeline.end && (multiClipTimeline.end += jump);
@@ -2298,7 +2299,7 @@ const i18n = i18nModule();
 						Sheet.Edit.Cmd(cmd);
 						multiClipTimeline.text = Subtitle.Encode(SheetTrigger.Input);
 					}
-					arrayCurrent.push({index : multiClipIndex, data : Clone(multiClipTimeline)});
+					arrayCurrent.push({index : multiClipIndex, data : clone(multiClipTimeline)});
 				}
 			}
 			SheetTrigger.Input.removeClass('multi-clip');
@@ -2309,7 +2310,7 @@ const i18n = i18nModule();
 		}),
 		TimePlus : (function(jump,clip){
 			jump = jump ? parseInt(jump) : parseInt(Sheet.Config.Jump);
-			clip = Clone(Sheet.ArrayData[Sheet.Current.row]);
+			clip = clone(Sheet.ArrayData[Sheet.Current.row]);
 			if (Sheet.Current.target == 'starttime'){
 				clip.start += jump;
 			} else if (Sheet.Current.target == 'endtime'){
@@ -2319,7 +2320,7 @@ const i18n = i18nModule();
 		}),
 		TimeMinus : (function(jump,clip){
 			jump = jump ? parseInt(jump) : parseInt(Sheet.Config.Jump);
-			clip = Clone(Sheet.ArrayData[Sheet.Current.row]);
+			clip = clone(Sheet.ArrayData[Sheet.Current.row]);
 			if (Sheet.Current.target == 'starttime' && clip.start > 0){
 				clip.start -= jump;
 				clip.start < 0 && (clip.start = 0);
@@ -2353,7 +2354,7 @@ const i18n = i18nModule();
 			Sheet.Edit.State = false;
 			$('#sheet-edit').removeClass('on');
 			SheetTrigger.Wrap.removeClass('on').removeClass('clip');
-			clip = Clone(Sheet.Current.data);
+			clip = clone(Sheet.Current.data);
 			colText = Subtitle.Encode(SheetTrigger.Input);
 			if (clip[Sheet.Current.target] != colText){
 				clip[Sheet.Current.target] = colText;
@@ -2852,7 +2853,7 @@ const i18n = i18nModule();
 			if (Sheet.Format == 'smi' && Sheet.Current.col > 0) --Sheet.Current.col;
 			if (Sheet.Format == 'srt' && Sheet.Current.col > 0) ++Sheet.Current.col;
 		}
-		if (o) Extend(Sheet, o);
+		if (o) extend(Sheet, o);
 		if (!o.ArrayData && Sheet.ArrayData.length == 0) Sheet.ArrayData = Fn.Data('get','SUBTITLE_TEMP');
 		if (!Sheet.ArrayData || Sheet.ArrayData == '' || Sheet.ArrayData.length == 0) Sheet.ArrayData = [Sheet.Empty];
 		Fn.Data('set','SUBTITLE_TEMP', Sheet.ArrayData);
@@ -3114,8 +3115,4 @@ const i18n = i18nModule();
 	});
 //})(jQuery,document,window,WebFont,$.Shortcuts);
 
-Date.prototype.format=function(a){if(!this.valueOf())return' ';var b,c=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'],d=this;return a.replace(/(yyyy|yy|MM|dd|E|hh|mm|ss|ms|a\/p)/gi,function(a){switch(a){case'yyyy':return d.getFullYear();case'yy':return(d.getFullYear()%1e3).zf(2);case'MM':return(d.getMonth()+1).zf(2);case'dd':return d.getDate().zf(2);case'E':return c[d.getDay()];case'HH':return d.getHours().zf(2);case'hh':return((b=d.getHours()%12)?b:12).zf(2);case'mm':return d.getMinutes().zf(2);case'ss':return d.getSeconds().zf(2);case'ms':return d.getMilliseconds().zf(3);case'a/p':return d.getHours()<12?'오전':'오후';default:return a}})},String.prototype.string=function(a){for(var b='',c=0;c++<a;)b+=this;return b},String.prototype.zf=function(a){return'0'.string(a-this.length)+this},Number.prototype.zf=function(a){return this.toString().zf(a)},Array.prototype.find||(Array.prototype.find=function(a,b){try{var c=Object(this);if('function'!=typeof a)throw new TypeError;for(var e,d=c.length,f=0;f<d;f++)if(f in c&&(e=c[f],a.call(b,e,f,c)))return e;return}finally{c=null,d=null,f=null,e=null}}),Array.prototype.findIndex||(Array.prototype.findIndex=function(a,b){var c=Object(this);if('function'!=typeof a)throw new TypeError;for(var d,e=c.length,f=0;f<e;f++)if(f in c&&(d=c[f],a.call(b,d,f,c)))return f;return-1});
-function Clone(a){var b,c;if("object"!=typeof a)return a;if(!a)return a;if("[object Array]"===Object.prototype.toString.apply(a)){for(b=[],c=0;c<a.length;c+=1)b[c]=Clone(a[c]);return b}b={};for(c in a)a.hasOwnProperty(c)&&(b[c]=Clone(a[c]));return b}
-function Capitalize(string){return string[0].toUpperCase()+string.slice(1);}
-function Extend(a,b,c){for(c in b)b.hasOwnProperty(c)&&(a[c]=b[c])}
 var Toast;!function(t){function a(t,a,n){d("info",t,a,n)}function n(t,a,n){d("warning",t,a,n)}function i(t,a,n){d("error",t,a,n)}function o(t,a,n){d("success",t,a,n)}function d(a,n,i,o){void 0===o&&(o={}),o=$.extend({},t.defaults,o),s||(s=$("#toast-container"),0===s.length&&(s=$("<div>").attr("id","toast-container").appendTo($("body")))),o.width&&s.css({width:o.width});var d=$("<div>").addClass("toast").addClass("toast-"+a);if(i){var e=$("<div>").addClass("toast-title").append(i);d.append(e)}if(n){var r=$("<div>").addClass("toast-message").append(n);d.append(r)}o.displayDuration>0&&setTimeout(function(){d.fadeOut(o.fadeOutDuration,function(){d.remove()})},o.displayDuration),d.on("click",function(){d.remove()}),s.prepend(d)}t.defaults={width:"",displayDuration:2e3,fadeOutDuration:800},t.info=a,t.warning=n,t.error=i,t.success=o;var s}(Toast||(Toast={}));

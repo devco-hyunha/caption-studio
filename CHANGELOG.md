@@ -23,10 +23,17 @@ Git 저장소에 올리는 버전은 **2.0.0**부터 시작합니다.
 
 상세 변경: [changelog/2.1.md](./changelog/2.1.md)
 
+## [2.2.0] — 2026-08-31
+
+`caption.js` 범용 유틸을 `public/js/modules/utils/`로 분리.
+
+상세 변경: [changelog/2.2.md](./changelog/2.2.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
+| 2.2.x | [changelog/2.2.md](./changelog/2.2.md) | utils 모듈 분리 |
 | 2.1.x | [changelog/2.1.md](./changelog/2.1.md) | i18n locale 모듈 분리 |
 | 2.0.x | [changelog/2.0.md](./changelog/2.0.md) | GitHub 리팩터링 기준선 및 레거시 정리 |
 
