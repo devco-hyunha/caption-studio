@@ -84,6 +84,31 @@
 - **변경 이력:** [CHANGELOG.md](./CHANGELOG.md) (목차) → [changelog/](./changelog/) (상세)
 - **릴리즈:** Git tag `vX.Y.Z` (검증 완료된 마일스톤마다)
 
+### dev 커밋 버전 (진행 중 마일스톤)
+
+하나의 PATCH/MINOR 목표를 **여러 커밋·브랜치**로 나눌 때, changelog에만 **SemVer pre-release** 형식으로 진행을 남깁니다.
+
+| 구분 | 규칙 |
+|------|------|
+| **표기** | `X.Y.Z-dev.N` (예: `2.2.2-dev.1`, `2.2.2-dev.2`) |
+| **`VERSION` / About UI / Git tag** | **마일스톤 완료·검증 후** `X.Y.Z`로 한 번만 반영 |
+| **기록 위치** | [changelog/](./changelog/) 해당 MINOR 파일에 `## X.Y.Z — 진행 중` 아래 `### X.Y.Z-dev.N` 섹션 |
+| **브랜치** | 목표 버전과 맞는 작업 브랜치 (예: `refactor/remove-eval` → 목표 `2.2.2`) |
+
+**흐름 예**
+
+1. 브랜치 생성 → changelog에 `## 2.2.2 — 진행 중 (브랜치명)` 추가 (`VERSION`은 이전 릴리스 유지)
+2. 커밋마다 → `2.2.2-dev.1`, `2.2.2-dev.2` … changelog에 누적
+3. merge/push 완료 → `VERSION`, About, `CHANGELOG.md`, tag `v2.2.2` 반영 후 dev 접두 정리
+
+`2.2.2.1`처럼 네 번째 숫자는 SemVer에 없으므로 쓰지 않습니다. pre-release는 `-dev.N`을 사용합니다.
+
+**dev 커밋과 커밋 메시지**
+
+- 커밋 **제목** `type`은 이번 커밋의 **주 변경** 하나만 (예: `refactor(utils): …`)
+- **본문**은 `Why` / `Verify`만 — `Fix:`, `Docs:` 같은 type 라벨은 쓰지 않음
+- 같은 커밋에 섞인 `fix`, `docs` 등 **부가 변경**은 [changelog/](./changelog/) 해당 `X.Y.Z-dev.N` 섹션의 `Changed` / `Fixed` / `Docs`에 기록
+
 ## 커밋 메시지 규칙
 
 커밋 히스토리만 봐도 **무엇을, 왜, 어떤 영역에서** 바꿨는지 알 수 있도록 아래 형식을 따릅니다.
@@ -122,7 +147,7 @@
 - 동작은 같고 코드만 정리 → `refactor`
 - jQuery/플러그인을 없애는 변경 → `remove` (히스토리에서 찾기 쉽게)
 - 사용자가 체감하는 새 동작 → `feat`
-- 한 커밋에 여러 type이 섞이면 → 커밋을 나눈다
+- 한 커밋에 여러 type이 섞이면 → **커밋을 나눈다** (단, [dev 커밋 버전](#dev-커밋-버전-진행-중-마일스톤) 진행 중이면 주 type만 제목에 두고 `fix`·`docs`는 changelog에 기록)
 
 ### scope — 영역
 
@@ -143,10 +168,10 @@
 
 ### body (선택)
 
-큰 변경이거나 검증이 필요할 때 본문에 짧게 남깁니다.
+큰 변경이거나 검증이 필요할 때 본문에 짧게 남깁니다. **본문에 `Fix:` / `Docs:` 등 type 라벨을 넣지 않습니다** — bugfix·문서 변경은 [changelog/](./changelog/)에 `Fixed` / `Docs`로 남깁니다.
 
 ```text
-- Why: (변경 이유)
+- Why: (변경 이유 — 주 변경 중심)
 - Verify: (확인 방법 — 예: index.html에서 SRT import/export)
 ```
 

@@ -13,6 +13,7 @@ const {
 	formatTimecode,
 	parseTimecode,
 	timePartsToMs,
+	normalizeElementColor,
 } = utilsModule();
 
 //;(function($,Do,Wn,WebFont,Shortkey,Player,Video,Interface,Ev,Fn,Sheet,SheetTrigger,Subtitle){
@@ -257,7 +258,7 @@ const {
 		if (opt.cancelBtn) cf.cancel = $('<button class="btn-cancel tup">'+opt.cancelBtn+'</button>').appendTo(cf.btns);
 		ev.close = function(process){
 			if (process && opt[process]) opt[process]();
-			for (key in cf) cf[key].remove();
+			for (let key in cf) cf[key].remove();
 		};
 		if (opt.bgDismiss){
 			cf.overlay.on('click',function(){
@@ -1195,19 +1196,19 @@ const {
 			}
 	});
 	Subtitle.Encode = (function(input,text,contents){
-		input.find('*').each(function(eq,element,color,attr){
-			element = $(element);
-			if (element.attr('color') || (element.attr('style') && element.attr('style').indexOf('color') == 0)){
-				color = eval(element.css('color'));
+		input.find('*').each(function(eq, el){
+			const element = $(el);
+			const color = normalizeElementColor(el);
+			if (color){
 				element.prop('style',false);
-				if (element[0].localName == 'font'){
+				if (el.localName == 'font'){
 					element.attr('color',color);
 				} else {
 					element.removeAttr('color').wrap('<font />');
 					element.parent().attr('color',color);
-				};
+				}
 			}
-			attr = $.map(this.attributes, function(attr) {
+			let attr = $.map(el.attributes, function(attr) {
 				return attr.name;
 			});
 			$.each(attr, function(eq, attrItem) {
@@ -1221,10 +1222,6 @@ const {
 		if (contents.length >= 4){
 			contents = contents.lastIndexOf('<br>') == contents.length - 4 ? contents.substr(0,contents.length - 4) : contents;
 		}
-		function rgb(a,b,c){
-			var r = (a).toString(16), g = (b).toString(16), b = (c).toString(16);
-			return  ('#' + (r.length == 1 ? ('0'+ r) : r) + (g.length == 1 ? ('0'+ g) : g) + (b.length == 1 ? ('0'+ b) : b)).toUpperCase();
-		};
 		return contents;
 	});
 	Subtitle.Vaild = (function(text){

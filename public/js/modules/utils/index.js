@@ -3,6 +3,7 @@ import editHistoryModule from './editHistory.js';
 import { clone, extend } from './object.js';
 import { capitalize, padZero } from './string.js';
 import { splitTimecode, formatTimecode, parseTimecode, timePartsToMs } from './time.js';
+import { cssColorToHex, rgbToHex, normalizeElementColor } from './color.js';
 
 const utils = () => ({
 	storage: storageModule(),
@@ -15,6 +16,9 @@ const utils = () => ({
 	formatTimecode,
 	parseTimecode,
 	timePartsToMs,
+	cssColorToHex,
+	rgbToHex,
+	normalizeElementColor,
 });
 
 export default utils;
