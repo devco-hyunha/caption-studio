@@ -29,6 +29,12 @@ Git 저장소에 올리는 버전은 **2.0.0**부터 시작합니다.
 
 상세 변경: [changelog/2.2.md](./changelog/2.2.md)
 
+## [2.2.1] — 2026-08-31
+
+`Fn` 저장소·편집 히스토리·타임코드 유틸을 `modules/utils/`로 분리하고 API 전환.
+
+상세 변경: [changelog/2.2.md](./changelog/2.2.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |

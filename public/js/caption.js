@@ -1,7 +1,19 @@
 import i18nModule from './modules/i18n/i18n.js';
-import { clone, capitalize, extend, padZero } from './modules/utils/utils.js';
+import utilsModule from './modules/utils/index.js';
 
 const i18n = i18nModule();
+const {
+	storage,
+	editHistory,
+	clone,
+	capitalize,
+	extend,
+	padZero,
+	splitTimecode,
+	formatTimecode,
+	parseTimecode,
+	timePartsToMs,
+} = utilsModule();
 
 //;(function($,Do,Wn,WebFont,Shortkey,Player,Video,Interface,Ev,Fn,Sheet,SheetTrigger,Subtitle){
 	var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Subtitle={},Ev={};
@@ -72,7 +84,7 @@ const i18n = i18nModule();
 		sec = Sheet.TimeSearch(parseInt(sec*1000));
 		if (sec.timeline && !sec.timeline.endtime){
 			sec.timeline.end = (sec.index + 1) <= Sheet.DataSize ? Sheet.ArrayData[sec.index + 1].start : Player.Interface.duration()*1000;
-			sec.timeline.endtime = Fn.Hour(sec.timeline.end);
+			sec.timeline.endtime = formatTimecode(sec.timeline.end);
 		}
 		if (sec.visible){
 			Player.Subtitle.addClass('visible');
@@ -125,9 +137,9 @@ const i18n = i18nModule();
 			}
 		}).on('click','.subtitle-visible',function(){
 			Player.Wrap.toggleClass('overlap');
-			Fn.Data('set','subtitle-visible',Player.Wrap.hasClass('overlap'));
+			storage.set('subtitle-visible',Player.Wrap.hasClass('overlap'));
 		});
-		if (Fn.Data('get','subtitle-visible')) Player.Wrap.find('.subtitle-visible').trigger('click');
+		if (storage.get('subtitle-visible')) Player.Wrap.find('.subtitle-visible').trigger('click');
 	});
 	Video.FileCheck = (function(input, file, format){
 		format = file ? Player.Element[0].canPlayType(file.type) : '';
@@ -962,7 +974,7 @@ const i18n = i18nModule();
 				input.trigger('focus');
 			} else if($.Shortcuts.search(mask)){
 				Shortkey.Custom[key].mask = mask;
-				Fn.Data('set','customkey-'+key, mask);
+				storage.set('customkey-'+key, mask);
 				$.Shortcuts.removeAll();
 				Shortkey.Init();
 				form.removeClass('on');
@@ -1017,7 +1029,7 @@ const i18n = i18nModule();
 			$.Shortcuts.add(Shortkey.Default[defaultForIndex]);
 		}
 		for (key in Shortkey.Custom){
-			keystr = Fn.Data('get','customkey-'+key);
+			keystr = storage.get('customkey-'+key);
 			if(keystr) Shortkey.Custom[key].mask = keystr;
 			$.Shortcuts.add(Shortkey.Custom[key]);
 		}
@@ -1066,9 +1078,9 @@ const i18n = i18nModule();
 					originTimeline.text += line;
 				} else {
 					convertData.push({
-						start : Fn.Second(originTimeline.start),
+						start : parseTimecode(originTimeline.start),
 						starttime : originTimeline.start,
-						end : Fn.Second(originTimeline.end),
+						end : parseTimecode(originTimeline.end),
 						endtime : originTimeline.end,
 						text : originTimeline.text,
 						memo : ''
@@ -1243,7 +1255,7 @@ const i18n = i18nModule();
 			});
 		}),
 		SMI : (function(smiEncode){
-			smiEncode = Fn.Data('get','smiEncode');
+			smiEncode = storage.get('smiEncode');
 			smiEncode == '' && (smiEncode = null);
 			Interface.Select.Trigger('smiEncode',smiEncode);
 			Subtitle.Import.Btn.off('click').on('click',function(encode,iFile,fileData,fileFormat,fileReader){
@@ -1275,7 +1287,7 @@ const i18n = i18nModule();
 			});
 		}),
 		SRT : (function(srtEncode){
-			srtEncode = Fn.Data('get','srtEncode');
+			srtEncode = storage.get('srtEncode');
 			srtEncode == '' && (srtEncode = null);
 			Interface.Select.Trigger('srtEncode',srtEncode);
 			Subtitle.Import.Btn.off('click').on('click',function(encode,iFile,fileData,fileFormat,fileReader){
@@ -1325,9 +1337,9 @@ const i18n = i18nModule();
 					currentTimeline = clone(data[arrayIndex]);
 					subtitle[arrayIndex] = {
 						'start' : currentTimeline.start,
-						'starttime' : Fn.Hour(currentTimeline.start),
+						'starttime' : formatTimecode(currentTimeline.start),
 						'end' : currentTimeline.end,
-						'endtime' : Fn.Hour(currentTimeline.end),
+						'endtime' : formatTimecode(currentTimeline.end),
 						'text' : currentTimeline.text,
 						'memo' : currentTimeline.memo
 					}
@@ -1337,7 +1349,7 @@ const i18n = i18nModule();
 					currentTimeline = clone(data[arrayIndex]);
 					subtitle[arrayIndex] = {
 						'start' : currentTimeline.start,
-						'starttime' : Fn.Hour(currentTimeline.start),
+						'starttime' : formatTimecode(currentTimeline.start),
 						'text' : currentTimeline.text,
 						'memo' : currentTimeline.memo
 					}
@@ -1346,7 +1358,7 @@ const i18n = i18nModule();
 			return subtitle;
 		},
 		SMI : function(form, smiEncode){
-			smiEncode = Fn.Data('get','smiEncodeFile');
+			smiEncode = storage.get('smiEncodeFile');
 			(!smiEncode || smiEncode == '') && (smiEncode = 'EUC-KR');
 			Interface.Select.Trigger('smiEncodeFile',smiEncode);
 			form = $('#subtitle-export-smi');
@@ -1358,7 +1370,7 @@ const i18n = i18nModule();
 			});
 		},
 		SRT : function(form, srtEncode){
-			srtEncode = Fn.Data('get','srtEncodeFile');
+			srtEncode = storage.get('srtEncodeFile');
 			srtEncode == '' && (srtEncode = null);
 			Interface.Select.Trigger('srtEncodeFile',srtEncode);
 			form = $('#subtitle-export-srt');
@@ -1368,7 +1380,7 @@ const i18n = i18nModule();
 			});
 		},
 		VTT : function(form, vttEncode){
-			vttEncode = Fn.Data('get','vttEncodeFile');
+			vttEncode = storage.get('vttEncodeFile');
 			vttEncode == '' && (vttEncode = null);
 			Interface.Select.Trigger('vttEncodeFile',vttEncode);
 			form = $('#subtitle-export-vtt');
@@ -1378,7 +1390,7 @@ const i18n = i18nModule();
 			});
 		},
 		JSON : function(form, jsonFormat){
-			jsonFormat = Fn.Data('get','jsonFormat');
+			jsonFormat = storage.get('jsonFormat');
 			jsonFormat == '' && (jsonFormat = null);
 			Interface.Select.Trigger('jsonFormat',jsonFormat);
 			form = $('#subtitle-export-json');
@@ -1389,7 +1401,7 @@ const i18n = i18nModule();
 			});
 		},
 		EXCEL : function(form, excelFormat){
-			excelFormat = Fn.Data('get','excelFormat');
+			excelFormat = storage.get('excelFormat');
 			excelFormat == '' && (excelFormat = null);
 			Interface.Select.Trigger('excelFormat',excelFormat);
 			form = $('#subtitle-export-excel');
@@ -1401,64 +1413,6 @@ const i18n = i18nModule();
 		}
 	};
 
-	Fn.Data = (function(io, k, v){
-		switch (io){
-			case 'set'	: localStorage.setItem(k,JSON.stringify(v)),v=true;break;
-			case 'del'	: localStorage.removeItem(k),v=true;break;
-			case 'get'	: v = JSON.parse(localStorage.getItem(k));break;
-		}
-		return v;
-	});
-	Fn.Log = (function() {  
-		var Log = {};
-		Log.Index = -1;
-		Log.ArrayData = [];
-		Log.Prev = (function(o){
-			o = Log.Index;
-			return o >= -1 && (--Log.Index), Log.ArrayData[Log.Index + 1];
-		});
-		Log.Next = (function(e,o) {
-			e = Log.ArrayData,
-			o = Log.Index;
-			return o < e.length - 1 && (++Log.Index), e[Log.Index];
-		});
-		Log.Current = (function(e,o) {
-			e = Log.ArrayData,
-			o = Log.Index;
-			return void 0 === e[o] ? [] : e[o]
-		});
-		Log.Latest = (function(e,o) {
-			e = Log.ArrayData,
-			o = e.length - 1;
-			return Log.Index = o, void 0 === e[o] ? [] : e[o];
-		});
-		Log.Update = (function(e,z,o,n) {
-			z = 0,
-			o = Log.ArrayData,
-			n = Log.Index;
-			return n != o.length - 1 && (o = o.slice(0, n + 1)), o.push(e), 0 !== z && o.length > z && (o = o.slice(o.length - z, o.length)), n = o.length - 1, Log.Index = n, Log.ArrayData = o, !1//clone(o), !1
-		});
-		Log.Clear = (function(){
-			Log.Index = -1, Log.ArrayData= [];
-		})
-		return Log;
-	})();
-	Fn.Hour = (function(msec){
-		msec=(msec/1000).toFixed(3).toString().split('.');
-		msec[0]=parseInt(msec[0]);
-		msec[1]||(msec[1]=0);
-		return padZero(Math.floor(msec[0]/3600), 2)+':'+padZero(Math.floor(msec[0]%3600/60), 2)+':'+padZero(Math.floor(msec[0]%60), 2)+','+padZero(msec[1], 3);
-	});
-	Fn.Second = (function(hour){
-		try{
-			hour = hour.split(':');
-			hour[0] = parseInt(hour[0]);
-			hour[1] = parseInt(hour[1]);
-			hour[2] = parseInt(hour[2].replace(',',''));
-			return (hour[0] * 3600000) + (hour[1] * 60000) + hour[2];
-		} catch (e) {
-		}
-	});
 	Fn.Format = (function(format,optionArray){
 		if (format != Sheet.Format){
 			Interface.Confirm({
@@ -1466,7 +1420,7 @@ const i18n = i18nModule();
 				content :i18n.t('subtitle-format-change-contents'),
 				bgDismiss:true,
 				success:function(){
-					Fn.Data('set','format',format);
+					storage.set('format',format);
 					optionArray = {};
 					if (Sheet.Format != format){
 						optionArray = Subtitle['To'+ format.toUpperCase()](Sheet.Format, Sheet.ArrayData);
@@ -1476,7 +1430,7 @@ const i18n = i18nModule();
 					Sheet.Current.row = 0;
 					Sheet.Current.col = 0;
 					Sheet.Move.Event();
-					Fn.Log.Clear();
+					editHistory.clear();
 					Sheet.Edit.History();
 				},
 				cancel:function(){
@@ -1487,7 +1441,7 @@ const i18n = i18nModule();
 	});
 	Fn.Language = (function(language){
 		i18n.setLanguage(language);
-		Fn.Data('set','language',language);
+		storage.set('language',language);
 		Sheet.Set({
 			Language : language,
 			Header : Subtitle.Header[Sheet.Format]
@@ -1496,29 +1450,29 @@ const i18n = i18nModule();
 		$('.nav-open').removeClass('nav-open');
 	});
 	Fn.EncodeSmi = (function(encodeType){
-		Fn.Data('set','smiEncode',encodeType);
+		storage.set('smiEncode',encodeType);
 	});
 	Fn.EncodeSrt = (function(encodeType){
-		Fn.Data('set','srtEncode',encodeType);
+		storage.set('srtEncode',encodeType);
 	});
 	Fn.EncodeSmiFile = (function(encodeType){
-		Fn.Data('set','smiEncodeFile',encodeType);
+		storage.set('smiEncodeFile',encodeType);
 		$('.encode_smi_file').val(encodeType);
 	});
 	Fn.EncodeSrtFile = (function(encodeType){
-		Fn.Data('set','srtEncodeFile',encodeType);
+		storage.set('srtEncodeFile',encodeType);
 		$('.encode_srt_file').val(encodeType);
 	});
 	Fn.EncodeVttFile = (function(encodeType){
-		Fn.Data('set','vttEncodeFile',encodeType);
+		storage.set('vttEncodeFile',encodeType);
 		$('.encode_vtt_file').val(encodeType);
 	});
 	Fn.ExcelFormat = (function(encodeType){
-		Fn.Data('set','excelFormat',encodeType);
+		storage.set('excelFormat',encodeType);
 		$('.excel-format').val(encodeType);
 	});
 	Fn.JsonFormat = (function(encodeType){
-		Fn.Data('set','jsonFormat',encodeType);
+		storage.set('jsonFormat',encodeType);
 		$('.json-format').val(encodeType);
 	});
 	//Sheet trigger
@@ -1619,7 +1573,7 @@ const i18n = i18nModule();
 		Jump : 30,
 		InputJump : $('#jump_time_config_value'),
 		SetJump : function(jump){
-			jump = Fn.Data('get','jump_val');
+			jump = storage.get('jump_val');
 			jump && (Sheet.Config.Jump = parseInt(jump));
 			$('#time-plus').find('strong').text(Sheet.Config.Jump);
 			$('#time-minus').find('strong').text(Sheet.Config.Jump);
@@ -1650,7 +1604,7 @@ const i18n = i18nModule();
 				} else {
 					btn.removeClass('on');
 					btn.children().text(i18n.t('change'));
-					Fn.Data('set','jump_val',jump);
+					storage.set('jump_val',jump);
 					Interface.Success(i18n.t('config-saved'));
 					Sheet.Config.SetJump();
 					Sheet.Config.InputJump.prop({
@@ -1877,7 +1831,7 @@ const i18n = i18nModule();
 	};
 	Sheet.Undo = (function(undo,prev){
 		undo = $('#undo');
-		prev = Fn.Log.Prev();
+		prev = editHistory.prev();
 		if (prev && !undo.hasClass('disabled')){
 			if (prev.cmd.indexOf('m.') == 0){
 				Sheet.Multiple.Update(prev.o,prev.current);
@@ -1893,14 +1847,14 @@ const i18n = i18nModule();
 				}
 			}
 		} else {
-			Fn.Log.Next();
+			editHistory.next();
 		}
 		Sheet.Edit.History();
 		return false;
 	});
 	Sheet.Redo = (function(redo,next){
 		redo = $('#redo');
-		next = Fn.Log.Next();
+		next = editHistory.next();
 		if (next && !redo.hasClass('disabled')){
 			if (next.cmd.indexOf('m.') == 0){
 				Sheet.Multiple.Update(next.n,next.current);
@@ -1921,7 +1875,7 @@ const i18n = i18nModule();
 	Sheet.AutoSave = function(){
 		clearTimeout(Sheet.AutoSaveTimer);
 		Sheet.AutoSaveTimer = setTimeout(function() {
-			Fn.Data('set','SUBTITLE_TEMP', Sheet.ArrayData);
+			storage.set('SUBTITLE_TEMP', Sheet.ArrayData);
 		},400);
 	};
 	Sheet.UpdateTarget = {
@@ -1950,7 +1904,7 @@ const i18n = i18nModule();
 						row.prev().removeClass('error');
 					}
 				}
-				Sheet.ArrayInfo[position.row].starttime = Fn.Hour(timeline.start);
+				Sheet.ArrayInfo[position.row].starttime = formatTimecode(timeline.start);
 				next && (timeline.end = next.start, row.find('.dur').children().text(((next.start - timeline.start) / 1000).toFixed(3)));
 				row.find('.starttime').children().text(Sheet.ArrayInfo[position.row].starttime);
 				Sheet.Search.Error(Sheet.ArrayError);
@@ -2009,8 +1963,8 @@ const i18n = i18nModule();
 						row.prev().removeClass('error');
 					}
 				}
-				Sheet.ArrayInfo[position.row].starttime = Fn.Hour(timeline.start);
-				Sheet.ArrayInfo[position.row].endtime = Fn.Hour(timeline.end);
+				Sheet.ArrayInfo[position.row].starttime = formatTimecode(timeline.start);
+				Sheet.ArrayInfo[position.row].endtime = formatTimecode(timeline.end);
 
 				row.find('.starttime').children().text(Sheet.ArrayInfo[position.row].starttime);
 				row.find('.endtime').children().text(Sheet.ArrayInfo[position.row].endtime);
@@ -2061,9 +2015,9 @@ const i18n = i18nModule();
 		timelineInfo			= {};
 		timelineInfo.line		= timeline.data.text.split('<br').length,
 		timelineInfo.height		= timelineInfo.line*Sheet.LineHeight+Sheet.CellPadding,
-		timelineInfo.starttime	= Fn.Hour(timeline.data.start),
+		timelineInfo.starttime	= formatTimecode(timeline.data.start),
 		Sheet.Height += timelineInfo.height,
-		"srt"==Sheet.Format&&(timelineInfo.endtime=Fn.Hour(timeline.data.end)),
+		"srt"==Sheet.Format&&(timelineInfo.endtime=formatTimecode(timeline.data.end)),
 		Sheet.ArrayHeight.splice(timeline.index, 0, timelineInfo.height),
 		Sheet.ArrayInfo.splice(timeline.index, 0, timelineInfo);
 		errorSize = Sheet.ArrayError.length;
@@ -2199,11 +2153,14 @@ const i18n = i18nModule();
 					}
 				});
 			});
-			timePositive.find('input').on('click',function(){
-				milli = Number(timeParts.find('.milli > input').val());
-				milli += Number(timeParts.find('.second > input').val()) * 1000;
-				milli += Number(timeParts.find('.minute > input').val()) * 60 * 1000;
-				milli += Number(timeParts.find('.hour > input').val()) * 60 * 60 * 1000;
+			timePositive.find('input').on('click',function(timeMs){
+				timeMs = timePartsToMs({
+					hour: timeParts.find('.hour > input').val(),
+					minute: timeParts.find('.minute > input').val(),
+					second: timeParts.find('.second > input').val(),
+					milli: timeParts.find('.milli > input').val(),
+				});
+				milli = timeMs.hour + timeMs.minute + timeMs.second + timeMs.milli;
 				milli = Math.abs(milli);
 				$(this).val() == 'minus' && (milli *= -1);
 				milliSecond.val(milli);
@@ -2212,7 +2169,7 @@ const i18n = i18nModule();
 				$(this).parent().find('input').trigger('focus');
 				
 			});
-			timeParts.find('input').on('change keydown keyup',function(time,timeOption,value,milli){
+			timeParts.find('input').on('change keydown keyup',function(time,timeOption,value,milli,timeMs){
 				time		= $(this);
 				timeOption	= time.data();
 				value = parseInt(time.val());
@@ -2222,10 +2179,13 @@ const i18n = i18nModule();
 				timeSliders.find('.'+timeOption.target).slider('option','value',value);
 				time.next().text(padZero(value, timeOption.zf));
 
-				milli = Number(timeParts.find('.milli > input').val());
-				milli += Number(timeParts.find('.second > input').val()) * 1000;
-				milli += Number(timeParts.find('.minute > input').val()) * 60 * 1000;
-				milli += Number(timeParts.find('.hour > input').val()) * 60 * 60 * 1000;
+				timeMs = timePartsToMs({
+					hour: timeParts.find('.hour > input').val(),
+					minute: timeParts.find('.minute > input').val(),
+					second: timeParts.find('.second > input').val(),
+					milli: timeParts.find('.milli > input').val(),
+				});
+				milli = timeMs.hour + timeMs.minute + timeMs.second + timeMs.milli;
 				milli = Math.abs(milli);
 				timePositive.find('[name="time-positive"]:checked').val() == 'minus' && (milli *= -1);
 				milliSecond.val(milli);
@@ -2243,13 +2203,7 @@ const i18n = i18nModule();
 				value > timeOption.max && (value = timeOption.max, time.val(value));
 				value < timeOption.min && (value = timeOption.min, time.val(value));
 				value = Math.abs(value);
-				value = (value/1000).toFixed(3).toString().split('.');
-				value[0]=parseInt(value[0]);
-				value[1]||(value[1]=0);
-				hour =  padZero(Math.floor(value[0]/3600), 2);
-				minute = padZero(Math.floor(value[0]%3600/60), 2);
-				second = padZero(Math.floor(value[0]%60), 2);
-				milli = padZero(value[1], 3);
+				({ hour, minute, second, milli } = splitTimecode(value));
 
 				timeParts.find('.hour > input').val(hour).trigger('change');
 				timeParts.find('.minute > input').val(minute).trigger('change');
@@ -2383,7 +2337,7 @@ const i18n = i18nModule();
 			Set : function(colors,colorsSize,colorIndex){
 				if (!Sheet.Edit.Color.List){
 					Sheet.Edit.Color.List = ['#ff0000','#ff00ff','#aa00ff','#0000ff','#00ffff','#00ff00','#ffff00','#ffaa00'];
-					colors = Fn.Data('get','CaptionColorTemp');
+					colors = storage.get('CaptionColorTemp');
 					if (colors && colors != '' && colors.length > 0){
 						colorsSize = colors.length;
 						for (colorIndex = 0; colorIndex < colorsSize; colorIndex++){
@@ -2391,7 +2345,7 @@ const i18n = i18nModule();
 						}
 					}
 				} else {
-					Fn.Data('set','CaptionColorTemp',Sheet.Edit.Color.List);
+					storage.set('CaptionColorTemp',Sheet.Edit.Color.List);
 				}
 				$('.color-list').each(function(count,section,colorSize,panel,singleColor){
 					section = $(section).find('.color-panel');
@@ -2537,12 +2491,12 @@ const i18n = i18nModule();
 			return false;
 		},
 		Log : function(c,i,n,o,p){
-			Fn.Log.Update({cmd:c,id:i,n:n,o:o,current:p});
+			editHistory.push({cmd:c,id:i,n:n,o:o,current:p});
 			Sheet.Edit.History();
 		},
 		History : function(count, index, undo, redo){
-			count = Fn.Log.ArrayData.length;
-			index = Fn.Log.Index + 1;
+			count = editHistory.entries.length;
+			index = editHistory.index + 1;
 			undo = $('#undo');
 			redo = $('#redo');
 			if (count === 0){
@@ -2829,8 +2783,8 @@ const i18n = i18nModule();
 				timelineInfo.height=timelineInfo.line*Sheet.LineHeight+Sheet.CellPadding,
 				Sheet.Height+=timelineInfo.height,
 				Sheet.ArrayHeight[arrayEq]=timelineInfo.height,
-				timelineInfo.starttime=Fn.Hour(timelineData.start),
-				"srt"==Sheet.Format&&(timelineInfo.endtime=Fn.Hour(timelineData.end)),
+				timelineInfo.starttime=formatTimecode(timelineData.start),
+				"srt"==Sheet.Format&&(timelineInfo.endtime=formatTimecode(timelineData.end)),
 				nextData&&(timelineInfo.next=Number(nextData.start));
 				if (Sheet.Format == 'srt'){
 					if (arrayEq < Sheet.DataSize && Number(timelineData.end) > Number(timelineInfo.next)) Sheet.ArrayError.push(arrayEq);
@@ -2846,7 +2800,7 @@ const i18n = i18nModule();
 	});
 	Sheet.Set = (function(o){
 		SheetTrigger.Init = null;
-		!Sheet.Format && !o.Format && (Sheet.Format = Fn.Data('get','format'));
+		!Sheet.Format && !o.Format && (Sheet.Format = storage.get('format'));
 		if (!Sheet.Format || Sheet.Format == '') Sheet.Format = 'smi';
 		if (o.Format && o.format != Sheet.Format){
 			Sheet.Format = o.Format;
@@ -2854,9 +2808,9 @@ const i18n = i18nModule();
 			if (Sheet.Format == 'srt' && Sheet.Current.col > 0) ++Sheet.Current.col;
 		}
 		if (o) extend(Sheet, o);
-		if (!o.ArrayData && Sheet.ArrayData.length == 0) Sheet.ArrayData = Fn.Data('get','SUBTITLE_TEMP');
+		if (!o.ArrayData && Sheet.ArrayData.length == 0) Sheet.ArrayData = storage.get('SUBTITLE_TEMP');
 		if (!Sheet.ArrayData || Sheet.ArrayData == '' || Sheet.ArrayData.length == 0) Sheet.ArrayData = [Sheet.Empty];
-		Fn.Data('set','SUBTITLE_TEMP', Sheet.ArrayData);
+		storage.set('SUBTITLE_TEMP', Sheet.ArrayData);
 
 		Sheet.Interface.removeAttr('class').addClass(Sheet.Format);
 		Sheet.Head = Sheet.Interface.children('.sheet-head');
@@ -3064,7 +3018,7 @@ const i18n = i18nModule();
 					Sheet.Current.row = 0;
 					Sheet.Current.col = 0;
 					Sheet.Move.Event();
-					Fn.Log.Clear();
+					editHistory.clear();
 					Sheet.Edit.History();
 				}
 			});
@@ -3091,10 +3045,10 @@ const i18n = i18nModule();
 			},
 			active: (function(color, format, language, data) {
 				// option setting
-				color		= Fn.Data('get','color');
-				format		= Fn.Data('get','format');
-				language	= Fn.Data('get','language');
-				data		= Fn.Data('get','SUBTITLE_TEMP');
+				color		= storage.get('color');
+				format		= storage.get('format');
+				language	= storage.get('language');
+				data		= storage.get('SUBTITLE_TEMP');
 
 				if (!format || format == '') format = Sheet.Format;
 				if (!language || language == '' || !i18n.getLocale(language)) language = Sheet.Language;
