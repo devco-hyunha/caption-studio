@@ -192,6 +192,10 @@ refactor(sheet): caption.js의 시트 트리거 로직을 sheet/trigger.js로 �
 remove(jquery): jquery.shortcuts.js를 native keydown 핸들러로 교체
 ```
 
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
 ## 관련 링크
 
 - 운영: https://caption.devco.kr
