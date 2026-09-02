@@ -4,6 +4,7 @@ import { clone, extend } from './object.js';
 import { capitalize, padZero } from './string.js';
 import { splitTimecode, formatTimecode, parseTimecode, timePartsToMs } from './time.js';
 import { cssColorToHex, rgbToHex, normalizeElementColor } from './color.js';
+import { bindEvent, isJQuery, toElement } from './dom.js';
 import { runAction } from './action.js';
 
 const utils = () => ({
@@ -20,6 +21,9 @@ const utils = () => ({
 	cssColorToHex,
 	rgbToHex,
 	normalizeElementColor,
+	bindEvent,
+	isJQuery,
+	toElement,
 	runAction,
 });
 

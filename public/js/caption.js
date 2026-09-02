@@ -1,4 +1,5 @@
 import i18nModule from './modules/i18n/i18n.js';
+import subtitleModule from './modules/subtitle/index.js';
 import utilsModule from './modules/utils/index.js';
 
 const i18n = i18nModule();
@@ -11,16 +12,24 @@ const {
 	padZero,
 	splitTimecode,
 	formatTimecode,
-	parseTimecode,
 	timePartsToMs,
-	normalizeElementColor,
 	runAction,
 } = utilsModule();
+const subtitle = subtitleModule();
 
-const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
+const getActionContext = () => ({
+	Video,
+	import: subtitle.import,
+	export: subtitle.export,
+	Fn,
+	Shortkey,
+});
 
-//;(function($,Do,Wn,WebFont,Shortkey,Player,Video,Interface,Ev,Fn,Sheet,SheetTrigger,Subtitle){
-	var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Subtitle={},Ev={};
+var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Ev={};
+
+const initializeDomainModules = () => {
+	subtitle.initialize({ Interface, Sheet, i18n });
+};
 
 	Player.Wrap = $('#video');
 	Player.Subtitle = $('#subtitle');
@@ -1035,371 +1044,6 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 		$.Shortcuts.start();
 		Shortkey.Switching();
 	});
-	Subtitle.Header = {
-		smi : ['index','starttime','dur','text','memo'],
-		srt : ['index','starttime','endtime','dur','text','memo']
-	};
-	Subtitle.ToSRT = (function(format, originData, originDataSize, originIndex, originTimeline, convertData, convertIndex, convertLast){
-		convertIndex = 0;
-		convertData = [];
-		if ('srtstring' == format){
-			if (originData.indexOf('\r\n\r\n') >= 0) {
-				originData = originData.split('\r\n');
-			} else if (originData.indexOf('\n\r\n\r') >= 0){
-				originData = originData.split('\n\r');
-			} else if (originData.indexOf('\n\n') >= 0){
-				originData = originData.split('\n');
-			} else {
-				originData = originData.split('\r');
-			}
-			originTimeline = {
-				text: ''
-			};
-			originData.forEach(function(line) {
-				if(!originTimeline.id){
-					originTimeline.id = line;
-				} else if(!originTimeline.start) {
-					var linesize = line.length;
-					line = $.trim(line);
-					originTimeline.start = line.substring(0,12);
-					originTimeline.end = line.substring(linesize - 12,linesize);
-				} else if(line !== ''){
-					if (originTimeline.text != ''){
-						originTimeline.text += '<br>';
-					}  
-					originTimeline.text += line;
-				} else {
-					convertData.push({
-						start : parseTimecode(originTimeline.start),
-						starttime : originTimeline.start,
-						end : parseTimecode(originTimeline.end),
-						endtime : originTimeline.end,
-						text : originTimeline.text,
-						memo : ''
-					});
-					originTimeline = {
-						text: ''
-					};
-				}
-			});
-		} else if (format == 'smi'){
-			originDataSize = originData.length;
-			for (originIndex = 0; originIndex < originDataSize; originIndex++){
-				originTimeline = originData[originIndex];
-				if (Number(originTimeline.start) >= 0){
-					if (convertIndex > 0 && (originTimeline.text == '&nbsp;' || originTimeline.text == '') && convertData[convertIndex - 1].end == 0){
-						convertData[convertIndex - 1].end = originTimeline.start;
-					} else if (originTimeline.text != '&nbsp;' && originTimeline.text != ''){
-						if (convertIndex > 0 && convertData[convertIndex-1].end == 0) convertData[convertIndex-1].end = originTimeline.start;
-						convertData.push({
-							start : originTimeline.start,
-							end : 0,
-							text : originTimeline.text,
-							memo : (originTimeline.memo ? originTimeline.memo : '')
-						});
-						convertIndex++;
-					}
-				}
-			}
-			convertLast = convertData[convertData.length - 1];
-			if (convertLast && convertLast.end == 0) convertLast.end = parseInt(convertLast.start) + 99999;
-		} else if ('smistring' == format){
-			convertData = Subtitle.ToSMI('smistring', originData);
-			return Subtitle.ToSRT('smi', convertData.ArrayData);
-		} else if ('string' == format){
-			originData = originData.split('\n');
-			originData.forEach(function(string,index){
-				originTimeline = Subtitle.Vaild(string);
-				convertData.push({
-					start : 0,
-					end : 0,
-					text : originTimeline,
-					memo : ''
-				});
-			});
-		}
-		return {
-			Format : 'srt',
-			ArrayData : convertData
-		}
-	});
-	Subtitle.ToSMI = (function(format, originData, originDataSize, originIndex, originTimeline, originTimelineStart, originText, convertData, convertIndex){
-			var temp = [];
-			convertIndex = 0;
-			convertData = [];
-			if ('smistring' == format){
-				$('sami'),$('sync');
-				originData = originData.split(/<sync/i);
-				for (originIndex in originData){
-					originTimeline = $('<sync'+originData[originIndex]+'</p></sync>');
-					originText = originTimeline.children('p');
-					originTimelineStart = originTimeline.attr('start');
-					if (originTimelineStart && originTimelineStart >= 0){
-						originText = Subtitle.Encode(originText);
-						convertData.push({
-							start : Number(originTimelineStart),
-							text : originText,
-							memo : ''
-						});
-					}
-				}
-			} else if ('srt' == format){
-				originDataSize = originData.length;
-				for (originIndex = 0; originIndex < originDataSize; originIndex++){
-					originTimeline = originData[originIndex];
-					!originTimeline.memo && (originTimeline.memo = '');
-					if (originIndex > 0) temp.prev = originData[originIndex - 1];
-					if (temp.prev && temp.prev.end == originTimeline.start){
-						convertData[convertIndex - 1].text = originTimeline.text;
-						convertData[convertIndex - 1].memo = originTimeline.memo;
-					} else {
-						convertData.push({
-							start : originTimeline.start,
-							text : originTimeline.text,
-							memo : originTimeline.memo
-						});
-						convertIndex++;
-					}
-					convertData.push({
-						start : Number(originTimeline.end),
-						text : '',
-						memo : ''
-					});
-					convertIndex++;
-				}
-			} else if ('srtstring' == format){
-				convertData = Subtitle.ToSRT('srtstring', originData);
-				return Subtitle.ToSMI('srt', convertData.ArrayData);
-			} else if ('string' == format){
-				originData = originData.split('\n');
-				originData.forEach(function(string){
-					originText = Subtitle.Vaild(string);
-					convertData.push({
-						start : 0,
-						text : originText,
-						memo : ''
-					});
-				});
-			}
-			return {
-				Format : 'smi',
-				ArrayData : convertData
-			}
-	});
-	Subtitle.Encode = (function(input,text,contents){
-		input.find('*').each(function(eq, el){
-			const element = $(el);
-			const color = normalizeElementColor(el);
-			if (color){
-				element.prop('style',false);
-				if (el.localName == 'font'){
-					element.attr('color',color);
-				} else {
-					element.removeAttr('color').wrap('<font />');
-					element.parent().attr('color',color);
-				}
-			}
-			let attr = $.map(el.attributes, function(attr) {
-				return attr.name;
-			});
-			$.each(attr, function(eq, attrItem) {
-				try{
-					if (attrItem != 'color') element.removeAttr(attrItem);
-				} catch(e) {}
-			});
-		});
-		text = input.html().replace(/\n/gi,'').replace(/\t/gi,'');
-		contents = Subtitle.Vaild(text);
-		if (contents.length >= 4){
-			contents = contents.lastIndexOf('<br>') == contents.length - 4 ? contents.substr(0,contents.length - 4) : contents;
-		}
-		return contents;
-	});
-	Subtitle.Vaild = (function(text){
-		return text.replace(/<strong/gi,'<b').replace(/<\/strong/gi,'<\/b')
-		.replace(/<script/gi,'&lt;script').replace(/<\/script/gi,'&gt;\/script')
-		.replace(/<br \/>/gi,'<br>').replace(/\t/gi,'')
-		.replace(/<em/gi,'<i').replace(/<\/em/gi,'<\/i')
-		.replace(/<div>/gi,'').replace(/<br><\/div>/gi,'<br>').replace(/<\/div>/gi,'<br>')
-		.replace(/<span>/gi,'').replace(/<\/span>/gi,'')
-		.replace(/<p>/gi,'').replace(/<br><\/p>/gi,'<br>').replace(/<\/p>/gi,'<br>');
-	});
-	Subtitle.Import = {
-		Btn : $('#subtitle-import').find('.subtitle-load'),
-		TEXT : (function(){
-			Subtitle.Import.Btn.off('click').on('click',function(data){
-				data = $('#subtitle-text').val();
-				if (data == ''){
-					Interface.Alert(i18n.t('please-input-contents'));
-				} else {
-					Sheet.Current.row = 0;
-					Sheet.Current.col = 0;
-					Sheet.Move.Event();
-					Sheet.Set(Subtitle['To'+ Sheet.Format.toLocaleUpperCase()]('string',data));
-					Interface.Dialog();
-					ga("send",{hitType:"event",eventCategory:"Subtitle",eventAction:"Text Import",eventLabel:"Subtitle Import"});
-				}
-				return false;
-			});
-		}),
-		SMI : (function(smiEncode){
-			smiEncode = storage.get('smiEncode');
-			smiEncode == '' && (smiEncode = null);
-			Interface.Select.Trigger('smiEncode',smiEncode);
-			Subtitle.Import.Btn.off('click').on('click',function(encode,iFile,fileData,fileFormat,fileReader){
-				encode		= $('[data-key="smiEncode"]').data('value');
-				iFile		= $('#smi-file');
-				fileData	= iFile[0].files[0];
-				if (fileData){
-					fileFormat = fileData.name.split('.').pop();
-					fileReader = new FileReader();
-					if (fileFormat.search(/smi/i) < 0){
-						Interface.Alert(i18n.t('not-support-file-format'));
-						iFile.val('').trigger('change');
-					} else {
-						fileReader.readAsText(fileData,encode);
-						fileReader.onload = function(e) {
-							Sheet.Current.row = 0;
-							Sheet.Current.col = 0;
-							Sheet.Move.Event();
-							Sheet.Set(Subtitle['To'+ Sheet.Format.toLocaleUpperCase()]('smistring',fileReader.result));
-							Interface.Dialog();
-							fileReader = null;
-						}
-					}
-					ga("send",{hitType:"event",eventCategory:"Subtitle",eventAction:"SMI Import",eventLabel:"Subtitle Import"});
-				} else {
-					Interface.Alert(i18n.t('please-select-smi-file'));
-				}
-				return false;
-			});
-		}),
-		SRT : (function(srtEncode){
-			srtEncode = storage.get('srtEncode');
-			srtEncode == '' && (srtEncode = null);
-			Interface.Select.Trigger('srtEncode',srtEncode);
-			Subtitle.Import.Btn.off('click').on('click',function(encode,iFile,fileData,fileFormat,fileReader){
-				encode		= $('[data-key="srtEncode"]').data('value');
-				iFile		= $('#srt-file');
-				fileData	= iFile[0].files[0];
-				if (fileData){
-					fileFormat = fileData.name.split('.').pop();
-					fileReader = new FileReader();
-					if (fileFormat.search(/srt/i) < 0){
-						Interface.Alert(i18n.t('not-support-file-format'));
-						iFile.val('').trigger('change');
-					} else {
-						fileReader.readAsText(fileData,encode);
-						fileReader.onload = function(e) {
-							Sheet.Current.row = 0;
-							Sheet.Current.col = 0;
-							Sheet.Move.Event();
-							Sheet.Set(Subtitle['To'+ Sheet.Format.toLocaleUpperCase()]('srtstring',fileReader.result));
-							Interface.Dialog();
-							fileReader = null;
-						}
-					}
-					ga("send",{hitType:"event",eventCategory:"Subtitle",eventAction:"SRT Import",eventLabel:"Subtitle Import"});
-				} else {
-					Interface.Alert(i18n.t('please-select-srt-file'));
-				}
-				return false;
-			});
-		}),
-	};
-	Subtitle.Export = {
-		CLASS : {
-			'KRCC' : 'Name:Korean; lang:ko-KR; SAMIType:CC;',
-			'ENCC' : 'Name:English; lang:en-US; SAMIType:CC;',
-			'JPCC' : 'Name:Japanese; lang:en-US; SAMIType:CC;'
-		},
-		Convert : function(format, data, subtitle, arraySize, arrayIndex, currentTimeline){
-			subtitle = [];
-			if (!data) data = clone(Sheet.ArrayData);
-			if (Sheet.Format != format){
-				data = Subtitle['To'+format.toLocaleUpperCase()](Sheet.Format,data).ArrayData;
-			}
-			arraySize = data.length;
-			if (format && format == 'srt' || Sheet.Format == 'srt') {
-				for (arrayIndex = 0; arrayIndex < arraySize; arrayIndex++){
-					currentTimeline = clone(data[arrayIndex]);
-					subtitle[arrayIndex] = {
-						'start' : currentTimeline.start,
-						'starttime' : formatTimecode(currentTimeline.start),
-						'end' : currentTimeline.end,
-						'endtime' : formatTimecode(currentTimeline.end),
-						'text' : currentTimeline.text,
-						'memo' : currentTimeline.memo
-					}
-				}
-			} else if (Sheet.Format == 'smi') {
-				for (arrayIndex = 0; arrayIndex < arraySize; arrayIndex++){
-					currentTimeline = clone(data[arrayIndex]);
-					subtitle[arrayIndex] = {
-						'start' : currentTimeline.start,
-						'starttime' : formatTimecode(currentTimeline.start),
-						'text' : currentTimeline.text,
-						'memo' : currentTimeline.memo
-					}
-				}
-			}
-			return subtitle;
-		},
-		SMI : function(form, smiEncode){
-			smiEncode = storage.get('smiEncodeFile');
-			(!smiEncode || smiEncode == '') && (smiEncode = 'EUC-KR');
-			Interface.Select.Trigger('smiEncodeFile',smiEncode);
-			form = $('#subtitle-export-smi');
-			form.off('submit').on('submit',function(captionString, smiFileName, smiFileEncode, smiSign){
-				captionString = JSON.stringify(Subtitle.Export.Convert('smi'));
-				form.find('.lang_key').val(Sheet.Language);
-				form.find('.lang_value').val(Subtitle.Export.CLASS[Sheet.Language]);
-				form.find('.caption').val(captionString);
-			});
-		},
-		SRT : function(form, srtEncode){
-			srtEncode = storage.get('srtEncodeFile');
-			srtEncode == '' && (srtEncode = null);
-			Interface.Select.Trigger('srtEncodeFile',srtEncode);
-			form = $('#subtitle-export-srt');
-			form.off('submit').on('submit',function(captionString, srtFileName, srtFileEncode, srtIsStyle){
-				captionString = JSON.stringify(Subtitle.Export.Convert('srt'));
-				form.find('.caption').val(captionString);
-			});
-		},
-		VTT : function(form, vttEncode){
-			vttEncode = storage.get('vttEncodeFile');
-			vttEncode == '' && (vttEncode = null);
-			Interface.Select.Trigger('vttEncodeFile',vttEncode);
-			form = $('#subtitle-export-vtt');
-			form.off('submit').on('submit',function(captionString, vttFileName, vttFileEncode, vttIsStyle){
-				captionString = JSON.stringify(Subtitle.Export.Convert('srt'));
-				form.find('.caption').val(captionString);
-			});
-		},
-		JSON : function(form, jsonFormat){
-			jsonFormat = storage.get('jsonFormat');
-			jsonFormat == '' && (jsonFormat = null);
-			Interface.Select.Trigger('jsonFormat',jsonFormat);
-			form = $('#subtitle-export-json');
-			form.off('submit').on('submit',function(captionString, jsonFileFormat){
-				jsonFileFormat = $('.json-format').val();
-				captionString = JSON.stringify(Subtitle.Export.Convert(jsonFileFormat));
-				form.find('.caption').val(captionString);
-			});
-		},
-		EXCEL : function(form, excelFormat){
-			excelFormat = storage.get('excelFormat');
-			excelFormat == '' && (excelFormat = null);
-			Interface.Select.Trigger('excelFormat',excelFormat);
-			form = $('#subtitle-export-excel');
-			form.off('submit').on('submit',function(captionString, captionStyleFormat){
-				captionStyleFormat = $('.excel-format').val();
-				captionString = JSON.stringify(Subtitle.Export.Convert(captionStyleFormat));
-				form.find('.caption').val(captionString);
-			});
-		}
-	};
 
 	Fn.Format = (function(format,optionArray){
 		if (format != Sheet.Format){
@@ -1411,8 +1055,8 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 					storage.set('format',format);
 					optionArray = {};
 					if (Sheet.Format != format){
-						optionArray = Subtitle['To'+ format.toUpperCase()](Sheet.Format, Sheet.ArrayData);
-						optionArray.Header = Subtitle.Header[format];
+						optionArray = subtitle.converters[format](Sheet.Format, Sheet.ArrayData);
+						optionArray.Header = subtitle.header[format];
 					}
 					Sheet.Set(optionArray);
 					Sheet.Current.row = 0;
@@ -1432,36 +1076,10 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 		storage.set('language',language);
 		Sheet.Set({
 			Language : language,
-			Header : Subtitle.Header[Sheet.Format]
+			Header : subtitle.header[Sheet.Format]
 		});
 		Interface.I18n();
 		$('.nav-open').removeClass('nav-open');
-	});
-	Fn.EncodeSmi = (function(encodeType){
-		storage.set('smiEncode',encodeType);
-	});
-	Fn.EncodeSrt = (function(encodeType){
-		storage.set('srtEncode',encodeType);
-	});
-	Fn.EncodeSmiFile = (function(encodeType){
-		storage.set('smiEncodeFile',encodeType);
-		$('.encode_smi_file').val(encodeType);
-	});
-	Fn.EncodeSrtFile = (function(encodeType){
-		storage.set('srtEncodeFile',encodeType);
-		$('.encode_srt_file').val(encodeType);
-	});
-	Fn.EncodeVttFile = (function(encodeType){
-		storage.set('vttEncodeFile',encodeType);
-		$('.encode_vtt_file').val(encodeType);
-	});
-	Fn.ExcelFormat = (function(encodeType){
-		storage.set('excelFormat',encodeType);
-		$('.excel-format').val(encodeType);
-	});
-	Fn.JsonFormat = (function(encodeType){
-		storage.set('jsonFormat',encodeType);
-		$('.json-format').val(encodeType);
 	});
 	//Sheet trigger
 	SheetTrigger.Init = function(){
@@ -2239,7 +1857,7 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 						SheetTrigger.Input.html(multiClipTimeline.text).trigger('focus');
 						Sheet.Edit.Cmd('selectAll');
 						Sheet.Edit.Cmd(cmd);
-						multiClipTimeline.text = Subtitle.Encode(SheetTrigger.Input);
+						multiClipTimeline.text = subtitle.encode(SheetTrigger.Input);
 					}
 					arrayCurrent.push({index : multiClipIndex, data : clone(multiClipTimeline)});
 				}
@@ -2297,7 +1915,7 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 			$('#sheet-edit').removeClass('on');
 			SheetTrigger.Wrap.removeClass('on').removeClass('clip');
 			clip = clone(Sheet.Current.data);
-			colText = Subtitle.Encode(SheetTrigger.Input);
+			colText = subtitle.encode(SheetTrigger.Input);
 			if (clip[Sheet.Current.target] != colText){
 				clip[Sheet.Current.target] = colText;
 				Sheet.Command.u(Sheet.Current,clip);
@@ -2810,7 +2428,7 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 			}
 			t += '</div>';
 			return t;
-		})(Subtitle.Header[Sheet.Format]);
+		})(subtitle.header[Sheet.Format]);
 		Sheet.Convert();
 		Sheet.Init = true;
 		Sheet.Draw();
@@ -3013,6 +2631,7 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 		});
 	});
 	Do.on('ready', function(){
+		initializeDomainModules();
 		Interface.Tab();
 		Interface.Dialog();
 		Interface.InputFile();
@@ -3055,6 +2674,5 @@ const getActionContext = () => ({ Video, Subtitle, Fn, Shortkey });
 	});
 	Wn.on(Ev.Resize, function(){
 	});
-//})(jQuery,document,window,WebFont,$.Shortcuts);
 
 var Toast;!function(t){function a(t,a,n){d("info",t,a,n)}function n(t,a,n){d("warning",t,a,n)}function i(t,a,n){d("error",t,a,n)}function o(t,a,n){d("success",t,a,n)}function d(a,n,i,o){void 0===o&&(o={}),o=$.extend({},t.defaults,o),s||(s=$("#toast-container"),0===s.length&&(s=$("<div>").attr("id","toast-container").appendTo($("body")))),o.width&&s.css({width:o.width});var d=$("<div>").addClass("toast").addClass("toast-"+a);if(i){var e=$("<div>").addClass("toast-title").append(i);d.append(e)}if(n){var r=$("<div>").addClass("toast-message").append(n);d.append(r)}o.displayDuration>0&&setTimeout(function(){d.fadeOut(o.fadeOutDuration,function(){d.remove()})},o.displayDuration),d.on("click",function(){d.remove()}),s.prepend(d)}t.defaults={width:"",displayDuration:2e3,fadeOutDuration:800},t.info=a,t.warning=n,t.error=i,t.success=o;var s}(Toast||(Toast={}));
