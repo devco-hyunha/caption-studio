@@ -1,4 +1,4 @@
-const editHistory = () => {
+const createEditHistory = () => {
 	const history = {
 		index: -1,
 		entries: [],
@@ -39,4 +39,6 @@ const editHistory = () => {
 	return history;
 };
 
-export default editHistory;
+const editHistory = createEditHistory();
+
+export { editHistory };

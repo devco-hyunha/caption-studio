@@ -1,30 +1,10 @@
-import storageModule from './storage.js';
-import editHistoryModule from './editHistory.js';
-import { clone, extend } from './object.js';
-import { capitalize, padZero } from './string.js';
-import { splitTimecode, formatTimecode, parseTimecode, timePartsToMs } from './time.js';
-import { cssColorToHex, rgbToHex, normalizeElementColor } from './color.js';
-import { bindEvent, isJQuery, toElement } from './dom.js';
-import { runAction } from './action.js';
-
-const utils = () => ({
-	storage: storageModule(),
-	editHistory: editHistoryModule(),
-	clone,
-	extend,
-	capitalize,
-	padZero,
-	splitTimecode,
-	formatTimecode,
-	parseTimecode,
-	timePartsToMs,
-	cssColorToHex,
-	rgbToHex,
-	normalizeElementColor,
-	bindEvent,
-	isJQuery,
-	toElement,
-	runAction,
-});
-
-export default utils;
+/**
+ * caption.js용 공통 헬퍼 re-export.
+ * 도메인 전용 유틸(time.parseTimecode, color, dom 등)은 각 모듈에서 직접 import한다.
+ */
+export { storage } from './storage.js';
+export { editHistory } from './editHistory.js';
+export { clone, extend } from './object.js';
+export { capitalize, padZero } from './string.js';
+export { splitTimecode, formatTimecode, timePartsToMs } from './time.js';
+export { runAction } from './action.js';

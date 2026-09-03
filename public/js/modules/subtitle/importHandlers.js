@@ -1,8 +1,6 @@
-import storageModule from '../utils/storage.js';
+import { storage } from '../utils/storage.js';
 import { bindEvent } from '../utils/dom.js';
 import converters from './convert/index.js';
-
-const storage = storageModule();
 
 const getLoadBtn = () => document.querySelector('#subtitle-import .subtitle-load');
 

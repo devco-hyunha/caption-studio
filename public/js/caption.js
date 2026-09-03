@@ -1,9 +1,6 @@
 import i18nModule from './modules/i18n/i18n.js';
 import subtitleModule from './modules/subtitle/index.js';
-import utilsModule from './modules/utils/index.js';
-
-const i18n = i18nModule();
-const {
+import {
 	storage,
 	editHistory,
 	clone,
@@ -14,7 +11,9 @@ const {
 	formatTimecode,
 	timePartsToMs,
 	runAction,
-} = utilsModule();
+} from './modules/utils/index.js';
+
+const i18n = i18nModule();
 const subtitle = subtitleModule();
 
 const getActionContext = () => ({
@@ -1600,15 +1599,12 @@ const initializeDomainModules = () => {
 		prevIndex = timeline.index - 1;
 		nextIndex = timeline.index;
 		if (nextIndex < Sheet.DataSize){
-			console.log(1)
 			nextTimeline = Sheet.ArrayData[nextIndex];
 			if (Sheet.Format == 'srt' && Number(timeline.data.start) == 0) timeline.data.start = nextTimeline.end;
 			if (Sheet.Format == 'srt' && Number(timeline.data.end) == 0) timeline.data.end = nextTimeline.end;
 			if (Sheet.Format == 'smi' && Number(timeline.data.start) == 0) timeline.data.start = nextTimeline.start;
 		} else {
-			console.log(2)
 			if (prevIndex > -1){
-				console.log(3)
 				prevTimeline = Sheet.ArrayData[prevIndex];
 				if (Sheet.Format == 'srt' && Number(timeline.data.start) == 0) timeline.data.start = prevTimeline.end;
 				if (Sheet.Format == 'srt' && Number(timeline.data.end) == 0) timeline.data.end = prevTimeline.end;
