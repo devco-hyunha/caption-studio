@@ -38,7 +38,6 @@
 │       ├── modules/        # ES module 분리 (i18n, utils)
 │       ├── lib/            # jQuery, Video.js 등
 │       └── plugin/         # 단축키, 컬러피커 등
-├── download/               # 자막 내보내기(서버) 관련
 ├── favicon/
 ├── CHANGELOG.md            # 변경 이력 목차
 ├── VERSION                 # 현재 SemVer (Git tag와 맞춤)
@@ -55,7 +54,6 @@
 ## 로컬에서 레거시 실행
 
 정적 파일만으로 UI·편집 흐름을 확인할 수 있습니다.
-자막 **다운로드(서버/PHP 연동)** 등은 운영 환경과 동일하지 않을 수 있습니다.
 
 > 운영 동작·전체 기능 확인은 https://caption.devco.kr 를 기준으로 합니다.
 

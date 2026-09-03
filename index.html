@@ -47,6 +47,7 @@
 	<script defer src="/public/js/lib/html5-video/video-js.min.js"></script>
 	<script defer src="/public/js/lib/html5-video/Youtube.min.js"></script>
 	<script defer src="/public/js/lib/html5-video/Vimeo.min.js"></script>
+	<script defer src="/public/js/lib/iconv-lite.js"></script>
 	<script defer src="/public/js/plugin/jquery.scrollbar.js"></script>
 	<script defer src="/public/js/plugin/jquery.shortcuts.js"></script>
 	<script defer src="/public/js/plugin/colorpicker.js"></script>
@@ -512,9 +513,7 @@
 						<li><a href="javascript:void(0)" data-value="excel" data-action="export.excel"><span>excel</span></a></li>
 					</ul>
 					<div class="contain tab-body">
-						<form action="download/smi.php" method="post" id="subtitle-export-smi" class="tab-panel" autocomplete="off">
-							<input type="hidden" name="lang_key" class="lang_key" />
-							<input type="hidden" name="lang_value" class="lang_value" />
+						<form id="subtitle-export-smi" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="encode_smi_file" class="encode_smi_file" />
 							<div class="ui-select i18n" data-action="export.encoding.smi" data-key="smiEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
@@ -537,16 +536,13 @@
 									<span class="i18n i-title" data-text="signature"></span>
 									<textarea name="signature" class="i-text signature i18n" data-placeholder="signature"></textarea>
 								</li>
-								<li class="none">
-									<textarea name="caption" class="caption"></textarea>
-								</li>
 							</ul>
 							<div class="btn-group">
 								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
 								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
 							</div>
 						</form>
-						<form action="download/srt.php" method="post" id="subtitle-export-srt" class="tab-panel" autocomplete="off">
+						<form id="subtitle-export-srt" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="encode_srt_file" class="encode_srt_file" />
 							<div class="ui-select i18n" data-action="export.encoding.srt" data-key="srtEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
@@ -571,16 +567,13 @@
 										<input type="text" name="filename" id="srt-file" class="i-text filename i18n" data-placeholder="filename">
 									</label>
 								</li>
-								<li class="none">
-									<textarea name="caption" class="caption"></textarea>
-								</li>
 							</ul>
 							<div class="btn-group">
 								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
 								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
 							</div>
 						</form>
-						<form action="download/vtt.php" method="post" id="subtitle-export-vtt" class="tab-panel" autocomplete="off">
+						<form id="subtitle-export-vtt" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="encode_vtt_file" class="encode_vtt_file" />
 							<div class="ui-select i18n" data-action="export.encoding.vtt" data-key="vttEncodeFile" data-title="subtitle-file-encode">
 								<a href="javascript:void(0)" class="trigger"></a>
@@ -605,16 +598,13 @@
 										<input type="text" name="filename" id="vtt-file" class="i-text filename i18n" data-placeholder="filename">
 									</label>
 								</li>
-								<li class="none">
-									<textarea name="caption" class="caption"></textarea>
-								</li>
 							</ul>
 							<div class="btn-group">
 								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
 								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
 							</div>
 						</form>
-						<form action="download/json.php" method="post" id="subtitle-export-json" class="tab-panel" autocomplete="off">
+						<form id="subtitle-export-json" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="format" class="json-format" />
 							<div class="ui-select i18n" data-action="export.sheetFormat.json" data-key="jsonFormat" data-title="subtitle-format">
 								<a href="javascript:void(0)" class="trigger"></a>
@@ -630,16 +620,13 @@
 										<input type="text" name="filename" id="json-file" class="i-text filename i18n" data-placeholder="filename">
 									</label>
 								</li>
-								<li class="none">
-									<textarea name="caption" class="caption"></textarea>
-								</li>
 							</ul>
 							<div class="btn-group">
 								<button type="reset" class="none btn-reset i18n" data-text="reset"></button>
 								<button class="btn btn-submit subtitle-download"><span class="i18n" data-text="export-subtitle"></span></button>
 							</div>
 						</form>
-						<form action="download/excel.php" method="post" id="subtitle-export-excel" class="tab-panel" autocomplete="off">
+						<form id="subtitle-export-excel" class="tab-panel" autocomplete="off">
 							<input type="hidden" name="format" class="excel-format" />
 							<div class="ui-select i18n" data-action="export.sheetFormat.excel" data-key="excelFormat" data-title="subtitle-format">
 								<a href="javascript:void(0)" class="trigger"></a>
@@ -652,11 +639,8 @@
 								<li>
 									<label>
 										<span class="i18n i-title" data-text="filename"></span>
-										<input type="text" name="filename" id="json-file" class="i-text filename i18n" data-placeholder="filename">
+										<input type="text" name="filename" id="excel-file" class="i-text filename i18n" data-placeholder="filename">
 									</label>
-								</li>
-								<li class="none">
-									<textarea name="caption" class="caption"></textarea>
 								</li>
 							</ul>
 							<div class="btn-group">
@@ -734,7 +718,7 @@
 							</ul>
 							<dl>
 								<dt>version</dt>
-								<dd>2.3.0</dd>
+								<dd>2.3.1</dd>
 								<dt>developer</dt>
 								<dd>지현하 / Ji Hyunha</dd>
 								<dt>contact</dt>
