@@ -1,5 +1,6 @@
 import i18nModule from './modules/i18n/i18n.js';
 import subtitleModule from './modules/subtitle/index.js';
+import { trackEvent } from './modules/analytics/track.js';
 import {
 	storage,
 	editHistory,
@@ -193,7 +194,7 @@ const initializeDomainModules = () => {
 				Player.Print(this.currentTime());
 			});
 			Interface.Dialog();
-			ga("send",{hitType:"event",eventCategory:"Player",eventAction:type + " Input",eventLabel:"Video Input"});
+			trackEvent({ category: 'Player', action: type + ' Input', label: 'Video Input' });
 		} else {
 			Interface.Wrap.addClass('empty');
 			Interface.Alert(Player.Empty(type));
@@ -389,7 +390,7 @@ const initializeDomainModules = () => {
 					action = select.data('action');
 					if (action) runAction(action, getActionContext(), value);
 					select.removeClass('on');
-					ga("send",{hitType:"event",eventCategory:"Selection",eventAction:select.data('key') + " : " + value,eventLabel:"Selection"});
+					trackEvent({ category: 'Selection', action: select.data('key') + ' : ' + value, label: 'Selection' });
 				})
 				.on('mouseleave', function(){
 					$(this).removeClass('on');
@@ -1706,18 +1707,18 @@ const initializeDomainModules = () => {
 			insert.index = current.row + 1, current.col && (Sheet.Current.col = current.col);
 			insert.data = clone(Sheet.Empty);
 			Sheet.Edit.Log('i',insert.index,insert.data,null,current);
-			ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"insert",eventLabel:"Sheet Edit"});
+			trackEvent({ category: 'Sheet', action: 'insert', label: 'Sheet Edit' });
 			Sheet.Insert(insert);
 		}),
 		r : function(current,backup){
 			Sheet.Search.Panel && $('#sheet-search').trigger('click');
 			if (Sheet.DataSize == 0){
 				Sheet.Command.u(current,clone(Sheet.Empty));
-				ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"empty",eventLabel:"Sheet Edit"});
+				trackEvent({ category: 'Sheet', action: 'empty', label: 'Sheet Edit' });
 			} else {
 				backup = Sheet.Remove(current);
 				Sheet.Edit.Log('r',current.row,null,backup,current);
-				ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"remove",eventLabel:"Sheet Edit"});
+				trackEvent({ category: 'Sheet', action: 'remove', label: 'Sheet Edit' });
 			}
 		},
 		u : (function(position,data,backup,prev){
@@ -1725,12 +1726,12 @@ const initializeDomainModules = () => {
 			Sheet.Current.data = data;
 			backup = Sheet.Update(position,data);
 			Sheet.Edit.Log('u',position.row,data,backup,{row:position.row, col:position.col});
-			ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"update",eventLabel:"Sheet Edit"});
+			trackEvent({ category: 'Sheet', action: 'update', label: 'Sheet Edit' });
 		}),
 		m : function(cmd,arrayCurrent,arrayBackup){
 			Sheet.Search.Panel && $('#sheet-search').trigger('click');
 			Sheet.Edit.Log('m.'+cmd,null,arrayCurrent,arrayBackup,{row:Sheet.Current.row, col:Sheet.Current.col});
-			ga("send",{hitType:"event",eventCategory:"Sheet",eventAction:"update",eventLabel:"Sheet Edit"});
+			trackEvent({ category: 'Sheet', action: 'update', label: 'Sheet Edit' });
 		}
 	};
 	Sheet.Edit = {

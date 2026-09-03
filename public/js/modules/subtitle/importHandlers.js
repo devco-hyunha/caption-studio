@@ -1,5 +1,6 @@
 import { storage } from '../utils/storage.js';
 import { bindEvent } from '../utils/dom.js';
+import { trackEvent } from '../analytics/track.js';
 import converters from './convert/index.js';
 
 const getLoadBtn = () => document.querySelector('#subtitle-import .subtitle-load');
@@ -11,11 +12,10 @@ const resetFileInput = (input) => {
 };
 
 const sendImportGa = (eventAction) => {
-	ga('send', {
-		hitType: 'event',
-		eventCategory: 'Subtitle',
-		eventAction,
-		eventLabel: 'Subtitle Import',
+	trackEvent({
+		category: 'Subtitle',
+		action: eventAction,
+		label: 'Subtitle Import',
 	});
 };
 

@@ -1,10 +1,19 @@
 import { storage } from '../../utils/storage.js';
 import { bindEvent } from '../../utils/dom.js';
+import { trackEvent } from '../../analytics/track.js';
 import { encodeText } from './download/iconv.js';
 import { formatExportData } from './formatExportData.js';
 import { downloadBytes } from './download/downloadBytes.js';
 import { buildSmi, buildSrt, buildVtt, buildJson } from './build/buildFile.js';
 import { buildExcel } from './build/buildExcel.js';
+
+const sendExportGa = (eventAction) => {
+	trackEvent({
+		category: 'Subtitle',
+		action: eventAction,
+		label: 'Subtitle Export',
+	});
+};
 
 const setStorageAndField = (storageKey, fieldSelector) => (value) => {
 	storage.set(storageKey, value);
@@ -41,6 +50,7 @@ const resolveFilename = (form, extension) => {
  * @property {string} formSelector
  * @property {string} [defaultWhenEmpty] - storage가 비었을 때 기본값 (smi: EUC-KR)
  * @property {string|((form: HTMLFormElement) => string|undefined)} getConvertFormat
+ * @property {string} gaAction
  * @property {ClientDownloadConfig} clientDownload
  */
 
@@ -54,6 +64,7 @@ const createExportHandler = ({ Interface, Sheet, convert }, config) => () => {
 		formSelector,
 		defaultWhenEmpty,
 		getConvertFormat,
+		gaAction,
 		clientDownload,
 	} = config;
 
@@ -88,6 +99,7 @@ const createExportHandler = ({ Interface, Sheet, convert }, config) => () => {
 				resolveFilename(form, clientDownload.extension),
 				bytes,
 			);
+			sendExportGa(gaAction);
 		},
 	});
 };
@@ -118,6 +130,7 @@ const exportHandlers = ({ Interface, Sheet }) => {
 			formSelector: '#subtitle-export-smi',
 			defaultWhenEmpty: 'EUC-KR',
 			getConvertFormat: 'smi',
+			gaAction: 'SMI Export',
 			clientDownload: {
 				extension: 'smi',
 				encodingSelector: '.encode_smi_file',
@@ -128,6 +141,7 @@ const exportHandlers = ({ Interface, Sheet }) => {
 			storageKey: 'srtEncodeFile',
 			formSelector: '#subtitle-export-srt',
 			getConvertFormat: 'srt',
+			gaAction: 'SRT Export',
 			clientDownload: {
 				extension: 'srt',
 				encodingSelector: '.encode_srt_file',
@@ -138,6 +152,7 @@ const exportHandlers = ({ Interface, Sheet }) => {
 			storageKey: 'vttEncodeFile',
 			formSelector: '#subtitle-export-vtt',
 			getConvertFormat: 'srt',
+			gaAction: 'VTT Export',
 			clientDownload: {
 				extension: 'vtt',
 				encodingSelector: '.encode_vtt_file',
@@ -148,6 +163,7 @@ const exportHandlers = ({ Interface, Sheet }) => {
 			storageKey: 'jsonFormat',
 			formSelector: '#subtitle-export-json',
 			getConvertFormat: (form) => form.querySelector('.json-format')?.value,
+			gaAction: 'JSON Export',
 			clientDownload: {
 				extension: 'json',
 				build: buildJson,
@@ -157,6 +173,7 @@ const exportHandlers = ({ Interface, Sheet }) => {
 			storageKey: 'excelFormat',
 			formSelector: '#subtitle-export-excel',
 			getConvertFormat: (form) => form.querySelector('.excel-format')?.value,
+			gaAction: 'Excel Export',
 			clientDownload: {
 				extension: 'xlsx',
 				build: buildExcel,
