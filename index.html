@@ -130,7 +130,7 @@
 				</ul>
 			</div>
 			<div class="section">
-				<p class="print"></p>
+				<p class="current-text"></p>
 			</div>
 		</div>
 	</div>
@@ -415,20 +415,20 @@
 						<li><a href="javascript:void(0)" data-value="vimeo"><span>vimeo</span></a></li>
 					</ul>
 					<form class="contain tab-body" autocomplete="off">
-						<div id="video-import-file" class="tab-panel">
-							<label class="i-text file empty" data-action="Video.FileCheck">
+						<div id="video-import-file" class="tab-panel" data-type="file">
+							<label class="i-text file empty" data-action="video.fileCheck">
 								<input type="file" id="video-file" accept="video/mp4, video/ogg, video/webm" class="none" />
 								<span class="i-filename"></span>
 								<span class="i-placeholder i18n" data-text="video-import-file"></span>
 							</label>
 						</div>
-						<div id="video-import-url" class="tab-panel">
+						<div id="video-import-url" class="tab-panel" data-type="url">
 							<input type="text" id="video-url" class="i-text i18n" data-placeholder="video-import-url" />
 						</div>
-						<div id="video-import-youtube" class="tab-panel">
+						<div id="video-import-youtube" class="tab-panel" data-type="youtube">
 							<input type="text" id="video-youtube" class="i-text i18n" data-placeholder="video-import-youtube" />
 						</div>
-						<div id="video-import-vimeo" class="tab-panel">
+						<div id="video-import-vimeo" class="tab-panel" data-type="vimeo">
 							<input type="text" id="video-vimeo" class="i-text i18n" data-placeholder="video-import-vimeo" />
 						</div>
 						<div class="btn-group">
@@ -719,7 +719,7 @@
 							</ul>
 							<dl>
 								<dt>version</dt>
-								<dd>2.3.3</dd>
+								<dd>2.4.0</dd>
 								<dt>developer</dt>
 								<dd>지현하 / Ji Hyunha</dd>
 								<dt>contact</dt>

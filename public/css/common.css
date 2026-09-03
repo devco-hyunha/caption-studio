@@ -85,16 +85,16 @@ html {padding-left:320px;min-width:900px;font-family:'Nanum Gothic', sans-serif;
 #subtitle .util li a span {border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}
 #subtitle .util li a:active {padding:8px 0 6px;}
 #subtitle .section {display:table;padding:10px 0;width:300px;min-height:100px;border-top:1px solid #333;background-color:#111;}
-#subtitle .section .print {display:table-cell;font-size:16px;line-height:24px;color:#666;text-align:center;vertical-align:middle;word-break:break-all;}
+#subtitle .section .current-text {display:table-cell;font-size:16px;line-height:24px;color:#666;text-align:center;vertical-align:middle;word-break:break-all;}
 #subtitle.visible .header dd {color:#fff;}
-#subtitle.visible .section .print {color:#fff;}
+#subtitle.visible .section .current-text {color:#fff;}
 #subtitle.visible .current-start:after {color:#666;}
 #subtitle.visible .current-end:before {color:#666;}
 .overlap #subtitle {position:relative;}
 .overlap #subtitle .section {position:absolute;bottom:120px;left:0;width:320px;min-height:0;border-top:0;background-color:transparent;}
-.overlap #subtitle .section .print {display:none;padding:5px;text-shadow:0 0 3px #000, 0 0 3px #000, 0 0 3px #000, 0 0 3px #000, 0 0 4px #fff;}
-.overlap #subtitle.visible .section .print {display:block;}
-.overlap #subtitle.visible .section .print:hover {background-color:rgba(0,0,0,.5);text-shadow:none;}
+.overlap #subtitle .section .current-text {display:none;padding:5px;text-shadow:0 0 3px #000, 0 0 3px #000, 0 0 3px #000, 0 0 3px #000, 0 0 4px #fff;}
+.overlap #subtitle.visible .section .current-text {display:block;}
+.overlap #subtitle.visible .section .current-text:hover {background-color:rgba(0,0,0,.5);text-shadow:none;}
 .overlap #subtitle .util li a.subtitle-visible {background-color:#333;}
 
 .empty #video .video-import {display:block;}

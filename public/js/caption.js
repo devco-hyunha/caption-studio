@@ -1,5 +1,6 @@
 import i18nModule from './modules/i18n/i18n.js';
 import subtitleModule from './modules/subtitle/index.js';
+import videoModule from './modules/video/index.js';
 import { trackEvent } from './modules/analytics/track.js';
 import {
 	storage,
@@ -16,227 +17,22 @@ import {
 
 const i18n = i18nModule();
 const subtitle = subtitleModule();
+const video = videoModule();
 
 const getActionContext = () => ({
-	Video,
+	video,
 	import: subtitle.import,
 	export: subtitle.export,
 	Fn,
 	Shortkey,
 });
 
-var Do=$(document),Wn=$(window),Player={},Video={},Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Ev={};
+var Do=$(document),Wn=$(window),Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Ev={};
 
 const initializeDomainModules = () => {
+	video.initialize({ Interface, Sheet, i18n });
 	subtitle.initialize({ Interface, Sheet, i18n });
 };
-
-	Player.Wrap = $('#video');
-	Player.Subtitle = $('#subtitle');
-	Player.Target = 'player';
-	Player.HTML = '<video id="player" class="video-js" playsinline controls></video>';
-
-	Player.Support = (function(){
-		
-	});
-	Player.youtube = (function(src){
-		Player.Interface = videojs(Player.Target, {'techOrder': ['youtube','html5'], 'sources' : [{
-			'type'	: 'video/youtube',
-			'src'	: src
-		}]});
-	});
-	Player.vimeo = (function(src){
-		Player.Interface = videojs(Player.Target, {'techOrder': ['vimeo','html5'], 'sources' : [{
-			'type'			: 'video/vimeo',
-			'background'	: 1,
-			'src'			: src
-		}]});
-	});
-	Player.url = (function(src){
-		if (Player.Element[0].canPlayType('video/'+src.split('.').pop()) != '') {
-			Player.Element.prop('src',src);
-			Player.Interface = videojs(Player.Target);
-		} else {
-			Interface.Alert(i18n.t('not-support-file-format'));
-			Player.Refresh();
-		}
-	});
-	Player.file = (function(file,url,format,src){
-		url = window.URL || window.webkitURL;
-		format = file ? Player.Element[0].canPlayType(file.type) : '';
-		if (file && format != ''){
-			src = url.createObjectURL(file);
-			Player.Element.prop('src',src);
-			Player.Interface = videojs(Player.Target);
-		} else if (file && format == ''){
-			Interface.Alert(i18n.t('not-support-file-format'));
-			return false;
-		}
-	});
-	Player.Empty = function(type, result){
-		switch (type){
-			case 'youtube' : result = i18n.t('please-input-youtube-url');break;
-			case 'vimeo' : result = i18n.t('please-input-vimeo-url');break;
-			case 'url' : result = i18n.t('please-input-video-url');break;
-			case 'file' : result = i18n.t('please-select-video-file');break;
-		}
-		
-		return result;
-	};
-	Player.Refresh = (function(){
-		if (Player.Element){
-			videojs(Player.Target).dispose();
-			Player.Element = null;
-		}
-		if (Player.Interface) Player.Interface = null;
-		if (Sheet.Focus || Sheet.Focus == 0) Sheet.Focus = null;
-		Player.Wrap.find('.contain').append(Player.HTML);
-		Player.Element = $('#'+Player.Target);
-	});
-	Player.Print = (function(sec){
-		sec = Sheet.TimeSearch(parseInt(sec*1000));
-		if (sec.timeline && !sec.timeline.endtime){
-			sec.timeline.end = (sec.index + 1) <= Sheet.DataSize ? Sheet.ArrayData[sec.index + 1].start : Player.Interface.duration()*1000;
-			sec.timeline.endtime = formatTimecode(sec.timeline.end);
-		}
-		if (sec.visible){
-			Player.Subtitle.addClass('visible');
-		} else {
-			Player.Subtitle.removeClass('visible');
-		}
-		if (sec.timeline && Sheet.Focus != sec.index){
-			Sheet.Focus = sec.index;
-			Sheet.Panel.find('.focus').removeClass('focus');
-			Sheet.Panel.find('.row-'+ Sheet.Focus).addClass('focus');
-
-			Player.Subtitle.find('.print').html(sec.timeline.text);
-			Player.Subtitle.find('.current-line').text(sec.index + 1);
-			Player.Subtitle.find('.current-start').text(sec.timeline.starttime);
-			Player.Subtitle.find('.current-end').text(sec.timeline.endtime);
-		}
-	});
-
-	Video.Init = (function(){
-		Player.Refresh();
-		$('.video-load').off('click').on('click',function(button,ui,type,input,data){
-			button = $(this);
-			ui = button.parents('.ui-tab');
-			type = ui.data('value');
-			input = ui.find('#video-'+type);
-			if (type == 'file'){
-				data = input[0].files[0];
-			} else {
-				data = input.val();
-			}
-			Video.Input(type, data);
-		});
-		Player.Subtitle
-		.on('click','.move-current',function(){
-			if (Sheet.Focus || Sheet.Focus == 0) Sheet.RowOffset(Sheet.Focus);
-		}).on('click','.move-prev',function(focus, timeline){
-			if (Sheet.Focus || Sheet.Focus == 0){
-				focus		= Sheet.Focus > 0 ? (Sheet.Focus - 1) : 0;
-				timeline	= Sheet.ArrayData[focus];
-				Video.CurrentTime(timeline.start / 1000);
-				Sheet.Draw();
-			}
-		}).on('click','.move-next',function(max, focus, timeline){
-			if (Sheet.Focus || Sheet.Focus == 0){
-				max			= Sheet.DataSize;
-				focus		= Sheet.Focus < max ? (Sheet.Focus + 1) : max;
-				timeline	= Sheet.ArrayData[focus];
-				Video.CurrentTime(timeline.start / 1000);
-				Sheet.Draw();
-			}
-		}).on('click','.subtitle-visible',function(){
-			Player.Wrap.toggleClass('overlap');
-			storage.set('subtitle-visible',Player.Wrap.hasClass('overlap'));
-		});
-		if (storage.get('subtitle-visible')) Player.Wrap.find('.subtitle-visible').trigger('click');
-	});
-	Video.FileCheck = (function(input, file, format){
-		format = file ? Player.Element[0].canPlayType(file.type) : '';
-		if (!file || (file && format == '')){
-			input.addClass('empty');
-			input.find('input[type="file"]').val('');
-			input.find('.i-filename').text('');
-			Interface.Alert(i18n.t('not-support-file-format'));
-		}
-	});
-	Video.Input = (function(type, src){
-		Player.Refresh();
-		if (src && src != ''){
-			Interface.Wrap.removeClass('empty');
-			Player[type](src);
-			Player.timeTrigger = $('<button class="vjs-selecttime-control vjs-control vjs-button mt icon-timer" type="button" aria-live="polite"><span class="vjs-control-text">select time</span></button>').appendTo('.vjs-control-bar');
-			Player.timeTrigger.off('click').on('click',function(original,timeline,target){
-				if (Sheet.Format == 'smi' && Sheet.Current.col > 0){
-					Sheet.Current.col = 0;
-					Sheet.Current.target = 'starttime';
-					Sheet.Move.Event();
-				}
-				target = Sheet.Current.target;
-				if (!Sheet.Multiple.State && target.indexOf('time') > 0){
-					original = Sheet.ArrayData[Sheet.Current.row];
-					timeline = clone(original);
-					if (target == 'starttime'){
-						timeline.start = parseInt(Video.CurrentTime() * 1000);
-					} else if (target == 'endtime'){
-						timeline.end = parseInt(Video.CurrentTime() * 1000);
-					}
-					Sheet.Command.u(Sheet.Current,timeline);
-				}
-			});
-			Player.Interface.on('ended',function(){
-				Player.Print(-1);
-			});
-			Player.Interface.on('timeupdate',function(){
-				Player.Print(this.currentTime());
-			});
-			Interface.Dialog();
-			trackEvent({ category: 'Player', action: type + ' Input', label: 'Video Input' });
-		} else {
-			Interface.Wrap.addClass('empty');
-			Interface.Alert(Player.Empty(type));
-		}
-	});
-	Video.Play = (function(){Player.Interface.play();});
-	Video.Pause = (function(){Player.Interface.pause();});
-	Video.Paused = (function(){return Player.Interface.paused();});
-	Video.Toggle = (function(){if (Video.Paused()) Video.Play(); else Video.Pause();});
-	Video.Volume = (function(s){
-		if (!Player.Interface) return 0;
-		if (s || s == 0){
-			s = s <= 0 ? 0 : (s > 1 ? 1 : s);
-			Player.Interface.volume(s);
-			return s;
-		} else {
-			return Player.Interface.volume();
-		}
-	});
-	Video.VolumeUp = (function(s,volume){
-		if (s || s == 0){
-			volume = Video.Volume();
-			volume += s;
-			return Video.Volume(volume);
-		}
-	});
-	Video.VolumeDown = (function(s,volume){
-		if (s || s == 0){
-			volume = Video.Volume();
-			volume -= s;
-			return Video.Volume(volume);
-		}
-	});
-	Video.CurrentTime = (function(s){
-		if (!Player.Interface) return 0;
-		if (s){
-			Player.Interface.currentTime(s);
-			return s;
-		} else {
-			return Player.Interface.currentTime();
-		}
-	});
 
 	Interface.Wrap = $('#wrap');
 	Interface.Layout = $('#layout');
@@ -656,7 +452,7 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				try{
 					e.preventDefault();
-					Video.Volume(Video.Volume() + 0.1);
+					video.volume(video.volume() + 0.1);
 				} catch (error){
 					console.log(error);
 				}
@@ -667,7 +463,7 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				try{
 					e.preventDefault();
-					Video.Volume(Video.Volume() - 0.1);
+					video.volume(video.volume() - 0.1);
 				} catch (error){
 					console.log(error);
 				}
@@ -868,7 +664,7 @@ const initializeDomainModules = () => {
 			handler : function(){
 				try{
 					if (!Sheet.Multiple.State){
-						Video.CurrentTime(Sheet.ArrayData[Sheet.Current.row].start / 1000);
+						video.currentTime(Sheet.ArrayData[Sheet.Current.row].start / 1000);
 					}
 				} catch (error){
 					$('.video-import').trigger('click');
@@ -882,7 +678,7 @@ const initializeDomainModules = () => {
 				try{
 					if (!Sheet.Multiple.State){
 						e.preventDefault();
-						Video.Toggle();
+						video.toggle();
 					}
 				} catch (error){
 					$('.video-import').trigger('click');
@@ -893,14 +689,14 @@ const initializeDomainModules = () => {
 		'prev' : {
 			placeholder : 'video-prev', mask : 'ctrl+left', type : 'hold', isPrevented : true,
 			handler : function(){
-				Video.CurrentTime(Video.CurrentTime() - 10);
+				video.currentTime(video.currentTime() - 10);
 				return false;
 			}
 		},
 		'next' : {
 			placeholder : 'video-next', mask : 'ctrl+right', type : 'hold', isPrevented : true,
 			handler : function(){
-				Video.CurrentTime(Video.CurrentTime() + 10);
+				video.currentTime(video.currentTime() + 10);
 				return false;
 			}
 		}
@@ -2638,7 +2434,7 @@ const initializeDomainModules = () => {
 		Sheet.Search.Init();
 		Sheet.Config.Init();
 		Shortkey.Init();
-		Video.Init();
+		video.init();
 		WebFont.load({
 			custom: {
 				families: ['Nanum Gothic','material-icons'],

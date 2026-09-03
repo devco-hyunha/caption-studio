@@ -1,0 +1,205 @@
+import { createPlayer } from './player.js';
+import { storage } from '../utils/storage.js';
+import { clone } from '../utils/object.js';
+import { bindEvent, toElement } from '../utils/dom.js';
+import { trackEvent } from '../analytics/track.js';
+
+/**
+ * @typedef {Object} VideoInitDeps
+ * @property {object} Interface - caption.js UI 셸
+ * @property {object} Sheet - 시트 API
+ * @property {object} i18n - i18n 모듈
+ */
+
+const hasSheetFocus = (sheet) => sheet.Focus != null;
+
+const TIME_TRIGGER_HTML = '<button class="vjs-selecttime-control vjs-control vjs-button mt icon-timer" type="button" aria-live="polite"><span class="vjs-control-text">select time</span></button>';
+
+/**
+ * @param {VideoInitDeps & { player: object }} deps
+ */
+const createVideo = ({ player, ui, sheet, i18n }) => {
+	const video = {};
+
+	const currentTimeMs = () => parseInt(video.currentTime() * 1000);
+
+	const handleTimeTriggerClick = () => {
+		if (sheet.Format == 'smi' && sheet.Current.col > 0) {
+			sheet.Current.col = 0;
+			sheet.Current.target = 'starttime';
+			sheet.Move.Event();
+		}
+		const target = sheet.Current.target;
+		if (sheet.Multiple.State || target.indexOf('time') < 0) return;
+
+		const timeline = clone(sheet.ArrayData[sheet.Current.row]);
+		if (target == 'starttime') timeline.start = currentTimeMs();
+		else if (target == 'endtime') timeline.end = currentTimeMs();
+		sheet.Command.u(sheet.Current, timeline);
+	};
+
+	const attachTimeTrigger = () => {
+		const controlBar = document.querySelector('.vjs-control-bar');
+		if (!controlBar) return;
+		controlBar.insertAdjacentHTML('beforeend', TIME_TRIGGER_HTML);
+		const timeTrigger = controlBar.querySelector('.vjs-selecttime-control');
+		bindEvent({
+			target: timeTrigger,
+			event: 'click',
+			handler: handleTimeTriggerClick,
+		});
+	};
+
+	const input = (type, src) => {
+		player.refresh();
+		if (!src || src == '') {
+			toElement(ui.Wrap)?.classList.add('empty');
+			ui.Alert(player.empty(type));
+			return;
+		}
+
+		toElement(ui.Wrap)?.classList.remove('empty');
+		player.load(type, src);
+		if (!player.interface) {
+			toElement(ui.Wrap)?.classList.add('empty');
+			return;
+		}
+		attachTimeTrigger();
+		player.interface.on('ended', () => {
+			player.syncFromTime(-1);
+		});
+		player.interface.on('timeupdate', function () {
+			player.syncFromTime(this.currentTime());
+		});
+		ui.Dialog();
+		trackEvent({ category: 'Player', action: type + ' Input', label: 'Video Input' });
+	};
+
+	video.init = () => {
+		player.refresh();
+		document.querySelectorAll('.video-load').forEach((button) => {
+			bindEvent({
+				target: button,
+				event: 'click',
+				handler: () => {
+					const tab = button.closest('.ui-tab');
+					const panel = tab?.querySelector('.tab-panel.on');
+					const type = panel?.dataset.type;
+					const inputEl = panel?.querySelector('input');
+					const data = type == 'file' ? inputEl?.files[0] : inputEl?.value;
+					input(type, data);
+				},
+			});
+		});
+		bindEvent({
+			target: player.subtitle,
+			event: 'click',
+			selector: '.move-current',
+			handler: () => {
+				if (hasSheetFocus(sheet)) sheet.RowOffset(sheet.Focus);
+			},
+		});
+		bindEvent({
+			target: player.subtitle,
+			event: 'click',
+			selector: '.move-prev',
+			handler: () => {
+				if (!hasSheetFocus(sheet)) return;
+				const focus = sheet.Focus > 0 ? sheet.Focus - 1 : 0;
+				video.currentTime(sheet.ArrayData[focus].start / 1000);
+				sheet.Draw();
+			},
+		});
+		bindEvent({
+			target: player.subtitle,
+			event: 'click',
+			selector: '.move-next',
+			handler: () => {
+				if (!hasSheetFocus(sheet)) return;
+				const focus = sheet.Focus < sheet.DataSize ? sheet.Focus + 1 : sheet.DataSize;
+				video.currentTime(sheet.ArrayData[focus].start / 1000);
+				sheet.Draw();
+			},
+		});
+		bindEvent({
+			target: player.subtitle,
+			event: 'click',
+			selector: '.subtitle-visible',
+			handler: () => {
+				player.wrap.classList.toggle('overlap');
+				storage.set('subtitle-visible', player.wrap.classList.contains('overlap'));
+			},
+		});
+		const savedOverlap = storage.get('subtitle-visible');
+		if (savedOverlap != null) player.wrap.classList.toggle('overlap', Boolean(savedOverlap));
+	};
+
+	video.fileCheck = (field, file) => {
+		const fieldEl = toElement(field);
+		const format = file ? player.element.canPlayType(file.type) : '';
+		if (!file || format == '') {
+			fieldEl?.classList.add('empty');
+			const fileInput = fieldEl?.querySelector('input[type="file"]');
+			if (fileInput) fileInput.value = '';
+			const filename = fieldEl?.querySelector('.i-filename');
+			if (filename) filename.textContent = '';
+			ui.Alert(i18n.t('not-support-file-format'));
+		}
+	};
+
+	video.toggle = () => {
+		if (player.interface.paused()) player.interface.play();
+		else player.interface.pause();
+	};
+
+	video.volume = (s) => {
+		if (!player.interface) return 0;
+		if (s || s == 0) {
+			s = s <= 0 ? 0 : (s > 1 ? 1 : s);
+			player.interface.volume(s);
+			return s;
+		}
+		return player.interface.volume();
+	};
+
+	video.currentTime = (s) => {
+		if (!player.interface) return 0;
+		if (s || s == 0) {
+			player.interface.currentTime(s);
+			return s;
+		}
+		return player.interface.currentTime();
+	};
+
+	return video;
+};
+
+/**
+ * video 도메인 모듈을 생성한다. `initialize()` 호출 전까지 공개 API가 없다.
+ *
+ * @returns {{
+ *   initialize: (deps: VideoInitDeps) => void,
+ *   init?: () => void,
+ *   fileCheck?: Function,
+ *   toggle?: Function,
+ *   volume?: Function,
+ *   currentTime?: Function,
+ * }}
+ */
+const videoModule = () => {
+	const module = {};
+
+	/**
+	 * player를 만들고 공개 Video API를 붙인다. `Do.on('ready')`에서 Sheet·Interface 준비 후 호출한다.
+	 *
+	 * @param {VideoInitDeps} deps
+	 */
+	module.initialize = ({ Interface, Sheet, i18n }) => {
+		const player = createPlayer({ ui: Interface, sheet: Sheet, i18n });
+		Object.assign(module, createVideo({ player, ui: Interface, sheet: Sheet, i18n }));
+	};
+
+	return module;
+};
+
+export default videoModule;
