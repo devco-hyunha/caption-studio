@@ -34,14 +34,14 @@ const resolveFilename = (form, extension) => {
 /**
  * @typedef {Object} ExportHandlerDeps
  * @property {object} Interface - caption.js UI 셸 (`Select.Trigger` 등)
- * @property {object} Sheet - 시트 API (`Format`, `ArrayData`, `Language`)
+ * @property {object} sheet - 시트 API (`format`, `timelines`, `language`)
  */
 
 /**
  * @typedef {Object} ClientDownloadConfig
  * @property {string} extension
  * @property {string} [encodingSelector]
- * @property {(options: { form: HTMLFormElement, data: object[], Sheet: object }) => string|Uint8Array} build
+ * @property {(options: { form: HTMLFormElement, data: object[], sheet: object }) => string|Uint8Array} build
  */
 
 /**
@@ -58,7 +58,7 @@ const resolveFilename = (form, extension) => {
  * @param {ExportHandlerDeps & { convert: (format: string, sheetData?: object) => object }} deps
  * @param {ExportHandlerConfig} config
  */
-const createExportHandler = ({ Interface, Sheet, convert }, config) => () => {
+const createExportHandler = ({ Interface, sheet, convert }, config) => () => {
 	const {
 		storageKey,
 		formSelector,
@@ -85,7 +85,7 @@ const createExportHandler = ({ Interface, Sheet, convert }, config) => () => {
 
 			const exportFormat = resolveExportFormat(getConvertFormat, form);
 			const data = convert(exportFormat);
-			const payload = clientDownload.build({ form, data, Sheet });
+			const payload = clientDownload.build({ form, data, sheet });
 			const encoding = clientDownload.encodingSelector
 				? (form.querySelector(clientDownload.encodingSelector)?.value
 					|| storage.get(storageKey)
@@ -114,15 +114,15 @@ const createExportHandler = ({ Interface, Sheet, convert }, config) => () => {
  *   sheetFormat: Record<'json'|'excel', (value: string) => void>,
  * }}
  */
-const exportHandlers = ({ Interface, Sheet }) => {
+const exportHandlers = ({ Interface, sheet }) => {
 	const convert = (format, sheetData) =>
 		formatExportData({
 			exportFormat: format,
-			sheetFormat: Sheet.Format,
-			sheetData: sheetData ?? Sheet.ArrayData,
+			sheetFormat: sheet.format,
+			sheetData: sheetData ?? sheet.timelines,
 		});
 
-	const deps = { Interface, Sheet, convert };
+	const deps = { Interface, sheet, convert };
 
 	return {
 		smi: createExportHandler(deps, {

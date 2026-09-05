@@ -39,11 +39,11 @@ const isStyleChecked = (form) =>
 	Boolean(form.querySelector('[name="is-style"]')?.checked);
 
 /**
- * @param {{ form: HTMLFormElement, data: object[], Sheet: object }} options
+ * @param {{ form: HTMLFormElement, data: object[], sheet: object }} options
  * @returns {string}
  */
-const buildSmi = ({ form, data, Sheet }) => {
-	const langKey = Sheet.Language ?? '';
+const buildSmi = ({ form, data, sheet }) => {
+	const langKey = sheet.language ?? '';
 	const langValue = SMI_CLASS[langKey] ?? '';
 	const signatureRaw = fieldValue(form, 'signature');
 	const signature = signatureRaw

@@ -67,7 +67,7 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 		}
 		player.interface = null;
 		player.element = null;
-		if (sheet.Focus != null) sheet.Focus = null;
+		if (sheet.focus != null) sheet.focus = null;
 		player.wrap.querySelector('.contain').insertAdjacentHTML('beforeend', PLAYER_HTML);
 		player.element = document.querySelector(`#${PLAYER_TARGET}`);
 	};
@@ -108,21 +108,21 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 	player.refresh = refresh;
 
 	player.syncFromTime = (sec) => {
-		const hit = sheet.TimeSearch(parseInt(sec * 1000));
+		const hit = sheet.timeSearch(parseInt(sec * 1000));
 		const { timeline, index, visible } = hit;
 
 		if (timeline && !timeline.endtime) {
-			timeline.end = (index + 1) <= sheet.DataSize
-				? sheet.ArrayData[index + 1].start
+			timeline.end = (index + 1) <= sheet.lastIndex
+				? sheet.timelines[index + 1].start
 				: player.interface.duration() * 1000;
 			timeline.endtime = formatTimecode(timeline.end);
 		}
 
 		player.subtitle.classList.toggle('visible', Boolean(visible));
-		if (!timeline || sheet.Focus == index) return;
+		if (!timeline || sheet.focus == index) return;
 
-		sheet.Focus = index;
-		const panel = toElement(sheet.Panel);
+		sheet.focus = index;
+		const panel = toElement(sheet.panel);
 		if (panel) {
 			panel.querySelectorAll('.focus').forEach((row) => row.classList.remove('focus'));
 			panel.querySelector(`.row-${index}`)?.classList.add('focus');

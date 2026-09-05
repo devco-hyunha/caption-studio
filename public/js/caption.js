@@ -1,6 +1,7 @@
-import i18nModule from './modules/i18n/i18n.js';
+﻿import i18nModule from './modules/i18n/i18n.js';
 import subtitleModule from './modules/subtitle/index.js';
 import videoModule from './modules/video/index.js';
+import sheetModule from './modules/sheet/index.js';
 import { trackEvent } from './modules/analytics/track.js';
 import {
 	storage,
@@ -18,6 +19,7 @@ import {
 const i18n = i18nModule();
 const subtitle = subtitleModule();
 const video = videoModule();
+const sheet = sheetModule();
 
 const getActionContext = () => ({
 	video,
@@ -27,11 +29,17 @@ const getActionContext = () => ({
 	Shortkey,
 });
 
-var Do=$(document),Wn=$(window),Interface={},Fn={},Sheet={},SheetTrigger={},Shortkey=$.Shortcuts,Ev={};
+var Do=$(document),Wn=$(window),Interface={},Fn={},Shortkey=$.Shortcuts;
 
 const initializeDomainModules = () => {
-	video.initialize({ Interface, Sheet, i18n });
-	subtitle.initialize({ Interface, Sheet, i18n });
+	sheet.initialize({
+		i18n,
+		header: subtitle.header,
+		ui: Interface,
+		subtitle,
+	});
+	video.initialize({ Interface, sheet, i18n });
+	subtitle.initialize({ Interface, sheet, i18n });
 };
 
 	Interface.Wrap = $('#wrap');
@@ -91,7 +99,7 @@ const initializeDomainModules = () => {
 		if (key){
 			Interface.AnotherInput.trigger('focus');
 		} else {
-			Sheet.Active && Sheet.Active.target.indexOf('time') == -1 && SheetTrigger.Input && SheetTrigger.Input.trigger('focus');
+			sheet.active && sheet.active.target.indexOf('time') == -1 && sheet.trigger.input?.focus();
 		}
 	};
 	Interface.Dialog = (function(target,tabHeader){
@@ -241,26 +249,14 @@ const initializeDomainModules = () => {
 		});
 	});
 
-	Ev={
-		Resize		: 'orientationchange' in window?'orientationchange':'resize',
-		Scroll		: 'scroll.Sheet',
-		ScrollEnd	: 'scrollend.Sheet',
-		Blur		: 'click.SheetBlur',
-		Click		: 'click.Sheet',
-		Down		: 'mousedown.Sheet',
-		DblClick	: 'dblclick.Sheet',
-		Context		: 'contextmenu.Sheet',
-		ClickCount	: 0
-	};
-
 	Shortkey.Default = [
 		{
 			placeholder : 'next-row-move', mask : 'tab', type : 'hold', isPrevented : true,
 			handler : function(e){
 				if (!Interface.Layer){
 					e.preventDefault();
-					Sheet.Edit.State && Sheet.Edit.Off();
-					Sheet.Move.Row.Next(true);
+					sheet.edit.state && sheet.edit.off();
+					sheet.move.row.next(true);
 					return false;
 				}
 			}
@@ -269,15 +265,15 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				if (!Interface.Layer){
 					e.preventDefault();
-					Sheet.Edit.State && Sheet.Edit.Off();
-					Sheet.Move.Row.Prev();
+					sheet.edit.state && sheet.edit.off();
+					sheet.move.row.prev();
 					return false;
 				}
 			}
 		}, {
 			placeholder : 'sheet-edit-on', mask : 'f2', type : 'hold', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Edit.State && !Interface.Layer && !Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo')) Sheet.Edit.On();
+				if (!sheet.edit.state && !Interface.Layer && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo')) sheet.edit.on();
 			}
 		},  {
 			placeholder : 'sheet-edit-off', mask : 'esc', type : 'hold', isPrevented : true,
@@ -285,10 +281,10 @@ const initializeDomainModules = () => {
 				e.preventDefault();
 				if (Interface.Layer){
 					Interface.Layout.find('.overlay').trigger('click');
-				} else if (Sheet.Multiple.State){
-					Sheet.Multiple.Toggle();
-				} else if (Sheet.Edit.State) {
-					Sheet.Edit.Off();
+				} else if (sheet.multiple.state){
+					sheet.multiple.toggle();
+				} else if (sheet.edit.state) {
+					sheet.edit.off();
 				}
 			}
 		}, {
@@ -297,11 +293,11 @@ const initializeDomainModules = () => {
 				if (Interface.Layer){
 					e.preventDefault();
 					Interface.Layout.find('.dialog.on').find('.btn-submit').trigger('click');
-				} else if (Sheet.Edit.State){
+				} else if (sheet.edit.state){
 					e.preventDefault();
-					Sheet.Edit.Cmd('enter');
-				} else if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo')) {
-					Sheet.Edit.On();
+					sheet.edit.cmd('enter');
+				} else if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo')) {
+					sheet.edit.on();
 				}
 			}
 		}, {
@@ -309,7 +305,7 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				e.preventDefault();
 				if (!Interface.Layer){
-					Sheet.Move.Page.Prev('true');
+					sheet.move.page.prev();
 				}
 			}
 		}, {
@@ -317,30 +313,30 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				e.preventDefault();
 				if (!Interface.Layer){
-					Sheet.Move.Page.Next(false,'true');
+					sheet.move.page.next();
 				}
 			}
 		}, {
 			mask : 'up', type : 'hold', isPrevented : true,
 			handler : function(e){
-				Sheet.Shift = false;
+				sheet.shift = false;
 				if (Interface.Layer){
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Row.Prev('true');
+						sheet.move.row.prev();
 					}
 				}
 			}
 		}, {
 			mask : 'down', type : 'hold', isPrevented : true,
 			handler : function(e){
-				Sheet.Shift = false;
+				sheet.shift = false;
 				if (Interface.Layer){
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Row.Next(false,'true');
+						sheet.move.row.next(false);
 					}
 				}
 			}
@@ -349,9 +345,9 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				if (Interface.Layer){
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Col.Prev('true');
+						sheet.move.col.prev();
 					}
 				}
 			}
@@ -360,91 +356,91 @@ const initializeDomainModules = () => {
 			handler : function(e){
 				if (Interface.Layer){
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Col.Next('true');
+						sheet.move.col.next();
 					}
 				}
 			}
 		}, {
 			mask : 'shift+up', type : 'hold', isPrevented : true,
 			handler : function(e){
-				Sheet.Shift = true;
+				sheet.shift = true;
 				if (Interface.Layer){
 					e.preventDefault();
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Row.Prev('false');
+						sheet.move.row.prev();
 					}
 				}
 			}
 		}, {
 			mask : 'shift+down', type : 'hold', isPrevented : true,
 			handler : function(e){
-				Sheet.Shift = true;
+				sheet.shift = true;
 				if (Interface.Layer){
 					e.preventDefault();
 				} else {
-					if (!Sheet.Edit.State){
+					if (!sheet.edit.state){
 						e.preventDefault();
-						Sheet.Move.Row.Next(false,'false');
+						sheet.move.row.next(false);
 					}
 				}
 			}
 		}, {
 			mask : 'space', type : 'hold', isPrevented : true,
 			handler : function(e){
-				Sheet.Shift = false;
-				if (Sheet.Multiple.State){
+				sheet.shift = false;
+				if (sheet.multiple.state){
 					e.preventDefault();
-					Sheet.Multiple.Checking(Sheet.Current.row);
+					sheet.multiple.toggleRow(sheet.current.row);
 				}
 			}
 		}, {
 			placeholder : 'font-bold', mask : 'ctrl+b', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('bold');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('bold');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('bold');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('bold');
 				}
 			}
 		}, {
 			placeholder : 'font-italic', mask : 'ctrl+i', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('italic');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('italic');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('italic');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('italic');
 				}
 			}
 		}, {
 			placeholder : 'font-underline', mask : 'ctrl+u', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('underline');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('underline');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('underline');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('underline');
 				}
 			}
 		}, {
 			placeholder : 'undo', mask : 'ctrl+z', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer && !Sheet.Edit.State){
-					Sheet.Undo();
+				if (!Interface.Layer && !sheet.edit.state){
+					sheet.undo();
 				}
 			}
 		}, {
 			placeholder : 'redo', mask : 'ctrl+y', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer && !Sheet.Edit.State){
-					Sheet.Redo();
+				if (!Interface.Layer && !sheet.edit.state){
+					sheet.redo();
 				}
 			}
 		}, {
@@ -472,36 +468,36 @@ const initializeDomainModules = () => {
 		}, {
 			mask : 'backspace', type : 'hold', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !Sheet.Edit.State){
-					Sheet.Edit.Clip('clear');
+				if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !sheet.edit.state){
+					sheet.edit.clip('clear');
 				}
 			}
 		}, {
 			mask : 'delete', type : 'hold', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !Sheet.Edit.State){
-					Sheet.Edit.Clip('clear');
+				if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !sheet.edit.state){
+					sheet.edit.clip('clear');
 				}
 			}
 		}, {
 			placeholder : 'cut', mask : 'ctrl+x', type : 'down', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !Sheet.Edit.State){
-					Sheet.Edit.Clip();
+				if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !sheet.edit.state){
+					sheet.edit.clip();
 				}
 			}
 		}, {
 			placeholder : 'copy', mask : 'ctrl+c', type : 'down', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !Sheet.Edit.State){
-					Sheet.Edit.Clip();
+				if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !sheet.edit.state){
+					sheet.edit.clip();
 				}
 			}
 		}, {
 			placeholder : 'paste', mask : 'ctrl+v', type : 'down', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !Sheet.Edit.State){
-					Sheet.Edit.Clip();
+				if (!sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !sheet.edit.state){
+					sheet.edit.clip();
 				}
 			}
 		}
@@ -511,10 +507,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-1', mask : 'ctrl+1', type : 'down', isPrevented : true, 
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color0');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color0');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color0');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color0');
 				}
 			}
 		},
@@ -522,10 +518,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-2', mask : 'ctrl+2', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color1');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color1');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color1');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color1');
 				}
 			}
 		},
@@ -533,10 +529,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-3', mask : 'ctrl+3', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color2');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color2');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color2');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color2');
 				}
 			}
 		},
@@ -544,10 +540,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-4', mask : 'ctrl+4', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color3');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color3');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color3');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color3');
 				}
 			}
 		},
@@ -555,10 +551,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-5', mask : 'ctrl+5', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color4');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color4');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color4');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color4');
 				}
 			}
 		},
@@ -566,10 +562,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-6', mask : 'ctrl+6', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color5');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color5');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color5');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color5');
 				}
 			}
 		},
@@ -577,10 +573,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-7', mask : 'ctrl+7', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color6');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color6');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color6');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color6');
 				}
 			}
 		},
@@ -588,10 +584,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-8', mask : 'ctrl+8', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color7');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color7');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color7');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color7');
 				}
 			}
 		},
@@ -599,10 +595,10 @@ const initializeDomainModules = () => {
 			placeholder : 'color-reset', mask : 'ctrl+9', type : 'down', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color_clear');
-				} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-					Sheet.Edit.Clip('color_clear');
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('color_clear');
+				} else if (sheet.current.target == 'text' || sheet.current.target == 'memo'){
+					sheet.edit.clip('color_clear');
 				}
 			}
 		},
@@ -610,7 +606,7 @@ const initializeDomainModules = () => {
 			placeholder : 'sheet-insert', mask : 'ctrl+shift+a', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				!Sheet.Multiple.State && Sheet.Command.i(Sheet.Current);
+				!sheet.multiple.state && sheet.command.insert(sheet.current);
 				return false;
 			}
 		},
@@ -618,17 +614,17 @@ const initializeDomainModules = () => {
 			placeholder : 'sheet-remove', mask : 'ctrl+shift+d', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				!Sheet.Multiple.State && Sheet.Command.r(Sheet.Current);
+				!sheet.multiple.state && sheet.command.remove(sheet.current);
 				return false;
 			}
 		},
 		'plus' :  {placeholder : 'time-plus', mask : 'ctrl+plus', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('plus');
-				} else if (Sheet.Current.target == 'starttime' || Sheet.Current.target == 'endtime'){
-					Sheet.Edit.TimePlus();
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('plus');
+				} else if (sheet.current.target == 'starttime' || sheet.current.target == 'endtime'){
+					sheet.edit.timePlus();
 				}
 			}
 		},
@@ -636,17 +632,17 @@ const initializeDomainModules = () => {
 			placeholder : 'time-minus', mask : 'ctrl+minus', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('minus');
-				} else if (Sheet.Current.target == 'starttime' || Sheet.Current.target == 'endtime'){
-					Sheet.Edit.TimeMinus();
+				if (sheet.multiple.state){
+					sheet.edit.multiClip('minus');
+				} else if (sheet.current.target == 'starttime' || sheet.current.target == 'endtime'){
+					sheet.edit.timeMinus();
 				}
 			}
 		}, 
 		'carve' : {
 			placeholder : 'time-carve', mask : 'ctrl+`', type : 'down', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State){
+				if (!sheet.multiple.state){
 					$('.vjs-selecttime-control').trigger('click');
 				}
 				return false;
@@ -655,7 +651,7 @@ const initializeDomainModules = () => {
 		'sheetJump' : {
 			placeholder : 'move-current', mask : 'alt+q', type : 'down', isPrevented : true,
 			handler : function(){
-				if (!Sheet.Multiple.State && !isNaN(Sheet.Focus)) Sheet.RowOffset(Sheet.Focus);
+				if (!sheet.multiple.state && !isNaN(sheet.focus)) sheet.rowOffset(sheet.focus);
 				return false;
 			}
 		},
@@ -663,8 +659,8 @@ const initializeDomainModules = () => {
 			placeholder : 'timeline-current', mask : 'ctrl+q', type : 'down', isPrevented : true,
 			handler : function(){
 				try{
-					if (!Sheet.Multiple.State){
-						video.currentTime(Sheet.ArrayData[Sheet.Current.row].start / 1000);
+					if (!sheet.multiple.state){
+						video.currentTime(sheet.timelines[sheet.current.row].start / 1000);
 					}
 				} catch (error){
 					$('.video-import').trigger('click');
@@ -676,7 +672,7 @@ const initializeDomainModules = () => {
 			placeholder : 'play-stop', mask : 'ctrl+space', type : 'hold', isPrevented : true,
 			handler : function(e){
 				try{
-					if (!Sheet.Multiple.State){
+					if (!sheet.multiple.state){
 						e.preventDefault();
 						video.toggle();
 					}
@@ -833,8 +829,9 @@ const initializeDomainModules = () => {
 		$.Shortcuts.callback(function(e, keycode, regexp){
 			keycode = e.keyCode ? e.keyCode : e.which;
 			regexp = /[A-Za-o0-9`åÀ½»ÜÛÝºÞ¼¾¿]/;
-			if (!Interface.Layer && $('.ui-dialog.on').length == 0 && !Sheet.Edit.State && !Sheet.Multiple.State && (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo') && !e.ctrlKey && !e.altKey && (regexp.test(String.fromCharCode(keycode)) || 0 === keycode || keycode === Shortkey.Code.space)){
-				Sheet.Edit.On();
+
+			if (!Interface.Layer && $('.ui-dialog.on').length == 0 && !sheet.edit.state && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !e.ctrlKey && !e.altKey && (regexp.test(String.fromCharCode(keycode)) || 0 === keycode || keycode === Shortkey.Code.space)){
+				sheet.edit.on();
 			}
 		});
 		$.Shortcuts.start();
@@ -842,7 +839,7 @@ const initializeDomainModules = () => {
 	});
 
 	Fn.Format = (function(format,optionArray){
-		if (format != Sheet.Format){
+		if (format != sheet.format){
 			Interface.Confirm({
 				title:i18n.t('subtitle-format-change'),
 				content :i18n.t('subtitle-format-change-contents'),
@@ -850,19 +847,19 @@ const initializeDomainModules = () => {
 				success:function(){
 					storage.set('format',format);
 					optionArray = {};
-					if (Sheet.Format != format){
-						optionArray = subtitle.converters[format](Sheet.Format, Sheet.ArrayData);
+					if (sheet.format != format){
+						optionArray = subtitle.converters[format](sheet.format, sheet.timelines);
 						optionArray.Header = subtitle.header[format];
 					}
-					Sheet.Set(optionArray);
-					Sheet.Current.row = 0;
-					Sheet.Current.col = 0;
-					Sheet.Move.Event();
+					sheet.set(optionArray);
+					sheet.current.row = 0;
+					sheet.current.col = 0;
+					sheet.move.event();
 					editHistory.clear();
-					Sheet.Edit.History();
+					sheet.edit.history();
 				},
 				cancel:function(){
-					Interface.Select.Trigger('format',Sheet.Format);
+					Interface.Select.Trigger('format',sheet.format);
 				}
 			});
 		}
@@ -870,1558 +867,12 @@ const initializeDomainModules = () => {
 	Fn.Language = (function(language){
 		i18n.setLanguage(language);
 		storage.set('language',language);
-		Sheet.Set({
-			Language : language,
-			Header : subtitle.header[Sheet.Format]
+		sheet.set({
+			language : language,
+			Header : subtitle.header[sheet.format]
 		});
 		Interface.I18n();
 		$('.nav-open').removeClass('nav-open');
-	});
-	//Sheet trigger
-	SheetTrigger.Init = function(){
-		SheetTrigger.Wrap	= Sheet.Interface.find('.sheet-trigger');
-		SheetTrigger.Input	= SheetTrigger.Wrap.children('.sheet-input');
-		SheetTrigger.Input.on({
-			'keydown' : function(){
-				if (Sheet.Current.target != 'text' && Sheet.Current.target != 'memo') this.innerHTML = '';
-			},
-			'click' : function(){
-				$(this).focus();
-				return false;
-			}
-		});
-	};
-	SheetTrigger.AutoFocus = function(){
-		clearTimeout(Sheet.AutoFocusTimer);
-		Sheet.AutoFocusTimer = setTimeout(function() {
-			SheetTrigger.Wrap.trigger('focus');
-			Sheet.Active.target.indexOf('time') == -1 && SheetTrigger.Input.trigger('focus');
-		});
-	};
-	SheetTrigger.Focus = (function(col,height,bottom){
-		if (col && col.length > 0){
-			Sheet.Offset = col.position().top - 1;
-		} else {
-			Sheet.Offset = (function(arrayInfo,currentIndex,index,offset){
-				arrayInfo[currentIndex].height;
-				for(offset=index=0;index<currentIndex;index++)
-					offset+=arrayInfo[index].height;
-				return offset - 1;
-			})(Sheet.ArrayInfo,Sheet.Current.row);
-		}
-		height = Sheet.ArrayInfo[Sheet.Current.row].height;
-		bottom = Sheet.Offset + height;
-		if (Sheet.Scroll > Sheet.Offset){
-			Sheet.Init = true;
-			Sheet.Scroll = Sheet.Offset + 1;
-			Sheet.Body.scrollTop(Sheet.Offset);
-		} else if ((Sheet.Scroll + Sheet.Canvas.Height) < bottom) {
-			bottom = bottom - Sheet.Canvas.Height + 1;
-			Sheet.Init = true;
-			Sheet.Scroll = bottom;
-			Sheet.Body.scrollTop(bottom);
-		}
-		SheetTrigger.Wrap.css({
-			'left'		: Sheet.Move.Left[Sheet.Format][Sheet.Current.col],
-			'top'		: Sheet.Offset
-		});
-		SheetTrigger.Input.html(Sheet.Current.data[Sheet.Current.target] + '<br>').css({
-			'min-width'	: Sheet.ColWidth[Sheet.Current.target](),
-			'min-height': height + 1
-		});
-		SheetTrigger.AutoFocus();
-		if (!Sheet.Multiple.State){
-			switch (Sheet.Current.target){
-				case 'starttime': 
-					$('.btn-text-controls').addClass('disabled');
-					$('.btn-time-controls').removeClass('disabled');
-					break;
-				case 'endtime': 
-					$('.btn-text-controls').addClass('disabled');
-					$('.btn-time-controls').removeClass('disabled');
-					break;
-				case 'text': 
-					$('.btn-text-controls').removeClass('disabled');
-					$('.btn-time-controls').addClass('disabled');
-					break;
-				case 'memo': 
-					$('.btn-text-controls').removeClass('disabled');
-					$('.btn-time-controls').addClass('disabled');
-					break;
-			}
-		}
-	});
-
-	//Sheet
-	Sheet.Language			= 'KRCC';
-	Sheet.Height			= 0;
-	Sheet.CellPadding		= 7;
-	Sheet.LineHeight		= 22;
-	Sheet.ArrayData			= [];
-	Sheet.ArrayInfo			= [];
-	Sheet.ArrayHeight		= [];
-	Sheet.ArrayError		= [];
-	Sheet.ArrayMultiple		= [];
-	Sheet.Canvas			= {};
-	Sheet.Current			= {};
-	Sheet.Active			= null;
-	Sheet.Empty				= {start : 0, end : 0, text : '', memo : ''};
-
-	/*
-	Sheet.ArrayData		= sheetdata;
-	Sheet.ArrayData		= [Sheet.Empty];
-	*/
-	Sheet.Config = {
-		Jump : 30,
-		InputJump : $('#jump_time_config_value'),
-		SetJump : function(jump){
-			jump = storage.get('jump_val');
-			jump && (Sheet.Config.Jump = parseInt(jump));
-			$('#time-plus').find('strong').text(Sheet.Config.Jump);
-			$('#time-minus').find('strong').text(Sheet.Config.Jump);
-			Sheet.Config.InputJump.val(Sheet.Config.Jump);
-		},
-		Init : function(){
-			Sheet.Config.SetJump();
-			$('#jump_time_change').off().on('click',function(me){
-				me = $(this);
-				if (!me.hasClass('on')){
-					me.addClass('on');
-					me.children().text(i18n.t('save'));
-					Sheet.Config.InputJump.prop({
-						'disabled':false,
-						'readonly':false
-					}).trigger('focus');
-					Sheet.Edit.Cmd('selectAll');
-					return false;
-				}
-			});
-			$('.subtitle-move-time').off('submit').on('submit', function(jump,btn){
-				jump = $.trim(Sheet.Config.InputJump.val());
-				btn = $('#jump_time_change');
-				if (jump == ''){
-					Interface.Alert(i18n.t('please-input-move-time'));
-				} else if (jump <= 0 || jump > 1000){
-					Interface.Alert(i18n.t('input-move-time-error'));
-				} else {
-					btn.removeClass('on');
-					btn.children().text(i18n.t('change'));
-					storage.set('jump_val',jump);
-					Interface.Success(i18n.t('config-saved'));
-					Sheet.Config.SetJump();
-					Sheet.Config.InputJump.prop({
-						'disabled':true,
-						'readonly':true
-					});
-				}
-				return false;
-			});
-		}
-	};
-	Sheet.Search = {
-		Panel : false,
-		Init : function(searchInput){
-			Sheet.Search.Form = $('#sheet-search-panel');
-			searchInput = Sheet.Search.Form.find('.i-sheet-search');
-			$('#sheet-search').on('click',function(){
-				Sheet.Search.Panel = !Sheet.Search.Panel;
-				searchInput.val('');
-				Sheet.Search.Loop('');
-				Sheet.Init = true;
-				Sheet.Draw();
-				setTimeout(function(){
-					Sheet.Search.Panel && searchInput.focus();
-				});
-			});
-			searchInput.on({
-				'focusin' :function(){
-					Sheet.Search.State = true;
-				},
-				'focusout': function(){
-					Sheet.Search.State = null;
-				}
-			});
-			Sheet.Search.Form.find('.btn-prev').on('click',function(){
-				if (!$(this).hasClass('disabled')){
-					if (Sheet.Search.Current > 0){
-						--Sheet.Search.Current;
-						Sheet.Search.Move();
-					};
-				}
-				return false;
-			});
-			Sheet.Search.Form.find('.btn-next').on('click',function(){
-				if (!$(this).hasClass('disabled')){
-					if (Sheet.Search.Current < Sheet.ArraySearch.length - 1){
-						++Sheet.Search.Current;
-						Sheet.Search.Move();
-					};
-				}
-				return false;
-			});
-			Sheet.Search.Form.find('#error-search').on('change',function(errorSearch,errorSize,errorForIndex){
-				errorSearch = $(this).is(':checked');
-				if (errorSearch){
-					searchInput.val('');
-					Sheet.ArraySearch = [];
-					errorSize = Sheet.ArrayError.length;
-					Sheet.ArrayError.sort(function(a,b){return a - b});
-					for (errorForIndex = 0; errorForIndex < errorSize; errorForIndex++){
-						Sheet.ArraySearch[errorForIndex] = {row : Sheet.ArrayError[errorForIndex], col : 0};
-					}
-					Sheet.Search.Current = 0;
-					Sheet.Search.Move();
-					Sheet.Init = true;
-					Sheet.Draw();
-					$('.form-sheet-search').find('input').prop('disabled',true);
-					$('.form-sheet-search').find('button').prop('disabled',true);
-				} else {
-					Sheet.ArraySearch = [];
-					Sheet.Search.Loop('');
-					$('.form-sheet-search').find('input').prop('disabled',false);
-					$('.form-sheet-search').find('button').prop('disabled',false);
-				}
-			});
-			$('.form-sheet-search').on('submit',function(data){
-				data = searchInput.val();
-				Sheet.Search.Loop(data.toLowerCase());
-				return false;
-			});
-		},
-		Loop : function(data,arrayDataSize,arrayDataForIndex,arrayDataTimeline,textIndex,memoIndex,resultStart){
-			Sheet.ArraySearch = [];
-			if (data && data != ''){
-				arrayDataSize = Sheet.ArrayData.length;
-				textIndex = Sheet.Format == 'smi' ? 1 : 2;
-				memoIndex = Sheet.Format == 'smi' ? 2 : 3;
-				for (arrayDataForIndex = 0;arrayDataForIndex < arrayDataSize;arrayDataForIndex++){
-					arrayDataTimeline = Sheet.ArrayData[arrayDataForIndex];
-					arrayDataTimeline.text.toLowerCase().search(data) > -1 && Sheet.ArraySearch.push({row : arrayDataForIndex, col : textIndex});
-					arrayDataTimeline.memo.toLowerCase().search(data) > -1 && Sheet.ArraySearch.push({row : arrayDataForIndex, col : memoIndex});
-				}
-			}
-			Sheet.Search.Current = 0;
-			Sheet.Search.Move();
-			Sheet.Init = true;
-			Sheet.Draw();
-		},
-		Move : function(searchSize){
-			searchSize = Sheet.ArraySearch.length;
-			if (searchSize > 0){
-				Sheet.Current = clone(Sheet.ArraySearch[Sheet.Search.Current]);
-				Sheet.Move.Event();
-			} else {
-				Sheet.Search.Current = -1;
-			}
-			$('#sheet-search-panel').find('.result').text((Sheet.Search.Current + 1) + '/' + searchSize);
-			Sheet.Search.Form.children('a').removeClass('disabled');
-			if (Sheet.Search.Current <= 0) Sheet.Search.Form.children('.btn-prev').addClass('disabled');
-			if (Sheet.Search.Current >= searchSize - 1) Sheet.Search.Form.children('.btn-next').addClass('disabled');
-		},
-		Error : function(arrayData,errorSize){
-			errorSize = Sheet.ArrayError.length;
-			if (errorSize){
-				$('.error-count').text(errorSize);
-				$('.error-label').show();
-			} else {
-				$('.error-label').hide();
-			}
-		}
-	}
-	Sheet.Multiple = {
-		State : false,
-		Toggle : function(){
-			if (!Sheet.Multiple.State){
-				Sheet.ArrayMultiple = [];
-				Sheet.Multiple.State = true;
-				Sheet.Multiple.Start = Sheet.Current.row;
-				Sheet.Multiple.Checking(Sheet.Current.row);
-				$('#sheet-multiple').addClass('on');
-				$('.btn-single-controls').addClass('disabled');
-				$('.btn-multiple-controls').removeClass('disabled');
-			} else {
-				Sheet.ArrayMultiple = [];
-				Sheet.Multiple.State = false;
-				Sheet.Multiple.Start = null;
-				Sheet.Panel.find('.multiple').removeClass('multiple');
-				$('#sheet-multiple').removeClass('on');
-				$('.btn-single-controls').removeClass('disabled');
-				switch (Sheet.Current.target){
-					case 'starttime': 
-						$('.btn-text-controls').addClass('disabled');
-						$('.btn-time-controls').removeClass('disabled');
-						break;
-					case 'endtime': 
-						$('.btn-text-controls').addClass('disabled');
-						$('.btn-time-controls').removeClass('disabled');
-						break;
-					case 'text': 
-						$('.btn-text-controls').removeClass('disabled');
-						$('.btn-time-controls').addClass('disabled');
-						break;
-					case 'memo': 
-						$('.btn-text-controls').removeClass('disabled');
-						$('.btn-time-controls').addClass('disabled');
-						break;
-				}
-				Sheet.Edit.History();
-			}
-		},
-		Checking : (function(row,currentIndex,selectionIndex,selectionStart,selectionEnd){
-			if (!Sheet.Shift){
-				Sheet.Multiple.Start = row;
-				currentIndex = Sheet.ArrayMultiple.indexOf(row);
-				if (currentIndex == -1){
-					Sheet.Panel.find('.row-'+row).addClass('multiple');
-					Sheet.ArrayMultiple.push(row);
-				} else {
-					Sheet.Panel.find('.row-'+row).removeClass('multiple');
-					Sheet.ArrayMultiple.splice(currentIndex,1);
-				}
-			} else {
-				selectionStart		= Sheet.Multiple.Start <= row ? Sheet.Multiple.Start : row;
-				selectionEnd		= Sheet.Multiple.Start <= row ? row : Sheet.Multiple.Start;
-				for (selectionIndex = selectionStart; selectionIndex <= selectionEnd; selectionIndex++){
-					currentIndex = Sheet.ArrayMultiple.indexOf(selectionIndex);
-					if (currentIndex == -1){
-						Sheet.ArrayMultiple.push(selectionIndex);
-						Sheet.Panel.find('.row-'+selectionIndex).addClass('multiple');
-					}
-				}
-			}
-		}),
-		Update : (function(arrayData,position,arrayDataSize,arrayDataForIndex,arrayDataTimeline){
-			arrayDataSize = arrayData.length;
-			extend(Sheet.Current,position);
-			for (arrayDataForIndex = 0; arrayDataForIndex < arrayDataSize; arrayDataForIndex++){
-				arrayDataTimeline = arrayData[arrayDataForIndex];
-				Sheet.ArrayData[arrayDataTimeline.index] = arrayDataTimeline.data;
-			}
-			Sheet.Convert();
-			Sheet.Init = true;
-			Sheet.Draw();
-			Sheet.Move.Event();
-		})
-	};
-	Sheet.RowOffset = (function(currentIndex){
-		Sheet.Offset = (function(arrayInfo,currentIndex,index,offset){
-			arrayInfo[currentIndex].height;
-			for (offset=index=0;index<currentIndex;index++)
-				offset+=arrayInfo[index].height;
-			return offset - 1;
-		})(Sheet.ArrayInfo,currentIndex);
-		Sheet.Body.scrollTop(Sheet.Offset);
-		Sheet.Current.row = currentIndex;
-		Sheet.Move.Event();
-	});
-	Sheet.TimeSearch = function(sec,result,arrayData,currentTimeline){
-		result = {};
-		arrayData = Sheet.ArrayData;
-		result.index = arrayData.findIndex(function(row,eq,data){
-			if (!row.end) row.end = data[eq + 1] ? data[eq + 1].start : 999999
-			return row.start<=sec && row.end>sec;
-		});
-		result.visible = true;
-		if (result.index == -1){
-			result.index = arrayData.findIndex(function(row){return row.start>sec;});
-			result.visible = false;
-		}
-		result.timeline = clone(arrayData[result.index]);
-		currentTimeline = Sheet.ArrayInfo[result.index];
-		currentTimeline && currentTimeline.starttime && (result.timeline.starttime = currentTimeline.starttime);
-		return result;
-	};
-	Sheet.Undo = (function(undo,prev){
-		undo = $('#undo');
-		prev = editHistory.prev();
-		if (prev && !undo.hasClass('disabled')){
-			if (prev.cmd.indexOf('m.') == 0){
-				Sheet.Multiple.Update(prev.o,prev.current);
-			} else {
-				if ('i' === prev.cmd){
-					prev.current.row = prev.id;
-					Sheet.Remove(prev.current);
-				} else if ('r' === prev.cmd){
-					Sheet.Current.col = prev.current.col;
-					Sheet.Insert({ index : prev.id, data : prev.o });
-				} else if ('u' === prev.cmd && JSON.stringify(Sheet.ArrayData[prev.id]) === JSON.stringify(prev.n)){
-					Sheet.Update(prev.current, prev.o);
-				}
-			}
-		} else {
-			editHistory.next();
-		}
-		Sheet.Edit.History();
-		return false;
-	});
-	Sheet.Redo = (function(redo,next){
-		redo = $('#redo');
-		next = editHistory.next();
-		if (next && !redo.hasClass('disabled')){
-			if (next.cmd.indexOf('m.') == 0){
-				Sheet.Multiple.Update(next.n,next.current);
-			} else {
-				if ('i' === next.cmd){
-					Sheet.Current.col = next.current.col;
-					Sheet.Insert({index : next.id, data : next.n});
-				} else if ('r' === next.cmd){
-					Sheet.Remove(next.current);
-				} else if ('u' === next.cmd){
-					Sheet.Update(next.current, next.n);
-				}
-			}
-		}
-		Sheet.Edit.History();
-		return false;
-	});
-	Sheet.AutoSave = function(){
-		clearTimeout(Sheet.AutoSaveTimer);
-		Sheet.AutoSaveTimer = setTimeout(function() {
-			storage.set('SUBTITLE_TEMP', Sheet.ArrayData);
-		},400);
-	};
-	Sheet.UpdateTarget = {
-		smi : {
-			starttime : (function(position,timeline,row,prev,next,error){
-				row = Sheet.Panel.find('.row-' + position.row);
-				prev = Sheet.ArrayData[position.row - 1];
-				next = Sheet.ArrayData[position.row + 1];
-				error = Sheet.ArrayError.indexOf(position.row);
-				if (next && Number(timeline.start) > Number(next.start)){
-					error == -1 && (Sheet.ArrayError.push(position.row));
-					row.addClass('error');
-				} else {
-					error != -1 && (Sheet.ArrayError.splice(error, 1));
-					row.removeClass('error');
-				}
-				if (prev){
-					prev.end = timeline.start;
-					row.prev().find('.dur').children().text(((prev.end - prev.start) / 1000).toFixed(3));
-					error = Sheet.ArrayError.indexOf(position.row - 1);
-					if (prev.start > timeline.start){
-						if (error == -1) Sheet.ArrayError.push(position.row - 1);
-						row.prev().addClass('error');
-					} else {
-						if(error != -1) Sheet.ArrayError.splice(error, 1);
-						row.prev().removeClass('error');
-					}
-				}
-				Sheet.ArrayInfo[position.row].starttime = formatTimecode(timeline.start);
-				next && (timeline.end = next.start, row.find('.dur').children().text(((next.start - timeline.start) / 1000).toFixed(3)));
-				row.find('.starttime').children().text(Sheet.ArrayInfo[position.row].starttime);
-				Sheet.Search.Error(Sheet.ArrayError);
-			}),
-			text : (function(position,timeline,row,originLine,newLine,durLine,durHeight){
-				row			= Sheet.Panel.find('.row-' + position.row);
-				row.children('.col-'+position.col).find('.cell').html(timeline.text + '<br />');
-				originLine	= Sheet.ArrayInfo[position.row].line;
-				newLine		= timeline[Sheet.Current.target].split('<br').length;
-				if (originLine != newLine){
-					durLine = newLine - originLine;
-					durHeight = durLine * Sheet.LineHeight;
-					Sheet.ArrayInfo[position.row].line = newLine;
-					Sheet.ArrayInfo[position.row].height += durHeight;
-					Sheet.ArrayHeight[position.row] += durHeight;
-					Sheet.Interface.find('.sheet-body').scrollbar();
-					Sheet.Height += durHeight;
-					Sheet.Contain.height(Sheet.Height);
-					row.find('.memo > .cell').css({
-						'-webkit-line-clamp':newLine,
-						'max-height':Sheet.ArrayHeight[position.row] +'px'
-					});
-				}
-				SheetTrigger.Focus(row.children('.col-'+position.col));
-			}),
-			memo : (function(position,timeline,col){
-				col = Sheet.Panel.find('.row-' + position.row).children('.col-'+position.col);
-				col.find('.cell').html(timeline.memo + '<br />');
-				SheetTrigger.Focus(col);
-			})
-		},
-		srt : {
-			time : (function(position,timeline,row,prev,next,error,value){
-				row = Sheet.Panel.find('.row-' + position.row);
-				prev = Sheet.ArrayData[position.row - 1];
-				next = Sheet.ArrayData[position.row + 1];
-				error = Sheet.ArrayError.indexOf(position.row);
-
-				if (next && Number(timeline.end) > Number(next.start)){
-					error == -1 && (Sheet.ArrayError.push(position.row));
-					row.addClass('error');
-				} else if (Number(timeline.start) > Number(timeline.end)) {
-					error == -1 && (Sheet.ArrayError.push(position.row));
-					row.addClass('error');
-				} else {
-					error != -1 && (Sheet.ArrayError.splice(error, 1));
-					row.removeClass('error');
-				}
-				if (prev){
-					error = Sheet.ArrayError.indexOf(position.row - 1);
-					if (Number(prev.end) > Number(timeline.start)){
-						error == -1 && (Sheet.ArrayError.push(position.row - 1));
-						row.prev().addClass('error');
-					} else {
-						error != -1 && (Sheet.ArrayError.splice(error, 1));
-						row.prev().removeClass('error');
-					}
-				}
-				Sheet.ArrayInfo[position.row].starttime = formatTimecode(timeline.start);
-				Sheet.ArrayInfo[position.row].endtime = formatTimecode(timeline.end);
-
-				row.find('.starttime').children().text(Sheet.ArrayInfo[position.row].starttime);
-				row.find('.endtime').children().text(Sheet.ArrayInfo[position.row].endtime);
-				row.find('.dur').children().text(((timeline.end - timeline.start) / 1000).toFixed(3));
-				Sheet.Search.Error(Sheet.ArrayError);
-			})
-		}
-	};
-	Sheet.UpdateTarget.srt.starttime = Sheet.UpdateTarget.srt.time,
-	Sheet.UpdateTarget.srt.endtime = Sheet.UpdateTarget.srt.time;
-	Sheet.UpdateTarget.srt.text = Sheet.UpdateTarget.smi.text;
-	Sheet.UpdateTarget.srt.memo = Sheet.UpdateTarget.smi.memo;
-	Sheet.Update = (function(position, timeline, backup){
-		Sheet.Edit.State && Sheet.Edit.Off();
-		extend(Sheet.Current,position);
-		Sheet.Current.target = Sheet.Move.Target[Sheet.Format][Sheet.Current.col];
-		backup = clone(Sheet.ArrayData[position.row]);
-		Sheet.ArrayData[position.row] = timeline;
-		Sheet.UpdateTarget[Sheet.Format][Sheet.Current.target](position, timeline);
-		Sheet.AutoSave();
-		Sheet.Move.Event();
-		return backup;
-	});
-	Sheet.Insert = function(timeline,timelineInfo,prevIndex,prevTimeline,nextIndex,nextTimeline,errorSize,eq,error){
-		Sheet.Edit.State && Sheet.Edit.Off();
-		isNaN(timeline.index) && (timeline.index = Sheet.ArrayData.length);
-		prevIndex = timeline.index - 1;
-		nextIndex = timeline.index;
-		if (nextIndex < Sheet.DataSize){
-			nextTimeline = Sheet.ArrayData[nextIndex];
-			if (Sheet.Format == 'srt' && Number(timeline.data.start) == 0) timeline.data.start = nextTimeline.end;
-			if (Sheet.Format == 'srt' && Number(timeline.data.end) == 0) timeline.data.end = nextTimeline.end;
-			if (Sheet.Format == 'smi' && Number(timeline.data.start) == 0) timeline.data.start = nextTimeline.start;
-		} else {
-			if (prevIndex > -1){
-				prevTimeline = Sheet.ArrayData[prevIndex];
-				if (Sheet.Format == 'srt' && Number(timeline.data.start) == 0) timeline.data.start = prevTimeline.end;
-				if (Sheet.Format == 'srt' && Number(timeline.data.end) == 0) timeline.data.end = prevTimeline.end;
-				if (Sheet.Format == 'smi' && Number(timeline.data.start) == 0) timeline.data.start = prevTimeline.start;
-			}
-		}
-		Sheet.ArrayData.splice(timeline.index, 0, timeline.data);
-		Sheet.DataSize			= Sheet.ArrayData.length - 1;
-		Sheet.Current.row		= timeline.index;
-		timelineInfo			= {};
-		timelineInfo.line		= timeline.data.text.split('<br').length,
-		timelineInfo.height		= timelineInfo.line*Sheet.LineHeight+Sheet.CellPadding,
-		timelineInfo.starttime	= formatTimecode(timeline.data.start),
-		Sheet.Height += timelineInfo.height,
-		"srt"==Sheet.Format&&(timelineInfo.endtime=formatTimecode(timeline.data.end)),
-		Sheet.ArrayHeight.splice(timeline.index, 0, timelineInfo.height),
-		Sheet.ArrayInfo.splice(timeline.index, 0, timelineInfo);
-		errorSize = Sheet.ArrayError.length;
-		for (eq = 0; eq < errorSize; eq++){
-			if (Sheet.ArrayError[eq] >= timeline.index) ++Sheet.ArrayError[eq];
-		}
-		for (prevIndex -= 1; prevIndex < timeline.index + 2;prevIndex++){
-			if (prevIndex >= 0 && prevIndex < Sheet.DataSize){
-				error = Sheet.ArrayError.indexOf(prevIndex);
-				error > -1 && Sheet.ArrayError.splice(error, 1);
-				prevTimeline = Sheet.ArrayData[prevIndex];
-				nextTimeline = Sheet.ArrayData[prevIndex + 1];
-				if (Sheet.Format == 'srt'){
-					if (Number(prevTimeline.start) > Number(prevTimeline.end)){
-						Sheet.ArrayError.push(prevIndex);
-					} else if (Number(prevTimeline.end) > Number(nextTimeline.start)){
-						Sheet.ArrayError.push(prevIndex);
-					}
-				} else if (Sheet.Format == 'smi'){
-					if (Number(prevTimeline.start) > Number(nextTimeline.start)){
-						Sheet.ArrayError.push(prevIndex);
-					}
-				}
-			}
-		}
-		Sheet.Contain.height(Sheet.Height);
-		Sheet.Init = true;
-		Sheet.Draw();
-		Sheet.Move.Event();
-		Sheet.AutoSave();
-		Sheet.Search.Error(Sheet.ArrayError);
-		return timeline;
-	};
-	Sheet.Remove = function(position,backup,eq,arrayErrorSize,error,currentIndex,prevIndex){
-		Sheet.Edit.State && Sheet.Edit.Off();
-		Sheet.Height -= Sheet.ArrayHeight[position.row];
-		Sheet.Current.row	= position.row;
-		Sheet.Current.col	= position.col;
-		backup				= clone(Sheet.ArrayData[position.row]);
-		Sheet.ArrayHeight.splice(position.row,1);
-		Sheet.ArrayInfo.splice(position.row,1);
-		Sheet.ArrayData.splice(position.row,1);
-		Sheet.DataSize		= Sheet.ArrayData.length - 1;
-		currentIndex = position.row-1;
-
-		error = Sheet.ArrayError.indexOf(currentIndex);
-		error > -1 && Sheet.ArrayError.splice(error, 1);
-		arrayErrorSize = Sheet.ArrayError.length;
-		for (eq = 0; eq < arrayErrorSize; eq++){
-			if (Sheet.ArrayError[eq] > currentIndex) --Sheet.ArrayError[eq];
-		}
-		for (prevIndex = currentIndex - 1; prevIndex < currentIndex + 2;prevIndex++){
-			if (prevIndex >= 0 && prevIndex < Sheet.DataSize){
-				error = Sheet.ArrayError.indexOf(prevIndex);
-				error > -1 && Sheet.ArrayError.splice(error, 1);
-				if (Sheet.Format == 'srt'){
-					if (Number(Sheet.ArrayData[prevIndex].start) > Number(Sheet.ArrayData[prevIndex].end)){
-						Sheet.ArrayError.push(prevIndex);
-					} else if (Number(Sheet.ArrayData[prevIndex].end) > Number(Sheet.ArrayData[prevIndex + 1].start)){
-						Sheet.ArrayError.push(prevIndex);
-					}
-				} else if (Sheet.Format == 'smi'){
-					if (Number(Sheet.ArrayData[prevIndex].start) > Number(Sheet.ArrayData[prevIndex + 1].start)){
-						Sheet.ArrayError.push(prevIndex);
-					}
-				}
-			}
-		}
-		Sheet.Current.row < 0 && (Sheet.Current.row = 0);
-		Sheet.Current.row > Sheet.DataSize && (Sheet.Current.row = Sheet.DataSize);
-		Sheet.Contain.height(Sheet.Height);
-		Sheet.Init = true;
-		Sheet.Draw();
-		Sheet.Move.Event();
-		Sheet.AutoSave();
-		Sheet.Search.Error(Sheet.ArrayError);
-		return backup;
-	};
-	Sheet.Command = {
-		i : (function(current,insert){
-			Sheet.Search.Panel && $('#sheet-search').trigger('click');
-			insert = [];
-			!current && (current = {row : Sheet.Current.row, col : Sheet.Current.col});
-			insert.index = current.row + 1, current.col && (Sheet.Current.col = current.col);
-			insert.data = clone(Sheet.Empty);
-			Sheet.Edit.Log('i',insert.index,insert.data,null,current);
-			trackEvent({ category: 'Sheet', action: 'insert', label: 'Sheet Edit' });
-			Sheet.Insert(insert);
-		}),
-		r : function(current,backup){
-			Sheet.Search.Panel && $('#sheet-search').trigger('click');
-			if (Sheet.DataSize == 0){
-				Sheet.Command.u(current,clone(Sheet.Empty));
-				trackEvent({ category: 'Sheet', action: 'empty', label: 'Sheet Edit' });
-			} else {
-				backup = Sheet.Remove(current);
-				Sheet.Edit.Log('r',current.row,null,backup,current);
-				trackEvent({ category: 'Sheet', action: 'remove', label: 'Sheet Edit' });
-			}
-		},
-		u : (function(position,data,backup,prev){
-			Sheet.Search.Panel && $('#sheet-search').trigger('click');
-			Sheet.Current.data = data;
-			backup = Sheet.Update(position,data);
-			Sheet.Edit.Log('u',position.row,data,backup,{row:position.row, col:position.col});
-			trackEvent({ category: 'Sheet', action: 'update', label: 'Sheet Edit' });
-		}),
-		m : function(cmd,arrayCurrent,arrayBackup){
-			Sheet.Search.Panel && $('#sheet-search').trigger('click');
-			Sheet.Edit.Log('m.'+cmd,null,arrayCurrent,arrayBackup,{row:Sheet.Current.row, col:Sheet.Current.col});
-			trackEvent({ category: 'Sheet', action: 'update', label: 'Sheet Edit' });
-		}
-	};
-	Sheet.Edit = {
-		State : false,
-		TimeControl : (function(timeEditor,timeParts,timeSliders,milliSecond,timePositive,timeReset){
-			timeEditor		= $("#time-editor");
-			timeParts		= timeEditor.find('.time-part');
-			timeSliders		= timeEditor.find('.time-slider');
-			milliSecond		= timeEditor.find('#millisecond');
-			timePositive	= timeEditor.find('.time-positive'),
-			timeReset		= timeEditor.find('.btn-reset');
-			timeSliders.find('.slider').each(function(eq,timeSlider,sliderOption){
-				timeSlider		= $(timeSlider);
-				sliderOption	=  timeSlider.data();
-				timeSlider.slider({
-					min: sliderOption.min,
-					max: sliderOption.max,
-					step : sliderOption.step,
-					range: "min",
-					slide: function(event, ui) {
-						timeParts.find('.'+sliderOption.target).children('input').val(ui.value).trigger('change');
-					}
-				});
-			});
-			timePositive.find('input').on('click',function(timeMs){
-				timeMs = timePartsToMs({
-					hour: timeParts.find('.hour > input').val(),
-					minute: timeParts.find('.minute > input').val(),
-					second: timeParts.find('.second > input').val(),
-					milli: timeParts.find('.milli > input').val(),
-				});
-				milli = timeMs.hour + timeMs.minute + timeMs.second + timeMs.milli;
-				milli = Math.abs(milli);
-				$(this).val() == 'minus' && (milli *= -1);
-				milliSecond.val(milli);
-			});
-			timeParts.find('.visible').on('click', function(target){
-				$(this).parent().find('input').trigger('focus');
-				
-			});
-			timeParts.find('input').on('change keydown keyup',function(time,timeOption,value,milli,timeMs){
-				time		= $(this);
-				timeOption	= time.data();
-				value = parseInt(time.val());
-				isNaN(value) && (value = 0);
-				value > timeOption.max && (value = timeOption.max, time.val(value));
-				
-				timeSliders.find('.'+timeOption.target).slider('option','value',value);
-				time.next().text(padZero(value, timeOption.zf));
-
-				timeMs = timePartsToMs({
-					hour: timeParts.find('.hour > input').val(),
-					minute: timeParts.find('.minute > input').val(),
-					second: timeParts.find('.second > input').val(),
-					milli: timeParts.find('.milli > input').val(),
-				});
-				milli = timeMs.hour + timeMs.minute + timeMs.second + timeMs.milli;
-				milli = Math.abs(milli);
-				timePositive.find('[name="time-positive"]:checked').val() == 'minus' && (milli *= -1);
-				milliSecond.val(milli);
-			});
-			milliSecond.on('change', function(time,timeOption,value,hour,minute,second,milli){
-				time		= $(this);
-				timeOption	= time.data();
-				value		= time.val();
-				isNaN(value) && (value = 0);
-				if (value < 0){
-					timePositive.find('.minus').prop('checked',true);
-				} else {
-					timePositive.find('.plus').prop('checked',true);
-				}
-				value > timeOption.max && (value = timeOption.max, time.val(value));
-				value < timeOption.min && (value = timeOption.min, time.val(value));
-				value = Math.abs(value);
-				({ hour, minute, second, milli } = splitTimecode(value));
-
-				timeParts.find('.hour > input').val(hour).trigger('change');
-				timeParts.find('.minute > input').val(minute).trigger('change');
-				timeParts.find('.second > input').val(second).trigger('change');
-				timeParts.find('.milli > input').val(milli).trigger('change');
-			});
-			timeReset.on('click',function(){
-				timeParts.find('input').each(function(eq,timePart){
-					$(timePart).val(0).trigger('change');
-				});
-			});
-			timeEditor.find('.time-apply').off('click').on('click',function(positive,milli){
-				positive = timePositive.find('[name="time-positive"]:checked').val();
-				milli = Math.abs(milliSecond.val());
-				if (milli){
-					if (!Sheet.Multiple.State){
-						Sheet.Edit['Time'+capitalize(positive)](milli);
-					} else {
-						Sheet.Edit.MultiClip(positive,milli);
-					}
-				}
-				timeReset.trigger('click');
-				Interface.Layout.find('.overlay').trigger('click');
-				return false;
-			});
-		}),
-		MultiClip : (function(cmd,jump,arrayBackup,arrayCurrent,multiClipSize,multiClipForIndex,multiClipIndex,multiClipTimeline){
-			jump = jump ? parseInt(jump) : parseInt(Sheet.Config.Jump);
-			arrayBackup = [];
-			arrayCurrent = [];
-			SheetTrigger.Input.addClass('multi-clip');
-			multiClipSize = Sheet.ArrayMultiple.length;
-			for (multiClipForIndex = 0; multiClipForIndex < multiClipSize; multiClipForIndex++){
-				multiClipIndex = Sheet.ArrayMultiple[multiClipForIndex];
-					if (multiClipIndex >= 0){
-					multiClipTimeline = Sheet.ArrayData[multiClipIndex];
-					arrayBackup.push({index : multiClipIndex, data : clone(multiClipTimeline)});
-					if (cmd == 'plus'){
-						multiClipTimeline.start += jump;
-						multiClipTimeline.end && (multiClipTimeline.end += jump);
-					} else if (cmd == 'minus'){
-						multiClipTimeline.start -= jump, multiClipTimeline.start < 0 && (multiClipTimeline.start = 0);
-						multiClipTimeline.end && (multiClipTimeline.end -= jump, multiClipTimeline.end < 0 && (multiClipTimeline.end = 0));
-					} else {
-						SheetTrigger.Input.html(multiClipTimeline.text).trigger('focus');
-						Sheet.Edit.Cmd('selectAll');
-						Sheet.Edit.Cmd(cmd);
-						multiClipTimeline.text = subtitle.encode(SheetTrigger.Input);
-					}
-					arrayCurrent.push({index : multiClipIndex, data : clone(multiClipTimeline)});
-				}
-			}
-			SheetTrigger.Input.removeClass('multi-clip');
-			Sheet.Init = true;
-			Sheet.Convert();
-			Sheet.Draw();
-			Sheet.Command.m(cmd,arrayCurrent,arrayBackup);
-		}),
-		TimePlus : (function(jump,clip){
-			jump = jump ? parseInt(jump) : parseInt(Sheet.Config.Jump);
-			clip = clone(Sheet.ArrayData[Sheet.Current.row]);
-			if (Sheet.Current.target == 'starttime'){
-				clip.start += jump;
-			} else if (Sheet.Current.target == 'endtime'){
-				clip.end += jump;
-			}
-			Sheet.Command.u(Sheet.Current,clip);
-		}),
-		TimeMinus : (function(jump,clip){
-			jump = jump ? parseInt(jump) : parseInt(Sheet.Config.Jump);
-			clip = clone(Sheet.ArrayData[Sheet.Current.row]);
-			if (Sheet.Current.target == 'starttime' && clip.start > 0){
-				clip.start -= jump;
-				clip.start < 0 && (clip.start = 0);
-				Sheet.Command.u(Sheet.Current,clip);
-			} else if (Sheet.Current.target == 'endtime' && clip.end > 0){
-				clip.end -= jump;
-				clip.end < 0 && (clip.end = 0);
-				Sheet.Command.u(Sheet.Current,clip);
-			}
-		}),
-		On : function(){
-			if (!Sheet.Search.State){
-				Sheet.Search.Panel && $('#sheet-search').trigger('click');
-				Sheet.Edit.State = true;
-				SheetTrigger.Wrap.addClass('on');
-				$('#sheet-edit').addClass('on');
-				SheetTrigger.Input.html(Sheet.Current.data[Sheet.Current.target] + '<br>');
-				if (!SheetTrigger.Input.is(':focus')){
-					setTimeout(function(){
-						SheetTrigger.Input.focus();
-						Sheet.Edit.Cmd('selectAll');
-					});
-				} else {
-					Sheet.Edit.Cmd('selectAll');
-				}
-				Sheet.Draw();
-			}
-		},
-		Off : (function(clip, colText){
-			Sheet.Edit.Cmd('unselect');
-			Sheet.Edit.State = false;
-			$('#sheet-edit').removeClass('on');
-			SheetTrigger.Wrap.removeClass('on').removeClass('clip');
-			clip = clone(Sheet.Current.data);
-			colText = subtitle.encode(SheetTrigger.Input);
-			if (clip[Sheet.Current.target] != colText){
-				clip[Sheet.Current.target] = colText;
-				Sheet.Command.u(Sheet.Current,clip);
-			}
-			Sheet.Move.Event();
-		}),
-		Clip : function(cmd, clip){
-			Sheet.Search.Panel && $('#sheet-search').trigger('click');
-			if (Sheet.Edit.State){
-				if (cmd) Sheet.Edit.Cmd(cmd);
-			} else {
-				Sheet.Edit.State = true;
-				SheetTrigger.Input.html(Sheet.Current.data[Sheet.Current.target]);
-				SheetTrigger.Wrap.addClass('clip');
-				SheetTrigger.Wrap.trigger('focus');
-				SheetTrigger.Input.trigger('focus');
-				Sheet.Edit.Cmd('selectAll');
-				if (cmd) Sheet.Edit.Cmd(cmd);
-				setTimeout(function(){
-					Sheet.Edit.Off();
-				});
-			}
-		},
-		Color : {
-			Set : function(colors,colorsSize,colorIndex){
-				if (!Sheet.Edit.Color.List){
-					Sheet.Edit.Color.List = ['#ff0000','#ff00ff','#aa00ff','#0000ff','#00ffff','#00ff00','#ffff00','#ffaa00'];
-					colors = storage.get('CaptionColorTemp');
-					if (colors && colors != '' && colors.length > 0){
-						colorsSize = colors.length;
-						for (colorIndex = 0; colorIndex < colorsSize; colorIndex++){
-							Sheet.Edit.Color.List[colorIndex] = colors[colorIndex];
-						}
-					}
-				} else {
-					storage.set('CaptionColorTemp',Sheet.Edit.Color.List);
-				}
-				$('.color-list').each(function(count,section,colorSize,panel,singleColor){
-					section = $(section).find('.color-panel');
-					colorSize = Sheet.Edit.Color.List.length;
-					while (colorSize--){
-						singleColor = Sheet.Edit.Color.List[colorSize];
-						panel = section.eq(colorSize);
-						panel.find('.color').css('background-color',singleColor).attr('title',singleColor);
-						panel.find('.hex').text(singleColor);
-					}
-				});
-			},
-			Event : function(picker, dialog){
-				dialog = Interface.ColorPicker.parents('.dialog');
-				dialog.find('.btn-color').on('click',function(me, parent, eq){
-					me = $(this),
-					parent = me.parent(),
-					eq = me.parent().index();
-					Interface.ColorPicker.ColorPickerSetColor(Sheet.Edit.Color.List[eq]).ColorPickerSubmit(function(hsb,hex,rgb){
-						Sheet.Edit.Color.List[eq] = '#'+hex;
-						Sheet.Edit.Color.Set(Sheet.Edit.Color.List);
-					});
-					dialog.find('li.current').removeClass('current');
-					parent.addClass('current');
-					return false;
-				});
-			},
-			Init : function(){
-				Sheet.Edit.Color.Set();
-				$('#color-1').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color0');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color0');
-						}
-					}
-					return false;
-				});
-				$('#color-2').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color1');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color1');
-						}
-					}
-					return false;
-				});
-				$('#color-3').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color2');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color2');
-						}
-					}
-					return false;
-				});
-				$('#color-4').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color3');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color3');
-						}
-					}
-					return false;
-				});
-				$('#color-5').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color4');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color4');
-						}
-					}
-					return false;
-				});
-				$('#color-6').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color5');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color5');
-						}
-					}
-					return false;
-				});
-				$('#color-7').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color6');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color6');
-						}
-					}
-					return false;
-				});
-				$('#color-8').off('click').on('click',function(){
-					if (!$(this).hasClass('disabled')){
-						if (Sheet.Multiple.State){
-							Sheet.Edit.MultiClip('color7');
-						} else if (Sheet.Current.target == 'text' || Sheet.Current.target == 'memo'){
-							Sheet.Edit.Clip('color7');
-						}
-					}
-					return false;
-				});
-
-				Interface.ColorPicker = $('#color-selector').find('.picker').ColorPicker();
-				Sheet.Edit.Color.Event();
-				$('#color-select').on('click',function(me){
-					Interface.Dialog('color-selector');
-					Interface.ColorPicker.parents('.dialog').find('.btn-color').eq(0).trigger('click');
-					return false;
-				});
-			} 
-		},
-		Cmd : function (cmd, attr, value, textRange, range, tempEl){
-			if (typeof cmd === 'string'){
-				if (cmd.indexOf('color_clear') == 0){
-					attr = 'removeFormat';
-					value = 'foreColor';
-				} else if (cmd.indexOf('color') == 0){
-					attr = 'foreColor';
-					value = Sheet.Edit.Color.List[cmd.replace('color','')];
-				} else if (cmd == 'enter'){
-					if ($.browser.mozilla){
-						attr = 'insertHTML';
-						value = "<br />";
-					} else {
-						attr = 'insertLineBreak';
-					}
-				} else {
-					attr = cmd;
-				}
-			} else {
-				attr = cmd.attr === 'color' ? 'foreColor' : cmd.attr;
-				value = cmd.value;
-			}
-			document.execCommand(attr, false, value);
-			return false;
-		},
-		Log : function(c,i,n,o,p){
-			editHistory.push({cmd:c,id:i,n:n,o:o,current:p});
-			Sheet.Edit.History();
-		},
-		History : function(count, index, undo, redo){
-			count = editHistory.entries.length;
-			index = editHistory.index + 1;
-			undo = $('#undo');
-			redo = $('#redo');
-			if (count === 0){
-				undo.addClass('disabled');
-				redo.addClass('disabled');
-			} else if (index === 0){
-				undo.addClass('disabled');
-				redo.removeClass('disabled');
-			} else if (count === index){
-				undo.removeClass('disabled');
-				redo.addClass('disabled');
-			} else {
-				undo.removeClass('disabled');
-				redo.removeClass('disabled');
-			}
-		}
-	};
-	Sheet.Move = {
-		Target : {
-			smi : ['starttime','text','memo'],
-			srt : ['starttime','endtime','text','memo']
-		},
-		Left : {
-			smi : [49,229,589],
-			srt : [49,149,329,689]
-		},
-		Event : function (){
-			Sheet.Current.target = Sheet.Move.Target[Sheet.Format][Sheet.Current.col];
-			Sheet.Current.info = Sheet.ArrayInfo[Sheet.Current.row];
-			Sheet.Current.data = Sheet.ArrayData[Sheet.Current.row];
-			Sheet.Panel.find('.col.current').removeClass('current');
-			SheetTrigger.Focus(Sheet.Panel.find('.row-'+Sheet.Current.row).children('.col-'+Sheet.Current.col).addClass('current'));
-		},
-		Page : {
-			Prev : function(inputOffset,inputHeight,canvasTop,canvasBottom,moveSize,moveData,moveScroll){
-				if (Sheet.Current.row > 0){
-					Sheet.Edit.State && Sheet.Edit.Off();
-					inputOffset = SheetTrigger.Wrap.position().top;
-					inputHeight = SheetTrigger.Wrap.height();
-					canvasTop = Sheet.Scroll;
-					canvasBottom = Sheet.Scroll + Sheet.Canvas.Height;
-					canvasBottom < inputOffset - inputHeight && (moveScroll = true);
-					if (canvasTop >= inputOffset || canvasBottom < inputOffset - inputHeight){
-						moveSize = inputOffset - Sheet.Canvas.Height * 0.875;
-					} else {
-						moveSize = canvasTop;
-					}
-					moveSize < 0 && (moveSize = 0);
-					moveData = (function(sheetArrayHeight,currentOffset,timelineOffset,timelineIndex,timelineHeight){
-					for (
-						timelineOffset=timelineIndex=0;
-						timelineHeight=sheetArrayHeight[timelineIndex++];
-						timelineOffset+=timelineHeight
-					) 
-					if(timelineOffset>currentOffset)
-						return{offset:timelineOffset - timelineHeight, index:timelineIndex-2};
-					})(Sheet.ArrayHeight, moveSize);
-					!moveData && (moveData = {offset : 0, index : 0});
-					Sheet.Current.row = moveData.index;
-					Sheet.Move.Event();
-					moveScroll && setTimeout(function(){Sheet.Body.scrollTop(moveData.offset)});
-				}
-			},
-			Next : function(inputOffset,inputHeight,canvasTop,canvasBottom,moveSize,moveData,moveScroll){
-				if (Sheet.Current.row < Sheet.DataSize){
-					Sheet.Edit.State && Sheet.Edit.Off();
-					inputOffset = SheetTrigger.Wrap.position().top;
-					inputHeight = SheetTrigger.Wrap.height();
-					canvasTop = Sheet.Scroll - 1;
-					canvasBottom = Sheet.Scroll + Sheet.Canvas.Height;
-					if (canvasTop > inputOffset || canvasBottom <= inputOffset + inputHeight){
-						moveSize = inputOffset + Sheet.Canvas.Height * 0.875;
-						moveScroll = true;
-					} else {
-						moveSize = canvasBottom;
-					}
-					moveData = (function(sheetArrayHeight,currentOffset,timelineOffset,timelineIndex,timelineHeight){
-					for (
-						timelineOffset=timelineIndex=0;
-						timelineHeight=sheetArrayHeight[timelineIndex++];
-						timelineOffset+=timelineHeight
-					) 
-						if(timelineOffset>currentOffset)
-							return{offset:timelineOffset, index:timelineIndex-2};
-					})(Sheet.ArrayHeight, moveSize);
-					!moveData && (moveData = {offset : Sheet.Height - Sheet.ArrayHeight[Sheet.DataSize], index : Sheet.DataSize});
-					Sheet.Current.row = moveData.index;
-					Sheet.Move.Event();
-					moveScroll && Sheet.Body.scrollTop(moveData.offset - Sheet.Canvas.Height);
-				}
-			}
-		},
-		Row : {
-			Prev : function(){
-				if (Sheet.Current.row>0){
-					--Sheet.Current.row;
-					Sheet.Move.Event();
-					if (Sheet.Multiple.State){
-						if (Sheet.Shift){
-							Sheet.Multiple.Checking(Sheet.Current.row);
-						} else {
-							Sheet.Multiple.Start = Sheet.Current.row;
-						}
-					}
-				}
-			},
-			Next : function(append){
-				if (Sheet.Current.row != Sheet.DataSize){
-					++Sheet.Current.row;
-					Sheet.Move.Event();
-					if (Sheet.Multiple.State){
-						if (Sheet.Shift){
-							Sheet.Multiple.Checking(Sheet.Current.row);
-						} else {
-							Sheet.Multiple.Start = Sheet.Current.row;
-						}
-					}
-				} else if (!Sheet.Multiple.State && append){
-					Sheet.Command.i(Sheet.Current);
-				}
-			}
-		},
-		Col : {
-			Prev : function(){
-				if (Sheet.Current.col > 0){
-					--Sheet.Current.col;
-					Sheet.Move.Event();
-				} else if (Sheet.Current.row > 0 && !Sheet.Multiple.State){
-					switch (Sheet.Format){
-						case 'srt' : Sheet.Current.col = 3;break;
-						case 'smi' : Sheet.Current.col = 2;break;
-					}
-					Sheet.Move.Row.Prev();
-				} else {
-					return false;
-				}
-			},
-			Next : function(maxCol){
-				switch (Sheet.Format){
-					case 'srt' : maxCol = 3;break;
-					case 'smi' : maxCol = 2;break;
-				}
-				if (Sheet.Current.col < maxCol){
-					++Sheet.Current.col;
-					Sheet.Move.Event();
-				} else if (Sheet.Current.row < Sheet.DataSize && !Sheet.Multiple.State ){
-					Sheet.Current.col = 0;
-					Sheet.Move.Row.Next(false);
-				}
-			}
-		}
-	};
-	Sheet.ColWidth = {
-		starttime	: function(){return 101},
-		endtime		: function(){return 101},
-		text		: function(){return 361},
-		memo		: (function(){
-			if (Sheet.Format == 'smi'){
-				return Sheet.Canvas.Width - 589;
-			} else if (Sheet.Format == 'srt'){
-				return Sheet.Canvas.Width - 689;
-			}
-		})
-	}
-	Sheet.DrawHTML = {
-		smi : (function(drawData,drawCount,drawHeight,drawTimeline,drawRange,drawHtml,drawTimelineInfo){
-			drawHtml='',
-			drawCount=Sheet.ArrayData.length,
-			drawHeight= 0,
-			drawData.index = drawData.index < 0 ? 0 : drawData.index;
-			while (drawData.index < drawCount && Sheet.Canvas.DrawHeight >= drawHeight) {
-				drawTimeline = Sheet.ArrayData[drawData.index];
-				drawTimelineInfo = Sheet.ArrayInfo[drawData.index];
-				drawRange = drawData.index < drawCount - 1;
-				if (drawTimeline){
-					drawRange && (drawTimeline.end = Sheet.ArrayData[drawData.index + 1].start);
-					drawHtml += '<div class="sheet-row row-' + drawData.index;
-					Sheet.ArrayError.indexOf(drawData.index) > -1 && (drawHtml += ' error');
-					Sheet.ArrayMultiple.indexOf(drawData.index) > -1 && (drawHtml += ' multiple');
-					drawHtml += '">';
-					drawHtml += '<div class="col index"><div class="cell">'+ (drawData.index + 1) + '</div></div>';
-					drawHtml += '<div class="col col-0 starttime';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="0" data-left="49" data-target="starttime"><div class="cell">'+ drawTimelineInfo.starttime + '</div></div>';
-					drawHtml += '<div class="col dur"><div class="cell">' + (drawRange ? ((drawTimeline.end - drawTimeline.start) / 1000).toFixed(3) : '') + '</div></div>';
-					drawHtml += '<div class="col col-1 text';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="1" data-left="229" data-target="text"><div class="cell">'+ drawTimeline.text + '<br></div></div>';
-					drawHtml += '<div class="col col-2 memo';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="2" data-left="589" data-target="memo"><div class="cell" style="-webkit-line-clamp:' + drawTimelineInfo.line + ';max-height:'+ (drawTimelineInfo.height - 3) +'px;">'+ (drawTimeline.memo ? drawTimeline.memo : '') + '<br></div></div>';
-					drawHtml += '</div>';
-				}
-				drawHeight += Sheet.ArrayHeight[drawData.index];
-				drawData.index++;
-			}
-			return drawHtml;
-		}),
-		srt : (function(drawData,drawCount,drawHeight,drawTimeline,drawRange,drawHtml,drawTimelineInfo){
-			drawHtml='',
-			drawCount=Sheet.ArrayData.length,
-			drawHeight= 0,
-			drawData.index = drawData.index < 0 ? 0 : drawData.index;
-			while (drawData.index < drawCount && Sheet.Canvas.DrawHeight >= drawHeight) {
-				drawTimeline = Sheet.ArrayData[drawData.index];
-				drawTimelineInfo = Sheet.ArrayInfo[drawData.index];
-				drawRange = drawData.index < drawCount - 1;
-				if (drawTimeline){
-					drawHtml += '<div class="sheet-row row-' + drawData.index;
-					Sheet.ArrayError.indexOf(drawData.index) > -1 && (drawHtml += ' error');
-					Sheet.ArrayMultiple.indexOf(drawData.index) > -1 && (drawHtml += ' multiple');
-					drawHtml += '">';
-					drawHtml += '<div class="col index"><div class="cell">'+ (drawData.index + 1) + '</div></div>';
-					drawHtml += '<div class="col col-0 starttime';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="0" data-left="49" data-target="starttime"><div class="cell">'+ drawTimelineInfo.starttime + '</div></div>';
-					drawHtml += '<div class="col col-1 endtime';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="1" data-left="149" data-target="endtime"><div class="cell">'+ drawTimelineInfo.endtime + '</div></div>';
-					drawHtml += '<div class="col dur"><div class="cell">' + ((drawTimeline.end - drawTimeline.start) / 1000).toFixed(3) + '</div></div>';
-					drawHtml += '<div class="col col-2 text';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="2" data-left="329" data-target="text"><div class="cell">'+ drawTimeline.text + '<br></div></div>';
-					drawHtml += '<div class="col col-3 memo';
-					drawHtml += '" tabindex="-1" data-row="'+ drawData.index + '" data-col="3" data-left="689" data-target="memo"><div class="cell" class="cell" style="-webkit-line-clamp:' + drawTimelineInfo.line + ';max-height:'+ (drawTimelineInfo.height - 3) +'px;">'+ (drawTimeline.memo ? drawTimeline.memo : '') + '<br></div></div>';
-					drawHtml += '</div>';
-				}
-				drawHeight += Sheet.ArrayHeight[drawData.index];
-				drawData.index++;
-			}
-			return drawHtml;
-		})
-	};
-	Sheet.Draw = (function(drawScroll,drawData){
-		drawScroll = Sheet.Body.scrollTop();
-		if (Sheet.Init || drawScroll != Sheet.Scroll || Sheet.Height < Sheet.Canvas.Height){
-			Sheet.Init		= null;
-			drawData		= (function(sheetArrayHeight,currentOffset,timelineOffset,timelineIndex,timelineHeight){
-				for (
-					timelineOffset=timelineIndex=0;
-					timelineHeight=sheetArrayHeight[timelineIndex++];
-					timelineOffset+=timelineHeight
-				) 
-					if(timelineOffset>currentOffset)
-						return{offset:timelineOffset, index:timelineIndex-1};
-			})(Sheet.ArrayHeight, drawScroll-Sheet.Canvas.Height);
-			Sheet.Scroll	= drawScroll;
-			if (drawData){
-				Sheet.Panel.css('padding-top',drawData.offset+'px');
-				Sheet.Panel[0].innerHTML = Sheet.DrawHTML[Sheet.Format](drawData);
-				Sheet.Panel.find('.row-'+Sheet.Current.row).find('.col-'+Sheet.Current.col).addClass('current');
-				Sheet.Focus && Sheet.Panel.find('.row-'+Sheet.Focus).addClass('focus');
-				if (Sheet.ArraySearch.length > 0){
-					(function(arraySearch,reverseIndex,item){
-						reverseIndex = arraySearch.length;
-						while (reverseIndex--){
-							item = Sheet.ArraySearch[reverseIndex];
-							Sheet.Panel.find('.row-' + item.row).find('.col-' + item.col).addClass('search');
-						}
-					})(Sheet.ArraySearch);
-				}
-			}
-		}
-	});
-	Sheet.StateUpdate = function(){
-		Wn.originHeight			= Wn.height();
-		Sheet.Canvas.Width		= Sheet.Contain.width();
-		Sheet.Canvas.Height		= Sheet.Body.parent().height();
-		Sheet.Canvas.DrawHeight	= Sheet.Canvas.Height * 3;
-		if (Sheet.Head){
-			Sheet.Head.width(Sheet.Canvas.Width);
-			Sheet.Head.css('left', 320 - Sheet.Body.scrollLeft());
-		}
-		Sheet.Current.target && SheetTrigger.Input.css({'min-width' : Sheet.ColWidth[Sheet.Current.target]()});
-	};
-	Sheet.Convert = (function(){
-		Sheet.StateUpdate();
-		Sheet.ArraySearch		= [];
-		Sheet.ArrayInfo			= [];
-		Sheet.ArrayHeight		= [];
-		Sheet.ArrayError		= [];
-		Sheet.Height			= 0;
-		Sheet.DataSize			= Sheet.ArrayData.length - 1;
-		(function(arrayData,arrayInfo,arrayEq,arrayIndex,timelineData,timelineInfo,nextData){
-			for (arrayEq=arrayIndex=0;timelineData=arrayData[arrayIndex++];arrayEq=arrayIndex){
-				timelineInfo = {};
-				if (isNaN(timelineData.start) && !isNaN(timelineData.sync)) timelineData.start = timelineData.sync;
-				timelineInfo.line = timelineData.text.split('<br').length,
-				nextData=arrayData[arrayIndex],
-				timelineInfo.height=timelineInfo.line*Sheet.LineHeight+Sheet.CellPadding,
-				Sheet.Height+=timelineInfo.height,
-				Sheet.ArrayHeight[arrayEq]=timelineInfo.height,
-				timelineInfo.starttime=formatTimecode(timelineData.start),
-				"srt"==Sheet.Format&&(timelineInfo.endtime=formatTimecode(timelineData.end)),
-				nextData&&(timelineInfo.next=Number(nextData.start));
-				if (Sheet.Format == 'srt'){
-					if (arrayEq < Sheet.DataSize && Number(timelineData.end) > Number(timelineInfo.next)) Sheet.ArrayError.push(arrayEq);
-					else if (Number(timelineData.end) < Number(timelineData.start)) Sheet.ArrayError.push(arrayEq);
-				} else if (Sheet.Format == 'smi'){
-					if (arrayEq < Sheet.DataSize && Number(timelineData.start) > Number(timelineInfo.next)) Sheet.ArrayError.push(arrayEq);
-				}
-				arrayInfo[arrayEq] = timelineInfo;
-			}
-		})(Sheet.ArrayData,Sheet.ArrayInfo);
-		Sheet.Contain.height(Sheet.Height);
-		Sheet.Search.Error(Sheet.ArrayError);
-	});
-	Sheet.Set = (function(o){
-		SheetTrigger.Init = null;
-		!Sheet.Format && !o.Format && (Sheet.Format = storage.get('format'));
-		if (!Sheet.Format || Sheet.Format == '') Sheet.Format = 'smi';
-		if (o.Format && o.Format != Sheet.Format){
-			Sheet.Format = o.Format;
-			if (Sheet.Format == 'smi' && Sheet.Current.col > 0) --Sheet.Current.col;
-			if (Sheet.Format == 'srt' && Sheet.Current.col > 0) ++Sheet.Current.col;
-		}
-		if (o) extend(Sheet, o);
-		if (!o.ArrayData && Sheet.ArrayData.length == 0) Sheet.ArrayData = storage.get('SUBTITLE_TEMP');
-		if (!Sheet.ArrayData || Sheet.ArrayData == '' || Sheet.ArrayData.length == 0) Sheet.ArrayData = [Sheet.Empty];
-		storage.set('SUBTITLE_TEMP', Sheet.ArrayData);
-
-		Sheet.Interface.removeAttr('class').addClass(Sheet.Format);
-		Sheet.Head = Sheet.Interface.children('.sheet-head');
-
-		Sheet.Head.children('.sheet-panel')[0].innerHTML = (function(h,c,t){
-			t = '<div class="sheet-row">';
-			for (c in h){
-				if (typeof h[c] === 'string') t += '<div class="'+ h[c] + ' col"><div class="cell">'+ i18n.t(h[c]+ '-' +Sheet.Format) +'</div></div>';
-			}
-			t += '</div>';
-			return t;
-		})(subtitle.header[Sheet.Format]);
-		Sheet.Convert();
-		Sheet.Init = true;
-		Sheet.Draw();
-		setTimeout(function(){
-			Object.keys(Sheet.Current).length == 0 && Sheet.Panel.find('.text').eq(0).trigger('click');
-		});
-	});
-	Sheet.Click = (function(col, context, current){
-		if (Sheet.Edit.State) Sheet.Edit.Off();
-		col =$(col);
-		current = col.data();
-		Sheet.Multiple.State && Sheet.Multiple.Checking(current.row);
-		if (Object.keys(current).length > 0){
-			if (Sheet.Current.row!=current.row||Sheet.Current.col!=current.col){
-				Sheet.Active = Sheet.Current = current;
-				Sheet.Current.info = Sheet.ArrayInfo[current.row];
-				Sheet.Current.data = Sheet.ArrayData[current.row];
-				Sheet.Active = Sheet.Current;
-				Sheet.Panel.find('.col.current').removeClass('current');
-				SheetTrigger.Focus(col.addClass('current'));
-			}
-			if (!Sheet.Multiple.State && context){
-				if (current.target == 'text' || current.target == 'memo') Sheet.Edit.On(); 
-			}
-		};
-		return false;
-	});
-	Sheet.Init = (function(target){
-		Sheet.Interface		= $(target);
-		Sheet.Contain		= Sheet.Interface.find('.sheet-contain');
-		Sheet.Panel			= Sheet.Contain.children('.sheet-panel');
-		Sheet.Interface.find('.sheet-body').scrollbar();
-		Sheet.Body			= Sheet.Interface.find('.sheet-body.scroll-content');
-
-		Sheet.Panel
-		.on(Ev.Click,'.col',function(e,current){
-			Sheet.Shift = e.shiftKey;
-			current = $(this).data();
-			(!Ev.Current||Ev.Current.row==current.row&&Ev.Current.col==current.col)&&(Ev.ClickCount++,Ev.Current=current);
-			if (Ev.ClickCount === 1) {
-				if (!Sheet.IsMultiple) Sheet.Click(this);
-				Ev.singleClickTimer = setTimeout(function() {
-					Ev.Current = null;
-					Ev.ClickCount = 0;
-				}, 400);
-			} else if (Ev.ClickCount === 2) {
-				if (!Sheet.IsMultiple) Sheet.Click(this, true);
-				Ev.Current = null;
-				Ev.ClickCount = 0;
-			}
-			return false;
-		})
-		.on(Ev.Context,'.col',function(){
-			if (!Sheet.IsMultiple) Sheet.Click(this, true);
-			return false;
-		});
-
-		Sheet.Body
-		.off(Ev.Scroll).on(Ev.Scroll, function(){
-			Sheet.StateUpdate();
-			Sheet.Draw();
-		})
-		.off(Ev.ScrollEnd).on(Ev.ScrollEnd, function(){
-			Sheet.Init = true;
-			Sheet.Draw();
-		});
-		Wn.off(Ev.Resize+'.sh').on(Ev.Resize+'.sh', function(){
-			Sheet.StateUpdate();
-			Wn.originHeight != Wn.height() && (Sheet.Init = true, Sheet.Draw());
-		}).off(Ev.Blur).on(Ev.Blur,function(){
-			if (Sheet.Edit.State){
-				Sheet.Edit.Cmd('unselect');
-				Sheet.Edit.Off();
-			}
-		});
-		SheetTrigger.Init();
-		Sheet.Edit.Color.Init();
-		$('#time-edit').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Interface.Dialog('time-editor');
-			}
-			return false;
-		});
-		$('#time-plus').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('plus');
-				} else if (Sheet.Current.target == 'starttime' || Sheet.Current.target == 'endtime'){
-					Sheet.Edit.TimePlus();
-				}
-			}
-			return false;
-		});
-		$('#time-minus').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('minus');
-				} else if (Sheet.Current.target == 'starttime' || Sheet.Current.target == 'endtime'){
-					Sheet.Edit.TimeMinus();
-				}
-			}
-			return false;
-		});
-		$('#sheet-edit').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Edit.State) Sheet.Edit.Off();
-				else  Sheet.Edit.On();
-			}
-			return false;
-		});
-		$('#sheet-insert').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Sheet.Command.i(Sheet.Current);
-			}
-			return false;
-		});
-		$('#sheet-remove').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Sheet.Command.r(Sheet.Current);
-			}
-			return false;
-		});
-		$('#sheet-multiple').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Sheet.Multiple.Toggle();
-			}
-			return false;
-		});
-		$('#font-bold').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('bold');
-				} else {
-					Sheet.Edit.Clip('bold');
-				}
-			}
-			return false;
-		});
-		$('#font-italic').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('italic');
-				} else {
-					Sheet.Edit.Clip('italic');
-				}
-			}
-			return false;
-		});
-		$('#font-underline').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('underline');
-				} else {
-					Sheet.Edit.Clip('underline');
-				}
-			}
-			return false;
-		});
-
-		$('#color-reset').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				if (Sheet.Multiple.State){
-					Sheet.Edit.MultiClip('color_clear');
-				} else {
-					Sheet.Edit.Clip('color_clear');
-				}
-			}
-			return false;
-		});
-
-		$('#undo').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Sheet.Undo();
-			}
-			return false;
-		});
-		$('#redo').off('click').on('click',function(){
-			if (!$(this).hasClass('disabled')){
-				Sheet.Redo();
-			}
-			return false;
-		});
-		$('#new-sheet').off('click').on('click',function(){
-			$('#nav-trigger').trigger('click');
-			Interface.Confirm({
-				title:i18n.t('new-file'),
-				content:i18n.t('new-file-contents'),
-				bgDismiss:true,
-				success:function(){
-					Sheet.Set({
-						ArrayData : []
-					});
-					Sheet.Current.row = 0;
-					Sheet.Current.col = 0;
-					Sheet.Move.Event();
-					editHistory.clear();
-					Sheet.Edit.History();
-				}
-			});
-		});
 	});
 	Do.on('ready', function(){
 		initializeDomainModules();
@@ -2429,10 +880,11 @@ const initializeDomainModules = () => {
 		Interface.Dialog();
 		Interface.InputFile();
 		Interface.Select.Init();
-		Sheet.Init('#sheet');
-		Sheet.Edit.TimeControl();
-		Sheet.Search.Init();
-		Sheet.Config.Init();
+		sheet.init('#sheet');
+		sheet.edit.timeControl();
+		sheet.search.init();
+		sheet.config.init();
+
 		Shortkey.Init();
 		video.init();
 		WebFont.load({
@@ -2450,8 +902,8 @@ const initializeDomainModules = () => {
 				language	= storage.get('language');
 				data		= storage.get('SUBTITLE_TEMP');
 
-				if (!format || format == '') format = Sheet.Format;
-				if (!language || language == '' || !i18n.getLocale(language)) language = Sheet.Language;
+				if (!format || format == '') format = sheet.format;
+				if (!language || language == '' || !i18n.getLocale(language)) language = sheet.language;
 				i18n.setLanguage(language);
 				Interface.I18n();
 				Interface.Select.Trigger('language',language);
@@ -2464,8 +916,6 @@ const initializeDomainModules = () => {
 				});
 			})
 		});
-	});
-	Wn.on(Ev.Resize, function(){
 	});
 
 var Toast;!function(t){function a(t,a,n){d("info",t,a,n)}function n(t,a,n){d("warning",t,a,n)}function i(t,a,n){d("error",t,a,n)}function o(t,a,n){d("success",t,a,n)}function d(a,n,i,o){void 0===o&&(o={}),o=$.extend({},t.defaults,o),s||(s=$("#toast-container"),0===s.length&&(s=$("<div>").attr("id","toast-container").appendTo($("body")))),o.width&&s.css({width:o.width});var d=$("<div>").addClass("toast").addClass("toast-"+a);if(i){var e=$("<div>").addClass("toast-title").append(i);d.append(e)}if(n){var r=$("<div>").addClass("toast-message").append(n);d.append(r)}o.displayDuration>0&&setTimeout(function(){d.fadeOut(o.fadeOutDuration,function(){d.remove()})},o.displayDuration),d.on("click",function(){d.remove()}),s.prepend(d)}t.defaults={width:"",displayDuration:2e3,fadeOutDuration:800},t.info=a,t.warning=n,t.error=i,t.success=o;var s}(Toast||(Toast={}));

@@ -16,12 +16,12 @@ import converters from '../convert/index.js';
  * @returns {import('../convert/index.js').Timeline[]} json/excel은 smi/srt 중 하나의 배열, vtt는 srt 형식
  */
 const formatExportData = ({ exportFormat, sheetFormat, sheetData }) => {
-	const arrayData = sheetFormat !== exportFormat
-		? converters[exportFormat](sheetFormat, sheetData).ArrayData
+	const timelines = sheetFormat !== exportFormat
+		? converters[exportFormat](sheetFormat, sheetData).timelines
 		: sheetData;
 
 	if (exportFormat === 'srt' || sheetFormat === 'srt') {
-		return arrayData.map(({ start, end, text, memo = '' }) => ({
+		return timelines.map(({ start, end, text, memo = '' }) => ({
 			start,
 			starttime: formatTimecode(start),
 			end,
@@ -32,7 +32,7 @@ const formatExportData = ({ exportFormat, sheetFormat, sheetData }) => {
 	}
 
 	if (sheetFormat === 'smi') {
-		return arrayData.map(({ start, text, memo = '' }) => ({
+		return timelines.map(({ start, text, memo = '' }) => ({
 			start,
 			starttime: formatTimecode(start),
 			text,

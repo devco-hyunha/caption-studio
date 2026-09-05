@@ -6,12 +6,12 @@ import { trackEvent } from '../analytics/track.js';
 
 /**
  * @typedef {Object} VideoInitDeps
- * @property {object} Interface - caption.js UI ì…¸
- * @property {object} Sheet - ì‹œíŠ¸ API
- * @property {object} i18n - i18n ëª¨ë“ˆ
+ * @property {object} Interface - caption.js UI ¼Ð
+ * @property {object} sheet - ½ÃÆ® API
+ * @property {object} i18n - i18n ¸ðµâ
  */
 
-const hasSheetFocus = (sheet) => sheet.Focus != null;
+const hasSheetFocus = (sheet) => sheet.focus != null;
 
 const TIME_TRIGGER_HTML = '<button class="vjs-selecttime-control vjs-control vjs-button mt icon-timer" type="button" aria-live="polite"><span class="vjs-control-text">select time</span></button>';
 
@@ -24,18 +24,18 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	const currentTimeMs = () => parseInt(video.currentTime() * 1000);
 
 	const handleTimeTriggerClick = () => {
-		if (sheet.Format == 'smi' && sheet.Current.col > 0) {
-			sheet.Current.col = 0;
-			sheet.Current.target = 'starttime';
-			sheet.Move.Event();
+		if (sheet.format == 'smi' && sheet.current.col > 0) {
+			sheet.current.col = 0;
+			sheet.current.target = 'starttime';
+			sheet.move.event();
 		}
-		const target = sheet.Current.target;
-		if (sheet.Multiple.State || target.indexOf('time') < 0) return;
+		const target = sheet.current.target;
+		if (sheet.multiple.state || target.indexOf('time') < 0) return;
 
-		const timeline = clone(sheet.ArrayData[sheet.Current.row]);
+		const timeline = clone(sheet.timelines[sheet.current.row]);
 		if (target == 'starttime') timeline.start = currentTimeMs();
 		else if (target == 'endtime') timeline.end = currentTimeMs();
-		sheet.Command.u(sheet.Current, timeline);
+		sheet.command.update(sheet.current, timeline);
 	};
 
 	const attachTimeTrigger = () => {
@@ -96,7 +96,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 			event: 'click',
 			selector: '.move-current',
 			handler: () => {
-				if (hasSheetFocus(sheet)) sheet.RowOffset(sheet.Focus);
+				if (hasSheetFocus(sheet)) sheet.rowOffset(sheet.focus);
 			},
 		});
 		bindEvent({
@@ -105,9 +105,9 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 			selector: '.move-prev',
 			handler: () => {
 				if (!hasSheetFocus(sheet)) return;
-				const focus = sheet.Focus > 0 ? sheet.Focus - 1 : 0;
-				video.currentTime(sheet.ArrayData[focus].start / 1000);
-				sheet.Draw();
+				const focus = sheet.focus > 0 ? sheet.focus - 1 : 0;
+				video.currentTime(sheet.timelines[focus].start / 1000);
+				sheet.render();
 			},
 		});
 		bindEvent({
@@ -116,9 +116,9 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 			selector: '.move-next',
 			handler: () => {
 				if (!hasSheetFocus(sheet)) return;
-				const focus = sheet.Focus < sheet.DataSize ? sheet.Focus + 1 : sheet.DataSize;
-				video.currentTime(sheet.ArrayData[focus].start / 1000);
-				sheet.Draw();
+				const focus = sheet.focus < sheet.lastIndex ? sheet.focus + 1 : sheet.lastIndex;
+				video.currentTime(sheet.timelines[focus].start / 1000);
+				sheet.render();
 			},
 		});
 		bindEvent({
@@ -175,7 +175,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 };
 
 /**
- * video ë„ë©”ì¸ ëª¨ë“ˆì„ ìƒì„±í•œë‹¤. `initialize()` í˜¸ì¶œ ì „ê¹Œì§€ ê³µê°œ APIê°€ ì—†ë‹¤.
+ * video µµ¸ÞÀÎ ¸ðµâÀ» »ý¼ºÇÑ´Ù. `initialize()` È£Ãâ Àü±îÁö °ø°³ API°¡ ¾ø´Ù.
  *
  * @returns {{
  *   initialize: (deps: VideoInitDeps) => void,
@@ -190,13 +190,13 @@ const videoModule = () => {
 	const module = {};
 
 	/**
-	 * playerë¥¼ ë§Œë“¤ê³  ê³µê°œ Video APIë¥¼ ë¶™ì¸ë‹¤. `Do.on('ready')`ì—ì„œ SheetÂ·Interface ì¤€ë¹„ í›„ í˜¸ì¶œí•œë‹¤.
+	 * player¸¦ ¸¸µé°í °ø°³ Video API¸¦ ºÙÀÎ´Ù. `Do.on('ready')`¿¡¼­ sheet¡¤Interface ÁØºñ ÈÄ È£ÃâÇÑ´Ù.
 	 *
 	 * @param {VideoInitDeps} deps
 	 */
-	module.initialize = ({ Interface, Sheet, i18n }) => {
-		const player = createPlayer({ ui: Interface, sheet: Sheet, i18n });
-		Object.assign(module, createVideo({ player, ui: Interface, sheet: Sheet, i18n }));
+	module.initialize = ({ Interface, sheet, i18n }) => {
+		const player = createPlayer({ ui: Interface, sheet, i18n });
+		Object.assign(module, createVideo({ player, ui: Interface, sheet, i18n }));
 	};
 
 	return module;

@@ -13,8 +13,8 @@ import { smiFromSmiString, smiFromSrtArray, smiFromString } from './smiHelpers.j
 
 /**
  * @typedef {Object} SheetData
- * @property {'smi'|'srt'} Format
- * @property {Timeline[]} ArrayData
+ * @property {'smi'|'srt'} format
+ * @property {Timeline[]} timelines
  */
 
 /**
@@ -26,18 +26,18 @@ import { smiFromSmiString, smiFromSrtArray, smiFromString } from './smiHelpers.j
  */
 const toSrt = (format, data) => {
 	if (format === 'smistring') {
-		return toSrt('smi', toSmi('smistring', data).ArrayData);
+		return toSrt('smi', toSmi('smistring', data).timelines);
 	}
 	if (format === 'srtstring') {
-		return { Format: 'srt', ArrayData: srtFromSrtString(data) };
+		return { format: 'srt', timelines: srtFromSrtString(data) };
 	}
 	if (format === 'smi') {
-		return { Format: 'srt', ArrayData: srtFromSmiArray(data) };
+		return { format: 'srt', timelines: srtFromSmiArray(data) };
 	}
 	if (format === 'string') {
-		return { Format: 'srt', ArrayData: srtFromString(data) };
+		return { format: 'srt', timelines: srtFromString(data) };
 	}
-	return { Format: 'srt', ArrayData: [] };
+	return { format: 'srt', timelines: [] };
 };
 
 /**
@@ -49,18 +49,18 @@ const toSrt = (format, data) => {
  */
 const toSmi = (format, data) => {
 	if (format === 'srtstring') {
-		return toSmi('srt', toSrt('srtstring', data).ArrayData);
+		return toSmi('srt', toSrt('srtstring', data).timelines);
 	}
 	if (format === 'smistring') {
-		return { Format: 'smi', ArrayData: smiFromSmiString(data) };
+		return { format: 'smi', timelines: smiFromSmiString(data) };
 	}
 	if (format === 'srt') {
-		return { Format: 'smi', ArrayData: smiFromSrtArray(data) };
+		return { format: 'smi', timelines: smiFromSrtArray(data) };
 	}
 	if (format === 'string') {
-		return { Format: 'smi', ArrayData: smiFromString(data) };
+		return { format: 'smi', timelines: smiFromString(data) };
 	}
-	return { Format: 'smi', ArrayData: [] };
+	return { format: 'smi', timelines: [] };
 };
 
 export default { srt: toSrt, smi: toSmi };

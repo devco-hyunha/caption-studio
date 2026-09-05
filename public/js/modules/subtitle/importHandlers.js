@@ -26,7 +26,7 @@ const setStorageEncoding = (storageKey) => (value) => {
 /**
  * @typedef {Object} ImportHandlerDeps
  * @property {object} Interface - caption.js UI 셸
- * @property {object} Sheet - 시트 API
+ * @property {object} sheet - 시트 API
  * @property {object} i18n - i18n 모듈
  */
 
@@ -44,7 +44,7 @@ const setStorageEncoding = (storageKey) => (value) => {
  * @param {ImportHandlerDeps & { applyToSheet: (result: object) => void }} deps
  * @param {FileImportConfig} config
  */
-const createFileImportHandler = ({ Interface, Sheet, i18n, applyToSheet }, config) => () => {
+const createFileImportHandler = ({ Interface, sheet, i18n, applyToSheet }, config) => () => {
 	const { encodeKey, inputSelector, formatPattern, convertFormat, emptyAlertKey, gaAction } = config;
 
 	let encode = storage.get(encodeKey);
@@ -74,7 +74,7 @@ const createFileImportHandler = ({ Interface, Sheet, i18n, applyToSheet }, confi
 			const fileReader = new FileReader();
 			fileReader.readAsText(fileData, storage.get(encodeKey));
 			fileReader.onload = () => {
-				applyToSheet(converters[Sheet.Format](convertFormat, fileReader.result));
+				applyToSheet(converters[sheet.format](convertFormat, fileReader.result));
 				sendImportGa(gaAction);
 			};
 		},
@@ -88,16 +88,16 @@ const createFileImportHandler = ({ Interface, Sheet, i18n, applyToSheet }, confi
  * @param {ImportHandlerDeps} deps
  * @returns {Record<'text'|'smi'|'srt', () => void> & { encoding: Record<'smi'|'srt', (value: string) => void> }}
  */
-const importHandlers = ({ Interface, Sheet, i18n }) => {
+const importHandlers = ({ Interface, sheet, i18n }) => {
 	const applyToSheet = (result) => {
-		Sheet.Current.row = 0;
-		Sheet.Current.col = 0;
-		Sheet.Move.Event();
-		Sheet.Set(result);
+		sheet.current.row = 0;
+		sheet.current.col = 0;
+		sheet.move.event();
+		sheet.set(result);
 		Interface.Dialog();
 	};
 
-	const deps = { Interface, Sheet, i18n, applyToSheet };
+	const deps = { Interface, sheet, i18n, applyToSheet };
 
 	return {
 		text: () => {
@@ -111,7 +111,7 @@ const importHandlers = ({ Interface, Sheet, i18n }) => {
 						Interface.Alert(i18n.t('please-input-contents'));
 						return;
 					}
-					applyToSheet(converters[Sheet.Format]('string', data));
+					applyToSheet(converters[sheet.format]('string', data));
 					sendImportGa('Text Import');
 				},
 			});

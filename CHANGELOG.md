@@ -71,10 +71,17 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.4.md](./changelog/2.4.md)
 
+## [2.5.0] — 2026-09-05
+
+`caption.js` Sheet 도메인을 `modules/sheet/`로 분리. camelCase API · Flex 레이아웃 · 바닐라 edit UI · 미사용 플러그인 정리.
+
+상세 변경: [changelog/2.5.md](./changelog/2.5.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
+| 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · 바닐라 edit UI |
 | 2.4.x | [changelog/2.4.md](./changelog/2.4.md) | video 분리 |
 | 2.3.x | [changelog/2.3.md](./changelog/2.3.md) | subtitle 분리 · 클라이언트 다운로드 · utils · analytics · ads |
 | 2.2.x | [changelog/2.2.md](./changelog/2.2.md) | utils 모듈 분리 |
