@@ -62,19 +62,19 @@ const createConfig = ({ sheet, i18n, ui }) => {
 					event.preventDefault();
 					const jump = (config.inputJump?.value ?? '').trim();
 					if (jump === '') {
-						ui.Alert(i18n.t('please-input-move-time'));
+						ui.alert(i18n.t('please-input-move-time'));
 						return;
 					}
 					const parsedJump = Number(jump);
 					if (Number.isNaN(parsedJump) || parsedJump <= 0 || parsedJump > 1000) {
-						ui.Alert(i18n.t('input-move-time-error'));
+						ui.alert(i18n.t('input-move-time-error'));
 						return;
 					}
 					changeBtn?.classList.remove('on');
 					const label = changeBtn?.firstElementChild ?? changeBtn;
 					if (label) label.textContent = i18n.t('change');
 					storage.set('jump_val', jump);
-					ui.Success(i18n.t('config-saved'));
+					ui.success(i18n.t('config-saved'));
 					config.setJump();
 					setInputJumpEditable(false);
 				},

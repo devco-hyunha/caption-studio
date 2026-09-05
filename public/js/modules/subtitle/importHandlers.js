@@ -25,7 +25,7 @@ const setStorageEncoding = (storageKey) => (value) => {
 
 /**
  * @typedef {Object} ImportHandlerDeps
- * @property {object} Interface - caption.js UI 셸
+ * @property {object} ui - UI 셸
  * @property {object} sheet - 시트 API
  * @property {object} i18n - i18n 모듈
  */
@@ -44,12 +44,12 @@ const setStorageEncoding = (storageKey) => (value) => {
  * @param {ImportHandlerDeps & { applyToSheet: (result: object) => void }} deps
  * @param {FileImportConfig} config
  */
-const createFileImportHandler = ({ Interface, sheet, i18n, applyToSheet }, config) => () => {
+const createFileImportHandler = ({ ui, sheet, i18n, applyToSheet }, config) => () => {
 	const { encodeKey, inputSelector, formatPattern, convertFormat, emptyAlertKey, gaAction } = config;
 
 	let encode = storage.get(encodeKey);
 	if (encode == '') encode = null;
-	Interface.Select.Trigger(encodeKey, encode);
+	ui.select({ key: encodeKey, value: encode });
 
 	bindEvent({
 		target: getLoadBtn(),
@@ -60,13 +60,13 @@ const createFileImportHandler = ({ Interface, sheet, i18n, applyToSheet }, confi
 			const fileData = fileInput?.files[0];
 
 			if (!fileData) {
-				Interface.Alert(i18n.t(emptyAlertKey));
+				ui.alert(i18n.t(emptyAlertKey));
 				return;
 			}
 
 			const fileFormat = fileData.name.split('.').pop();
 			if (!formatPattern.test(fileFormat)) {
-				Interface.Alert(i18n.t('not-support-file-format'));
+				ui.alert(i18n.t('not-support-file-format'));
 				resetFileInput(fileInput);
 				return;
 			}
@@ -88,16 +88,16 @@ const createFileImportHandler = ({ Interface, sheet, i18n, applyToSheet }, confi
  * @param {ImportHandlerDeps} deps
  * @returns {Record<'text'|'smi'|'srt', () => void> & { encoding: Record<'smi'|'srt', (value: string) => void> }}
  */
-const importHandlers = ({ Interface, sheet, i18n }) => {
+const importHandlers = ({ ui, sheet, i18n }) => {
 	const applyToSheet = (result) => {
 		sheet.current.row = 0;
 		sheet.current.col = 0;
 		sheet.move.event();
 		sheet.set(result);
-		Interface.Dialog();
+		ui.dialog.close();
 	};
 
-	const deps = { Interface, sheet, i18n, applyToSheet };
+	const deps = { ui, sheet, i18n, applyToSheet };
 
 	return {
 		text: () => {
@@ -108,7 +108,7 @@ const importHandlers = ({ Interface, sheet, i18n }) => {
 					event.preventDefault();
 					const data = document.querySelector('#subtitle-text')?.value ?? '';
 					if (data == '') {
-						Interface.Alert(i18n.t('please-input-contents'));
+						ui.alert(i18n.t('please-input-contents'));
 						return;
 					}
 					applyToSheet(converters[sheet.format]('string', data));

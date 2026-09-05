@@ -1,4 +1,4 @@
-﻿import { editHistory, clone } from '../../utils/index.js';
+import { editHistory, clone } from '../../utils/index.js';
 import { closeSearchPanel } from '../helpers/closeSearchPanel.js';
 import { createTime } from './time.js';
 import { createTimeControl } from './timeControl.js';
@@ -8,7 +8,7 @@ import { createColor } from './color.js';
  * @typedef {Object} EditDeps
  * @property {object} sheet
  * @property {{ encode: (el: Element) => string }} subtitle
- * @property {object} ui - Interface (Layout · Dialog · colorPicker)
+ * @property {object} ui - UI 셸 (layout · dialog · colorPicker)
  */
 
 const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');

@@ -6,9 +6,9 @@ import { trackEvent } from '../analytics/track.js';
 
 /**
  * @typedef {Object} VideoInitDeps
- * @property {object} Interface - caption.js UI 셸
- * @property {object} sheet - 시트 API
- * @property {object} i18n - i18n 모듈
+ * @property {object} ui - UI ??
+ * @property {object} sheet - ??? API
+ * @property {object} i18n - i18n ???
  */
 
 const hasSheetFocus = (sheet) => sheet.focus != null;
@@ -53,15 +53,15 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	const input = (type, src) => {
 		player.refresh();
 		if (!src || src == '') {
-			toElement(ui.Wrap)?.classList.add('empty');
-			ui.Alert(player.empty(type));
+			toElement(ui.wrap)?.classList.add('empty');
+			ui.alert(player.empty(type));
 			return;
 		}
 
-		toElement(ui.Wrap)?.classList.remove('empty');
+		toElement(ui.wrap)?.classList.remove('empty');
 		player.load(type, src);
 		if (!player.interface) {
-			toElement(ui.Wrap)?.classList.add('empty');
+			toElement(ui.wrap)?.classList.add('empty');
 			return;
 		}
 		attachTimeTrigger();
@@ -71,7 +71,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 		player.interface.on('timeupdate', function () {
 			player.syncFromTime(this.currentTime());
 		});
-		ui.Dialog();
+		ui.dialog.close();
 		trackEvent({ category: 'Player', action: type + ' Input', label: 'Video Input' });
 	};
 
@@ -143,7 +143,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 			if (fileInput) fileInput.value = '';
 			const filename = fieldEl?.querySelector('.i-filename');
 			if (filename) filename.textContent = '';
-			ui.Alert(i18n.t('not-support-file-format'));
+			ui.alert(i18n.t('not-support-file-format'));
 		}
 	};
 
@@ -175,7 +175,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 };
 
 /**
- * video 도메인 모듈을 생성한다. `initialize()` 호출 전까지 공개 API가 없다.
+ * video ?????? ????? ???????. `initialize()` ??? ?????? ???? API?? ????.
  *
  * @returns {{
  *   initialize: (deps: VideoInitDeps) => void,
@@ -190,13 +190,13 @@ const videoModule = () => {
 	const module = {};
 
 	/**
-	 * player를 만들고 공개 Video API를 붙인다. `Do.on('ready')`에서 sheet·Interface 준비 후 호출한다.
+	 * player?? ????? ???? Video API?? ??????. `Do.on('ready')`???? sheet??ui ??? ?? ??????.
 	 *
 	 * @param {VideoInitDeps} deps
 	 */
-	module.initialize = ({ Interface, sheet, i18n }) => {
-		const player = createPlayer({ ui: Interface, sheet, i18n });
-		Object.assign(module, createVideo({ player, ui: Interface, sheet, i18n }));
+	module.initialize = ({ ui, sheet, i18n }) => {
+		const player = createPlayer({ ui, sheet, i18n });
+		Object.assign(module, createVideo({ player, ui, sheet, i18n }));
 	};
 
 	return module;

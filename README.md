@@ -17,15 +17,17 @@
 
 ## 작업 목표
 
-1. 단일 파일 스크립트를 기능별로 분리
-2. 읽기 어려운 변수·스크립트 구조 개선
-3. jQuery 및 jQuery 플러그인 제거
-4. 코드 최신화 및 최적화
-5. UI 개선 *(미정)*
+| # | 목표 | 상태 (2.6.0) |
+|---|------|----------------|
+| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` 분리. `Shortkey` · `Fn` 일부는 `caption.js` 잔여 |
+| 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — 분리 모듈 camelCase·공개 API 축소 |
+| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — 분리 모듈은 바닐라 DOM. caption 단축키·ready 일부 jQuery 잔여 |
+| 4 | 코드 최신화 및 최적화 | 진행 중 |
+| 5 | UI 개선 | 미정 |
 
 ## 레거시 구조 (기준선)
 
-운영과 동일한 정적 앱 구성입니다.
+Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입니다. 이후 모듈 분리는 [CHANGELOG](./CHANGELOG.md) · [changelog/](./changelog/)를 참고합니다.
 
 ```
 .
@@ -34,24 +36,57 @@
 ├── public/
 │   ├── css/                # 스타일
 │   └── js/
-│       ├── caption.js      # 핵심 로직
-│       ├── modules/        # ES module 분리 (i18n, utils)
+│       ├── caption.js      # 핵심 로직 (단일 파일)
 │       ├── lib/            # jQuery, Video.js 등
 │       └── plugin/         # 단축키, 컬러피커 등
 ├── favicon/
-├── CHANGELOG.md            # 변경 이력 목차
-├── VERSION                 # 현재 SemVer (Git tag와 맞춤)
-└── changelog/              # MINOR별 상세 변경 (예: 2.0.md)
+├── CHANGELOG.md
+├── VERSION
+└── changelog/
 ```
 
 | 구분 | 설명 |
 |------|------|
 | UI / 셸 | `index.html` |
 | 핵심 로직 | `public/js/caption.js` |
-| 모듈 | `public/js/modules/` (i18n, utils) |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
 
-## 로컬에서 레거시 실행
+## 현재 구조
+
+[VERSION](./VERSION) 기준 워크트리 개요입니다.
+
+```
+.
+├── index.html
+├── manual.html
+├── public/
+│   ├── css/
+│   └── js/
+│       ├── caption.js          # 부트스트랩 · Shortkey · Fn 잔여
+│       ├── modules/
+│       │   ├── i18n/           # 다국어
+│       │   ├── utils/          # storage · DOM · runAction 등
+│       │   ├── subtitle/       # import / export / convert
+│       │   ├── video/          # 플레이어 연동
+│       │   ├── sheet/          # 자막 시트
+│       │   ├── ui/             # 셸 UI (toast · dialog · widgets)
+│       │   ├── analytics/
+│       │   └── ads/
+│       ├── lib/
+│       └── plugin/
+├── favicon/
+├── CHANGELOG.md
+├── VERSION
+└── changelog/
+```
+
+| 구분 | 설명 |
+|------|------|
+| 부트스트랩 | `public/js/caption.js` |
+| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,…}` |
+| 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
+
+## 로컬에서 실행
 
 정적 파일만으로 UI·편집 흐름을 확인할 수 있습니다.
 
@@ -122,7 +157,7 @@
 | 항목 | 규칙 |
 |------|------|
 | `type` | 변경 성격 (필수) |
-| `scope` | 영역 (선택) |
+| `scope` | 영역 (선택) — **현재 모듈·도메인에 맞춰 갱신** |
 | `subject` | 한 줄 요약, 50자 내외, 마침표 없음, 명령형 |
 | `body` | 변경 이유·검증 방법 (선택) |
 
@@ -135,7 +170,7 @@
 | `fix` | 잘못된 동작·버그 수정 | `fix(subtitle): SMI import 시 인코딩 깨짐 수정` |
 | `feat` | 새 기능 추가 (기존에 없던 동작) | `feat(shortkey): 자막 검색 단축키 추가` |
 | `perf` | 성능만 개선 (동작·UI 동일) | `perf(sheet): 자막 시트 렌더링 중복 호출 제거` |
-| `style` | UI·CSS·마크업만 변경 (로직 변경 없음) | `style(ui): 자막 시트 행 간격 조정` |
+| `style` | 화면·CSS·마크업만 변경 (로직 변경 없음) | `style(ui): 자막 시트 행 간격 조정` |
 | `docs` | README, 주석, 진행 문서 등 | `docs: 커밋 메시지 규칙 추가` |
 | `test` | 테스트 추가·수정·실패 수정 | `test(subtitle): SRT 파서 단위 테스트 추가` |
 | `remove` | jQuery·플러그인·미사용 코드 **제거** (대체 구현 포함) | `remove(jquery): colorpicker jQuery 플러그인을 vanilla로 교체` |
@@ -149,16 +184,21 @@
 
 ### scope — 영역
 
+도메인 모듈이 생기면 이 표를 최신에 맞춥니다. CSS만 바꿀 때는 type `style` + scope `ui`를 쓸 수 있습니다.
+
 | scope | 대상 |
 |-------|------|
-| `sheet` | 자막 시트 (편집, 그리기, 트리거) |
-| `player` | Video.js, 재생·타임라인 |
-| `subtitle` | SRT/SMI 파싱, import/export |
-| `i18n` | 다국어 |
-| `shortkey` | 단축키 |
+| `sheet` | `modules/sheet` — 자막 시트 |
+| `video` | `modules/video` — 플레이어 연동 |
+| `subtitle` | `modules/subtitle` — SRT/SMI import·export |
+| `ui` | `modules/ui` — 셸 UI (toast · dialog · widgets · confirm) |
+| `i18n` | `modules/i18n` — 다국어 |
+| `utils` | `modules/utils` — 공용 유틸 |
+| `analytics` | `modules/analytics` |
+| `ads` | `modules/ads` |
+| `shortkey` | caption.js 단축키 잔여 |
 | `jquery` | jQuery·jQuery UI 의존 제거 |
-| `structure` | 전역 변수, 모듈 구조, 네이밍 |
-| `ui` | 화면·레이아웃·CSS |
+| `structure` | 전역 변수, 모듈 골격, 네이밍 |
 | `build` | 번들, 빌드 설정 |
 | `docs` | 문서 |
 
@@ -180,10 +220,10 @@ chore: 운영 중인 Caption Studio 레거시 코드를 리팩터링 기준선�
 ```
 
 ```text
-refactor(sheet): caption.js의 시트 트리거 로직을 sheet/trigger.js로 분리
+refactor(ui): caption.js Interface 도메인을 modules/ui로 분리
 
-- Why: 단일 파일 분리 1단계
-- Verify: 자막 추가·삭제·이동 수동 확인
+- Why: toast·feedback·dialog·widgets를 caption.js에서 분리하고 공개 API를 ui.init·ui.select로 좁힌다
+- Verify: 다이얼로그·select·alert/confirm 수동 확인
 ```
 
 ```text

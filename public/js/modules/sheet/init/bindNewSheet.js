@@ -15,7 +15,7 @@ const bindNewSheet = (sheet, ui, i18n) => {
 		handler: (event) => {
 			event.preventDefault();
 			document.querySelector('#nav-trigger')?.click();
-			ui.Confirm({
+			ui.confirm({
 				title: i18n.t('new-file'),
 				content: i18n.t('new-file-contents'),
 				bgDismiss: true,

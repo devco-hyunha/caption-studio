@@ -2,24 +2,17 @@
 import subtitleModule from './modules/subtitle/index.js';
 import videoModule from './modules/video/index.js';
 import sheetModule from './modules/sheet/index.js';
-import { trackEvent } from './modules/analytics/track.js';
+import uiModule from './modules/ui/index.js';
 import {
 	storage,
 	editHistory,
-	clone,
-	capitalize,
-	extend,
-	padZero,
-	splitTimecode,
-	formatTimecode,
-	timePartsToMs,
-	runAction,
 } from './modules/utils/index.js';
 
 const i18n = i18nModule();
 const subtitle = subtitleModule();
 const video = videoModule();
 const sheet = sheetModule();
+const ui = uiModule();
 
 const getActionContext = () => ({
 	video,
@@ -29,231 +22,30 @@ const getActionContext = () => ({
 	Shortkey,
 });
 
-var Do=$(document),Wn=$(window),Interface={},Fn={},Shortkey=$.Shortcuts;
+var Do=$(document),Wn=$(window),Fn={},Shortkey=$.Shortcuts;
+
+ui.initialize({
+	i18n,
+	getSheet: () => sheet,
+	getActionContext,
+});
 
 const initializeDomainModules = () => {
 	sheet.initialize({
 		i18n,
 		header: subtitle.header,
-		ui: Interface,
+		ui,
 		subtitle,
 	});
-	video.initialize({ Interface, sheet, i18n });
-	subtitle.initialize({ Interface, sheet, i18n });
+	video.initialize({ ui, sheet, i18n });
+	subtitle.initialize({ ui, sheet, i18n });
 };
-
-	Interface.Wrap = $('#wrap');
-	Interface.Layout = $('#layout');
-	Interface.Alert = function(contents){
-		Toast.error(contents);
-	};
-	Interface.Success = function(contents){
-		Toast.success(contents);
-	};
-	Interface.Confirm = function(getOpt){
-		var opt = {
-			title : false,
-			content : false,
-			successBtn : i18n.t('yes'),
-			cancelBtn : i18n.t('no'),
-			bgDismiss : false,
-			success : null,
-			cancel : null
-		};
-		if (getOpt && typeof getOpt == 'object'){
-			$.extend(opt, getOpt);
-		}
-		var cf = [], ev = [];
-		cf.wrap = $('<div class="cf-wrap"></div>'),
-		cf.overlay = $('<div class="cf-overlay"></div>').appendTo(cf.wrap),
-		cf.box = $('<div class="cf-box"></div>').appendTo(cf.wrap);
-		if (opt.title) $('<div class="cf-title"><span class="title">'+opt.title+'</span></div>').appendTo(cf.box);
-		if (opt.content) $('<div class="cf-content">'+opt.content+'</div>').appendTo(cf.box);
-		if (opt.successBtn || opt.cancelBtn) cf.btns = $('<div class="cf-btns"></div>').appendTo(cf.box);
-		if (opt.successBtn) cf.success = $('<button class="btn-success tup">'+opt.successBtn+'</button>').appendTo(cf.btns);
-		if (opt.cancelBtn) cf.cancel = $('<button class="btn-cancel tup">'+opt.cancelBtn+'</button>').appendTo(cf.btns);
-		ev.close = function(process){
-			if (process && opt[process]) opt[process]();
-			for (let key in cf) cf[key].remove();
-		};
-		if (opt.bgDismiss){
-			cf.overlay.on('click',function(){
-				ev.close();
-			});
-		}
-		if (cf.success){
-			cf.success.on('click',function(){
-				ev.close('success');
-			});
-		}
-		if (cf.cancel){
-			cf.cancel.on('click',function(){
-				ev.close('cancel');
-			});
-		}
-		$('body').append(cf.wrap);
-		Interface.SwitchFocus(true);
-	};
-	Interface.SwitchFocus = function(key){
-		if (!Interface.AnotherInput) Interface.AnotherInput = $('<input readonly />').addClass('another-input').appendTo($('body'));
-		if (key){
-			Interface.AnotherInput.trigger('focus');
-		} else {
-			sheet.active && sheet.active.target.indexOf('time') == -1 && sheet.trigger.input?.focus();
-		}
-	};
-	Interface.Dialog = (function(target,tabHeader){
-		if (target){
-			if (Interface.Layout.hasClass('on')){
-				Interface.Layer = false;
-				Interface.Layout.find('.dialog.on').removeClass('on');
-			} else {
-				Interface.Layer = true;
-				Interface.Layout.addClass('on');
-			}
-			target = Interface.Layout.find('#'+target);
-			tabHeader = target.find('.tab-header');
-			if (tabHeader.length > 0){
-				tabHeader.children('li').eq(0).find('a').trigger('click');
-			}
-			target.addClass('on').find('input').eq(0).trigger('focus');
-			Interface.SwitchFocus(true);
-		} else {
-			$('.dialog-trigger').off('click').on('click',function(trigger,target){
-				trigger = $(this);
-				target = trigger.data('target');
-				Interface.Dialog(target);
-				$('.nav-open').removeClass('nav-open');
-			});
-			Interface.Layout.find('.btn-close').add('.overlay').off('click').on('click',function(){
-				Interface.Layout.removeClass('on');
-				Interface.Layout.dialog = Interface.Layout.find('.dialog.on');
-				Interface.Layout.dialog.find('.ui-tab').find('.tab-header > li > a').eq(0).trigger('click');
-				Interface.Layout.dialog.removeClass('on');
-				Interface.Layer = false;
-			}).trigger('click');
-			Interface.SwitchFocus();
-		}
-	});
-	Interface.Tab = (function(){
-		$('.ui-tab').each(function(eq,ui){
-			$(ui)
-			.on('click','.tab-header > li > a',function(tab,file,trigger,active,value,action,init){
-				tab = $(ui);
-				if (tab.hasClass('form')){
-					tab.find('.btn-reset').trigger('click');
-					file = tab.find('.i-text.file');
-					if (file.length > 0){
-						file.addClass('empty');
-						file.find('.i-filename').text('');
-					}
-				}
-				tab.find('.tab-header > li.on').removeClass('on');
-				tab.find('.tab-panel.on').removeClass('on');
-
-				trigger = $(this);
-				active = trigger.parent().addClass('on').index();
-				tab.find('.tab-panel').eq(active).addClass('on');
-				value = trigger.data('value');
-				action = trigger.data('action');
-				init = tab.data('action');
-				tab.data('value',value);
-				if (action) runAction(action, getActionContext(), value);
-				if (init) runAction(init, getActionContext(), value);
-			})
-			.find('.tab-header > li > a').eq(0).trigger('click');
-		});
-		$('.ui-toggle').each(function(eq,toggle){
-			$(toggle)
-			.on('click','.trigger',function(){
-				$(this).parent('.ui-toggle').toggleClass('on');
-			});
-		});
-	});
-	Interface.Select = {
-		Trigger : (function(k, v, i){
-			k = $('.ui-select[data-key="'+k+'"]');
-			if (v) k.find('[data-value="'+v+'"]').trigger('click');
-			else k.find('[data-value]').eq(0).trigger('click');
-		}),
-		Init : (function(){
-			$('.ui-select').each(function(eq,ui){
-				$(ui)
-				.on('click','.trigger',function(){
-					$(this).parent('.ui-select').toggleClass('on');
-				})
-				.on('click','.option > li > a',function(option,parent,select,value,action){
-					option = $(this);
-					parent = option.parent();
-					select = option.parents('.ui-select');
-					parent.siblings('.current').removeClass('current');
-					parent.addClass('current');
-					value = option.data('value');
-					select.find('.trigger').text(option.text());
-					select.data('value', value);
-					action = select.data('action');
-					if (action) runAction(action, getActionContext(), value);
-					select.removeClass('on');
-					trackEvent({ category: 'Selection', action: select.data('key') + ' : ' + value, label: 'Selection' });
-				})
-				.on('mouseleave', function(){
-					$(this).removeClass('on');
-				});
-			});
-			$('.ui-toggle').each(function(eq,toggle){
-				$(toggle).off('click')
-				.on('click','.trigger',function(){
-					$(this).parent('.ui-toggle').toggleClass('on');
-					return false;
-				});
-			});
-		})
-	};
-	Interface.InputFile = (function(){
-		$('.i-text.file').each(function(eq,ui){
-			$(ui).find('input[type="file"]').off('change').on('change',function(parent,file,filename,action){
-				parent = $(this).parent();
-				file = this.files[0];
-				filename = parent.find('.i-filename');
-				action = parent.data('action');
-				if (file){
-					parent.removeClass('empty');
-					filename.text(file.name);
-				} else {
-					parent.addClass('empty');
-					filename.text('');
-				}
-				if (action) runAction(action, getActionContext(), parent, file);
-			});
-		});
-	});
-	Interface.I18n = (function(){
-		if (!i18n.getLocale()) return;
-		$('.i18n').each(function(eq, ui, kA, k){
-			ui = $(ui);
-			kA = ui.data();
-			for (k in kA){
-				switch (k){
-					case 'text': ui.text(i18n.t(kA[k]));break;
-					case 'title': ui.attr('title', i18n.t(kA[k]));break;
-					case 'placeholder': ui.attr('placeholder', i18n.t(kA[k]));break;
-				}
-			};
-		});
-		$('.ui-select').each(function(eq, select, value, option){
-			select = $(select);
-			value = select.data('value');
-			if (!value) return;
-			option = select.find('.option [data-value="'+value+'"]');
-			if (option.length) select.find('.trigger').text(option.text());
-		});
-	});
 
 	Shortkey.Default = [
 		{
 			placeholder : 'next-row-move', mask : 'tab', type : 'hold', isPrevented : true,
 			handler : function(e){
-				if (!Interface.Layer){
+				if (!ui.layer){
 					e.preventDefault();
 					sheet.edit.state && sheet.edit.off();
 					sheet.move.row.next(true);
@@ -263,7 +55,7 @@ const initializeDomainModules = () => {
 		}, {
 			placeholder : 'prev-row-move', mask : 'shift+tab', type : 'hold', isPrevented : true,
 			handler : function(e){
-				if (!Interface.Layer){
+				if (!ui.layer){
 					e.preventDefault();
 					sheet.edit.state && sheet.edit.off();
 					sheet.move.row.prev();
@@ -273,14 +65,14 @@ const initializeDomainModules = () => {
 		}, {
 			placeholder : 'sheet-edit-on', mask : 'f2', type : 'hold', isPrevented : true,
 			handler : function(){
-				if (!sheet.edit.state && !Interface.Layer && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo')) sheet.edit.on();
+				if (!sheet.edit.state && !ui.layer && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo')) sheet.edit.on();
 			}
 		},  {
 			placeholder : 'sheet-edit-off', mask : 'esc', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (Interface.Layer){
-					Interface.Layout.find('.overlay').trigger('click');
+				if (ui.layer){
+					ui.layout.querySelector('.overlay')?.click();
 				} else if (sheet.multiple.state){
 					sheet.multiple.toggle();
 				} else if (sheet.edit.state) {
@@ -290,9 +82,9 @@ const initializeDomainModules = () => {
 		}, {
 			mask : 'enter', type : 'hold',
 			handler : function(e){
-				if (Interface.Layer){
+				if (ui.layer){
 					e.preventDefault();
-					Interface.Layout.find('.dialog.on').find('.btn-submit').trigger('click');
+					ui.layout.querySelector('.dialog.on .btn-submit')?.click();
 				} else if (sheet.edit.state){
 					e.preventDefault();
 					sheet.edit.cmd('enter');
@@ -304,7 +96,7 @@ const initializeDomainModules = () => {
 			mask : 'pageup', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer){
+				if (!ui.layer){
 					sheet.move.page.prev();
 				}
 			}
@@ -312,7 +104,7 @@ const initializeDomainModules = () => {
 			mask : 'pagedown', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer){
+				if (!ui.layer){
 					sheet.move.page.next();
 				}
 			}
@@ -320,7 +112,7 @@ const initializeDomainModules = () => {
 			mask : 'up', type : 'hold', isPrevented : true,
 			handler : function(e){
 				sheet.shift = false;
-				if (Interface.Layer){
+				if (ui.layer){
 				} else {
 					if (!sheet.edit.state){
 						e.preventDefault();
@@ -332,7 +124,7 @@ const initializeDomainModules = () => {
 			mask : 'down', type : 'hold', isPrevented : true,
 			handler : function(e){
 				sheet.shift = false;
-				if (Interface.Layer){
+				if (ui.layer){
 				} else {
 					if (!sheet.edit.state){
 						e.preventDefault();
@@ -343,7 +135,7 @@ const initializeDomainModules = () => {
 		}, {
 			mask : 'left', type : 'hold', isPrevented : true,
 			handler : function(e){
-				if (Interface.Layer){
+				if (ui.layer){
 				} else {
 					if (!sheet.edit.state){
 						e.preventDefault();
@@ -354,7 +146,7 @@ const initializeDomainModules = () => {
 		}, {
 			mask : 'right', type : 'hold', isPrevented : true,
 			handler : function(e){
-				if (Interface.Layer){
+				if (ui.layer){
 				} else {
 					if (!sheet.edit.state){
 						e.preventDefault();
@@ -366,7 +158,7 @@ const initializeDomainModules = () => {
 			mask : 'shift+up', type : 'hold', isPrevented : true,
 			handler : function(e){
 				sheet.shift = true;
-				if (Interface.Layer){
+				if (ui.layer){
 					e.preventDefault();
 				} else {
 					if (!sheet.edit.state){
@@ -379,7 +171,7 @@ const initializeDomainModules = () => {
 			mask : 'shift+down', type : 'hold', isPrevented : true,
 			handler : function(e){
 				sheet.shift = true;
-				if (Interface.Layer){
+				if (ui.layer){
 					e.preventDefault();
 				} else {
 					if (!sheet.edit.state){
@@ -431,7 +223,7 @@ const initializeDomainModules = () => {
 			placeholder : 'undo', mask : 'ctrl+z', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer && !sheet.edit.state){
+				if (!ui.layer && !sheet.edit.state){
 					sheet.undo();
 				}
 			}
@@ -439,7 +231,7 @@ const initializeDomainModules = () => {
 			placeholder : 'redo', mask : 'ctrl+y', type : 'hold', isPrevented : true,
 			handler : function(e){
 				e.preventDefault();
-				if (!Interface.Layer && !sheet.edit.state){
+				if (!ui.layer && !sheet.edit.state){
 					sheet.redo();
 				}
 			}
@@ -747,7 +539,7 @@ const initializeDomainModules = () => {
 		}).off(keyEvent).on(keyEvent,'.i-text',function(e, mask){
 			e.preventDefault();
 			if (e.which == 229 || e.which == 0 || e.key == 'unidentified'){
-				Interface.Alert(i18n.t('not-support-shortkey1'));
+				ui.alert(i18n.t('not-support-shortkey1'));
 				$(this).val('');
 				return false;
 			}
@@ -760,10 +552,10 @@ const initializeDomainModules = () => {
 			key = form.data('key');
 			mask = form.find('.i-text').val();
 			if ($.trim(mask) == ''){
-				Interface.Alert(i18n.t('please-input-shortkey'));
+				ui.alert(i18n.t('please-input-shortkey'));
 				input.trigger('focus');
 			} else if ($.trim(mask).length == 1){
-				Interface.Alert(i18n.t('not-support-shortkey2'));
+				ui.alert(i18n.t('not-support-shortkey2'));
 				input.trigger('focus');
 			} else if($.Shortcuts.search(mask)){
 				Shortkey.Custom[key].mask = mask;
@@ -771,9 +563,9 @@ const initializeDomainModules = () => {
 				$.Shortcuts.removeAll();
 				Shortkey.Init();
 				form.removeClass('on');
-				Interface.Success(i18n.t('config-saved'));
+				ui.success(i18n.t('config-saved'));
 			} else {
-				Interface.Alert(i18n.t('duplecation-shortkey'));
+				ui.alert(i18n.t('duplecation-shortkey'));
 				input.trigger('focus');
 			}
 			return false;
@@ -830,7 +622,7 @@ const initializeDomainModules = () => {
 			keycode = e.keyCode ? e.keyCode : e.which;
 			regexp = /[A-Za-o0-9`åÀ½»ÜÛÝºÞ¼¾¿]/;
 
-			if (!Interface.Layer && $('.ui-dialog.on').length == 0 && !sheet.edit.state && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !e.ctrlKey && !e.altKey && (regexp.test(String.fromCharCode(keycode)) || 0 === keycode || keycode === Shortkey.Code.space)){
+			if (!ui.layer && $('.ui-dialog.on').length == 0 && !sheet.edit.state && !sheet.multiple.state && (sheet.current.target == 'text' || sheet.current.target == 'memo') && !e.ctrlKey && !e.altKey && (regexp.test(String.fromCharCode(keycode)) || 0 === keycode || keycode === Shortkey.Code.space)){
 				sheet.edit.on();
 			}
 		});
@@ -840,7 +632,7 @@ const initializeDomainModules = () => {
 
 	Fn.Format = (function(format,optionArray){
 		if (format != sheet.format){
-			Interface.Confirm({
+			ui.confirm({
 				title:i18n.t('subtitle-format-change'),
 				content :i18n.t('subtitle-format-change-contents'),
 				bgDismiss:true,
@@ -859,7 +651,7 @@ const initializeDomainModules = () => {
 					sheet.edit.history();
 				},
 				cancel:function(){
-					Interface.Select.Trigger('format',sheet.format);
+					ui.select({ key: 'format', value: sheet.format });
 				}
 			});
 		}
@@ -871,15 +663,12 @@ const initializeDomainModules = () => {
 			language : language,
 			Header : subtitle.header[sheet.format]
 		});
-		Interface.I18n();
+		ui.applyI18n();
 		$('.nav-open').removeClass('nav-open');
 	});
 	Do.on('ready', function(){
 		initializeDomainModules();
-		Interface.Tab();
-		Interface.Dialog();
-		Interface.InputFile();
-		Interface.Select.Init();
+		ui.init();
 		sheet.init('#sheet');
 
 		Shortkey.Init();
@@ -902,17 +691,15 @@ const initializeDomainModules = () => {
 				if (!format || format == '') format = sheet.format;
 				if (!language || language == '' || !i18n.getLocale(language)) language = sheet.language;
 				i18n.setLanguage(language);
-				Interface.I18n();
-				Interface.Select.Trigger('language',language);
-				Interface.Select.Trigger('format',format);
+				ui.applyI18n();
+				ui.select({ key: 'language', value: language });
+				ui.select({ key: 'format', value: format });
 				$('#nav-trigger').on('click',function(){
-					Interface.Wrap.toggleClass('nav-open');
-					if (Interface.Wrap.hasClass('nav-open')){
-						Interface.SwitchFocus(true);
+					ui.wrap.classList.toggle('nav-open');
+					if (ui.wrap.classList.contains('nav-open')){
+						ui.switchFocus(true);
 					}
 				});
 			})
 		});
 	});
-
-var Toast;!function(t){function a(t,a,n){d("info",t,a,n)}function n(t,a,n){d("warning",t,a,n)}function i(t,a,n){d("error",t,a,n)}function o(t,a,n){d("success",t,a,n)}function d(a,n,i,o){void 0===o&&(o={}),o=$.extend({},t.defaults,o),s||(s=$("#toast-container"),0===s.length&&(s=$("<div>").attr("id","toast-container").appendTo($("body")))),o.width&&s.css({width:o.width});var d=$("<div>").addClass("toast").addClass("toast-"+a);if(i){var e=$("<div>").addClass("toast-title").append(i);d.append(e)}if(n){var r=$("<div>").addClass("toast-message").append(n);d.append(r)}o.displayDuration>0&&setTimeout(function(){d.fadeOut(o.fadeOutDuration,function(){d.remove()})},o.displayDuration),d.on("click",function(){d.remove()}),s.prepend(d)}t.defaults={width:"",displayDuration:2e3,fadeOutDuration:800},t.info=a,t.warning=n,t.error=i,t.success=o;var s}(Toast||(Toast={}));

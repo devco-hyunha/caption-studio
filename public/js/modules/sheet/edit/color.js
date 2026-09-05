@@ -111,7 +111,7 @@ const createColor = ({ edit, sheet, ui }) => ({
 				event: 'click',
 				handler: (event) => {
 					event.preventDefault();
-					ui.Dialog('color-selector');
+					ui.dialog.open('color-selector');
 					document.querySelector('#color-selector .btn-color')?.click();
 				},
 			});

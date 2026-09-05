@@ -36,7 +36,7 @@ import { createInit } from './init/index.js';
  * @typedef {Object} SheetInitDeps
  * @property {{ t: (key: string) => string }} i18n
  * @property {{ smi: string[], srt: string[] }} header
- * @property {object} ui - Interface
+ * @property {object} ui - UI 셸
  * @property {{ encode: Function }} subtitle
  */
 

@@ -33,7 +33,7 @@ const resolveFilename = (form, extension) => {
 
 /**
  * @typedef {Object} ExportHandlerDeps
- * @property {object} Interface - caption.js UI 셸 (`Select.Trigger` 등)
+ * @property {object} ui - UI 셸 (`select.trigger` 등)
  * @property {object} sheet - 시트 API (`format`, `timelines`, `language`)
  */
 
@@ -58,7 +58,7 @@ const resolveFilename = (form, extension) => {
  * @param {ExportHandlerDeps & { convert: (format: string, sheetData?: object) => object }} deps
  * @param {ExportHandlerConfig} config
  */
-const createExportHandler = ({ Interface, sheet, convert }, config) => () => {
+const createExportHandler = ({ ui, sheet, convert }, config) => () => {
 	const {
 		storageKey,
 		formSelector,
@@ -74,7 +74,7 @@ const createExportHandler = ({ Interface, sheet, convert }, config) => () => {
 	} else if (stored === '') {
 		stored = null;
 	}
-	Interface.Select.Trigger(storageKey, stored);
+	ui.select({ key: storageKey, value: stored });
 
 	const form = document.querySelector(formSelector);
 	bindEvent({
@@ -114,7 +114,7 @@ const createExportHandler = ({ Interface, sheet, convert }, config) => () => {
  *   sheetFormat: Record<'json'|'excel', (value: string) => void>,
  * }}
  */
-const exportHandlers = ({ Interface, sheet }) => {
+const exportHandlers = ({ ui, sheet }) => {
 	const convert = (format, sheetData) =>
 		formatExportData({
 			exportFormat: format,
@@ -122,7 +122,7 @@ const exportHandlers = ({ Interface, sheet }) => {
 			sheetData: sheetData ?? sheet.timelines,
 		});
 
-	const deps = { Interface, sheet, convert };
+	const deps = { ui, sheet, convert };
 
 	return {
 		smi: createExportHandler(deps, {

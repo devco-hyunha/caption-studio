@@ -8,7 +8,7 @@ import { bindNewSheet } from './bindNewSheet.js';
 /**
  * @typedef {Object} InitDeps
  * @property {object} sheet
- * @property {{ Dialog: Function, Confirm: Function }} ui
+ * @property {{ dialog: object, confirm: Function }} ui
  * @property {{ t: (key: string) => string }} i18n
  */
 

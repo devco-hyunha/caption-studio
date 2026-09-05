@@ -1,4 +1,4 @@
-﻿import { bindEvent } from '../../utils/dom.js';
+import { bindEvent } from '../../utils/dom.js';
 
 /**
  * @param {string} id
@@ -24,7 +24,7 @@ const bindToolbarClick = (id, onClick) => {
  * 시트 툴바 버튼 이벤트를 바인딩한다.
  *
  * @param {object} sheet
- * @param {{ Dialog: Function }} ui
+ * @param {{ dialog: { open: (id: string) => void } }} ui
  */
 const bindToolbar = (sheet, ui) => {
 	const handleEditClip = (command) => {
@@ -49,7 +49,7 @@ const bindToolbar = (sheet, ui) => {
 	};
 
 	bindToolbarClick('time-edit', () => {
-		ui.Dialog('time-editor');
+		ui.dialog.open('time-editor');
 	});
 	bindToolbarClick('time-plus', () => {
 		handleTimeStep('plus');

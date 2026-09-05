@@ -24,7 +24,7 @@ const createTechOptions = {
 
 /**
  * @typedef {Object} PlayerDeps
- * @property {object} ui - caption.js UI 셸 (`Interface`)
+ * @property {object} ui - UI 셸
  * @property {object} sheet - 시트 API
  * @property {object} i18n - i18n 모듈
  */
@@ -52,7 +52,7 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 	};
 
 	const alertUnsupported = () => {
-		ui.Alert(i18n.t('not-support-file-format'));
+		ui.alert(i18n.t('not-support-file-format'));
 	};
 
 	const loadTech = (type, src) => {

@@ -6,7 +6,7 @@ import importHandlers from './importHandlers.js';
 
 /**
  * @typedef {Object} SubtitleInitDeps
- * @property {object} Interface - caption.js UI 셸
+ * @property {object} ui - UI 셸
  * @property {object} sheet - 시트 API
  * @property {object} i18n - i18n 모듈 (import 핸들러에서 사용)
  */
@@ -31,13 +31,13 @@ const subtitleModule = () => {
 	};
 
 	/**
-	 * import/export 핸들러를 주입한다. `Do.on('ready')`에서 sheet·Interface 준비 후 호출한다.
+	 * import/export 핸들러를 주입한다. `Do.on('ready')`에서 sheet·ui 준비 후 호출한다.
 	 *
 	 * @param {SubtitleInitDeps} deps
 	 */
-	module.initialize = ({ Interface, sheet, i18n }) => {
-		module.import = importHandlers({ Interface, sheet, i18n });
-		module.export = exportHandlers({ Interface, sheet });
+	module.initialize = ({ ui, sheet, i18n }) => {
+		module.import = importHandlers({ ui, sheet, i18n });
+		module.export = exportHandlers({ ui, sheet });
 	};
 
 	return module;
