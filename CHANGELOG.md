@@ -77,11 +77,17 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.5.md](./changelog/2.5.md)
 
+## [2.5.1] — 2026-09-05
+
+`sheet.init`에 timeControl·search·config 초기화를 통합.
+
+상세 변경: [changelog/2.5.md](./changelog/2.5.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
-| 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · 바닐라 edit UI |
+| 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · init 통합 |
 | 2.4.x | [changelog/2.4.md](./changelog/2.4.md) | video 분리 |
 | 2.3.x | [changelog/2.3.md](./changelog/2.3.md) | subtitle 분리 · 클라이언트 다운로드 · utils · analytics · ads |
 | 2.2.x | [changelog/2.2.md](./changelog/2.2.md) | utils 모듈 분리 |

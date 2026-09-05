@@ -13,7 +13,7 @@ import { bindNewSheet } from './bindNewSheet.js';
  */
 
 /**
- * 시트 DOM·스크롤·툴바 이벤트를 바인딩하는 init 함수를 만든다.
+ * 시트 DOM·스크롤·툴바·편집/검색/설정 UI 이벤트를 바인딩하는 init 함수를 만든다.
  *
  * @param {InitDeps} deps
  * @returns {(target: string) => void}
@@ -27,6 +27,9 @@ const createInit = ({ sheet, ui, i18n }) => (target) => {
 
 	sheet.trigger.init();
 	sheet.edit.color.init();
+	sheet.edit.timeControl();
+	sheet.search.init();
+	sheet.config.init();
 
 	bindToolbar(sheet, ui);
 	bindNewSheet(sheet, ui, i18n);

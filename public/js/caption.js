@@ -881,9 +881,6 @@ const initializeDomainModules = () => {
 		Interface.InputFile();
 		Interface.Select.Init();
 		sheet.init('#sheet');
-		sheet.edit.timeControl();
-		sheet.search.init();
-		sheet.config.init();
 
 		Shortkey.Init();
 		video.init();
