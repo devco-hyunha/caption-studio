@@ -3,7 +3,7 @@ import { bindEvent } from '../utils/dom.js';
 /**
  * @typedef {Object} DialogDeps
  * @property {object} ui - UI 셸 (layout · layer · anotherInput)
- * @property {() => object} getSheet - switchFocus 복원용 sheet
+ * @property {object} sheet - switchFocus 복원용 sheet
  */
 
 /**
@@ -19,7 +19,7 @@ import { bindEvent } from '../utils/dom.js';
  *   },
  * }}
  */
-const createDialog = ({ ui, getSheet }) => {
+const createDialog = ({ ui, sheet }) => {
 	const switchFocus = (focusAnotherInput) => {
 		if (!ui.anotherInput) {
 			const anotherInput = document.createElement('input');
@@ -32,7 +32,6 @@ const createDialog = ({ ui, getSheet }) => {
 			ui.anotherInput.focus();
 			return;
 		}
-		const sheet = getSheet();
 		sheet.active && sheet.active.target.indexOf('time') == -1 && sheet.trigger.input?.focus();
 	};
 

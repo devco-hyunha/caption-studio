@@ -3,8 +3,12 @@ import { trackEvent } from '../analytics/track.js';
 import { bindEvent } from '../utils/dom.js';
 
 /**
- * @typedef {Object} WidgetsDeps
- * @property {() => object} getActionContext - data-action용 지연 컨텍스트
+ * @typedef {Object} WidgetsContext
+ * @property {object} video
+ * @property {object} Fn
+ * @property {object} Shortkey
+ * @property {object} [import]
+ * @property {object} [export]
  */
 
 const getChildIndex = (node) => [...node.parentElement.children].indexOf(node);
@@ -38,7 +42,7 @@ const bindToggle = () => {
 	});
 };
 
-const createTab = (getActionContext) => () => {
+const createTab = (context) => () => {
 	document.querySelectorAll('.ui-tab').forEach((tab) => {
 		bindEvent({
 			target: tab,
@@ -62,15 +66,15 @@ const createTab = (getActionContext) => () => {
 				const linkAction = tabLink.dataset.action;
 				const tabAction = tab.dataset.action;
 				if (value != null) tab.dataset.value = value;
-				if (linkAction) runAction(linkAction, getActionContext(), value);
-				if (tabAction) runAction(tabAction, getActionContext(), value);
+				if (linkAction) runAction(linkAction, context, value);
+				if (tabAction) runAction(tabAction, context, value);
 			},
 		});
 		tab.querySelector('.tab-header > li > a')?.click();
 	});
 };
 
-const createSelect = (getActionContext) => ({
+const createSelect = (context) => ({
 	trigger: ({ key, value } = {}) => {
 		const select = document.querySelector(`.ui-select[data-key="${key}"]`);
 		if (!select) return;
@@ -104,7 +108,7 @@ const createSelect = (getActionContext) => ({
 					if (value != null) select.dataset.value = value;
 
 					const selectAction = select.dataset.action;
-					if (selectAction) runAction(selectAction, getActionContext(), value);
+					if (selectAction) runAction(selectAction, context, value);
 					select.classList.remove('on');
 					trackEvent({
 						category: 'Selection',
@@ -125,7 +129,7 @@ const createSelect = (getActionContext) => ({
 	},
 });
 
-const createInputFile = (getActionContext) => () => {
+const createInputFile = (context) => () => {
 	document.querySelectorAll('.i-text.file').forEach((fileField) => {
 		const fileInput = fileField.querySelector('input[type="file"]');
 		if (!fileInput) return;
@@ -143,7 +147,7 @@ const createInputFile = (getActionContext) => () => {
 					fileField.classList.add('empty');
 					if (filename) filename.textContent = '';
 				}
-				if (fileAction) runAction(fileAction, getActionContext(), fileField, file);
+				if (fileAction) runAction(fileAction, context, fileField, file);
 			},
 		});
 	});
@@ -152,17 +156,17 @@ const createInputFile = (getActionContext) => () => {
 /**
  * tab · select · inputFile 위젯 API를 생성한다.
  *
- * @param {WidgetsDeps} deps
+ * @param {WidgetsContext} context - data-action용 컨텍스트 (`import`/`export` getter 가능)
  * @returns {{
  *   tab: () => void,
  *   select: { trigger: Function, init: Function },
  *   inputFile: () => void,
  * }}
  */
-const createWidgets = ({ getActionContext }) => ({
-	tab: createTab(getActionContext),
-	select: createSelect(getActionContext),
-	inputFile: createInputFile(getActionContext),
+const createWidgets = (context) => ({
+	tab: createTab(context),
+	select: createSelect(context),
+	inputFile: createInputFile(context),
 });
 
 export { createWidgets };

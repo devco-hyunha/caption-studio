@@ -14,23 +14,18 @@ const video = videoModule();
 const sheet = sheetModule();
 const ui = uiModule();
 
-const getActionContext = () => ({
-	video,
-	import: subtitle.import,
-	export: subtitle.export,
-	Fn,
-	Shortkey,
-});
-
 var Do=$(document),Wn=$(window),Fn={},Shortkey=$.Shortcuts;
 
-ui.initialize({
-	i18n,
-	getSheet: () => sheet,
-	getActionContext,
-});
-
 const initializeDomainModules = () => {
+	ui.initialize({
+		i18n,
+		sheet,
+		video,
+		Fn,
+		Shortkey,
+		get import() { return subtitle.import; },
+		get export() { return subtitle.export; },
+	});
 	sheet.initialize({
 		i18n,
 		header: subtitle.header,

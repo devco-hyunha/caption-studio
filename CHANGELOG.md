@@ -89,11 +89,17 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.6.md](./changelog/2.6.md)
 
+## [2.6.1] — 2026-09-06
+
+`ui.initialize` 주입을 `sheet`·평평한 context(getter)·`initializeDomainModules` 안으로 정리.
+
+상세 변경: [changelog/2.6.md](./changelog/2.6.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
-| 2.6.x | [changelog/2.6.md](./changelog/2.6.md) | ui 셸 분리 · README 구조 정리 |
+| 2.6.x | [changelog/2.6.md](./changelog/2.6.md) | ui 셸 분리 · initialize API 정리 |
 | 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · init 통합 |
 | 2.4.x | [changelog/2.4.md](./changelog/2.4.md) | video 분리 |
 | 2.3.x | [changelog/2.3.md](./changelog/2.3.md) | subtitle 분리 · 클라이언트 다운로드 · utils · analytics · ads |

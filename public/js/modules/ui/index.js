@@ -5,16 +5,20 @@ import { createWidgets } from './widgets.js';
 import { createApplyI18n } from './applyI18n.js';
 
 /**
- * @typedef {Object} UiInitDeps
+ * @typedef {Object} UiInitContext
  * @property {{ t: (key: string) => string, getLocale: (language?: string) => unknown }} i18n
- * @property {() => object} getSheet
- * @property {() => object} getActionContext
+ * @property {object} sheet
+ * @property {object} video
+ * @property {object} Fn
+ * @property {object} Shortkey
+ * @property {object} [import] - getter로 `subtitle.import` 지연 조회
+ * @property {object} [export] - getter로 `subtitle.export` 지연 조회
  */
 
 /**
  * UI 셸 모듈을 생성한다. `initialize()` 호출 전까지 공개 API가 없다.
  *
- * @returns {object & { initialize: (deps: UiInitDeps) => void, init?: () => void }}
+ * @returns {object & { initialize: (context: UiInitContext) => void, init?: () => void }}
  */
 const uiModule = () => {
 	const ui = {};
@@ -22,10 +26,14 @@ const uiModule = () => {
 
 	/**
 	 * DOM 핸들과 UI API를 주입한다.
+	 * `i18n`·`sheet`는 UI 조립에 쓰고, 동일 context를 data-action용으로 위젯에 전달한다.
+	 * (`import`/`export` getter는 destructure하지 않고 context 참조를 유지한다)
 	 *
-	 * @param {UiInitDeps} deps
+	 * @param {UiInitContext} context
 	 */
-	ui.initialize = ({ i18n, getSheet, getActionContext }) => {
+	ui.initialize = (context) => {
+		const { i18n, sheet } = context;
+
 		ui.wrap = document.querySelector('#wrap');
 		ui.layout = document.querySelector('#layout');
 
@@ -34,11 +42,11 @@ const uiModule = () => {
 		ui.success = success;
 		ui.confirm = confirm;
 
-		const { switchFocus, dialog } = createDialog({ ui, getSheet });
+		const { switchFocus, dialog } = createDialog({ ui, sheet });
 		ui.switchFocus = switchFocus;
 		ui.dialog = { open: dialog.open, close: dialog.close };
 
-		const { tab, select, inputFile } = createWidgets({ getActionContext });
+		const { tab, select, inputFile } = createWidgets(context);
 		ui.select = select.trigger;
 
 		ui.applyI18n = createApplyI18n({ i18n });
