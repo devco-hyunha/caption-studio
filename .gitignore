@@ -9,6 +9,7 @@ desktop.ini
 # Editor
 .vscode/
 .idea/
+.cursor/
 
 # Dependencies (future)
 node_modules/

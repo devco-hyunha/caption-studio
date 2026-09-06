@@ -22,7 +22,7 @@
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |
 | 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` · `isJQuery`/`toElement` 제거 |
-| 4 | 코드 최신화 및 최적화 | 진행 중 |
+| 4 | 코드 최신화 및 최적화 | 진행 중 — 이후 스택: Vite + React + TanStack Router |
 | 5 | UI 개선 | 미정 |
 
 ## 레거시 구조 (기준선)
