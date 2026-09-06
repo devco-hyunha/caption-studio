@@ -17,11 +17,11 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.6.1) |
+| # | 목표 | 상태 (2.7.0) |
 |---|------|----------------|
-| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` 분리. `Shortkey` · `Fn` 일부는 `caption.js` 잔여 |
+| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` 분리. `Fn` 일부는 `caption.js` 잔여 |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — 분리 모듈 camelCase·공개 API 축소 |
-| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — 분리 모듈은 바닐라 DOM. caption 단축키·ready 일부 jQuery 잔여 |
+| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — `modules/shortkey` jQuery 제거 완료. ready·Fn 일부 jQuery 잔여 |
 | 4 | 코드 최신화 및 최적화 | 진행 중 |
 | 5 | UI 개선 | 미정 |
 
@@ -38,7 +38,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │   └── js/
 │       ├── caption.js      # 핵심 로직 (단일 파일)
 │       ├── lib/            # jQuery, Video.js 등
-│       └── plugin/         # 단축키, 컬러피커 등
+│       └── plugin/         # (레거시 플러그인 잔여 · 단축키는 modules/shortkey)
 ├── favicon/
 ├── CHANGELOG.md
 ├── VERSION
@@ -62,7 +62,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 ├── public/
 │   ├── css/
 │   └── js/
-│       ├── caption.js          # 부트스트랩 · Shortkey · Fn 잔여
+│       ├── caption.js          # 부트스트랩 · Fn 잔여
 │       ├── modules/
 │       │   ├── i18n/           # 다국어
 │       │   ├── utils/          # storage · DOM · runAction 등
@@ -70,10 +70,10 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │       │   ├── video/          # 플레이어 연동
 │       │   ├── sheet/          # 자막 시트
 │       │   ├── ui/             # 셸 UI (toast · dialog · widgets)
+│       │   ├── shortkey/       # 단축키 (Shortcuts 엔진 · keys · 설정 UI)
 │       │   ├── analytics/
 │       │   └── ads/
 │       ├── lib/
-│       └── plugin/
 ├── favicon/
 ├── CHANGELOG.md
 ├── VERSION
@@ -83,7 +83,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | 구분 | 설명 |
 |------|------|
 | 부트스트랩 | `public/js/caption.js` |
-| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,…}` |
+| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,shortkey,…}` |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
 
 ## 로컬에서 실행
@@ -196,7 +196,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | `utils` | `modules/utils` — 공용 유틸 |
 | `analytics` | `modules/analytics` |
 | `ads` | `modules/ads` |
-| `shortkey` | caption.js 단축키 잔여 |
+| `shortkey` | `modules/shortkey` — 단축키 · 바닐라 Shortcuts |
 | `jquery` | jQuery·jQuery UI 의존 제거 |
 | `structure` | 전역 변수, 모듈 골격, 네이밍 |
 | `build` | 번들, 빌드 설정 |

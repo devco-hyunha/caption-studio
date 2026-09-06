@@ -6,7 +6,7 @@ import { bindEvent } from '../utils/dom.js';
  * @typedef {Object} WidgetsContext
  * @property {object} video
  * @property {object} Fn
- * @property {object} Shortkey
+ * @property {object} shortkey
  * @property {object} [import]
  * @property {object} [export]
  */

@@ -10,7 +10,7 @@ import { createApplyI18n } from './applyI18n.js';
  * @property {object} sheet
  * @property {object} video
  * @property {object} Fn
- * @property {object} Shortkey
+ * @property {object} shortkey
  * @property {object} [import] - getter로 `subtitle.import` 지연 조회
  * @property {object} [export] - getter로 `subtitle.export` 지연 조회
  */
