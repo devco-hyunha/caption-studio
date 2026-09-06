@@ -1,5 +1,3 @@
-import { TEXT_TARGETS, TIME_TARGETS } from './targets.js';
-
 /**
  * 사용자 변경 가능한 단축키 맵을 생성한다.
  *
@@ -15,7 +13,7 @@ const createCustomKeys = ({ sheet, video }) => {
 			edit.multiClip(clipKey);
 			return;
 		}
-		if (TEXT_TARGETS.includes(sheet.current.target)) {
+		if (sheet.isTextTarget) {
 			edit.clip(clipKey);
 		}
 	};
@@ -53,7 +51,7 @@ const createCustomKeys = ({ sheet, video }) => {
 			handler: () => {
 				if (multiple.state) {
 					edit.multiClip('plus');
-				} else if (TIME_TARGETS.includes(sheet.current.target)) {
+				} else if (sheet.isTimeTarget) {
 					edit.timePlus();
 				}
 			},
@@ -63,7 +61,7 @@ const createCustomKeys = ({ sheet, video }) => {
 			handler: () => {
 				if (multiple.state) {
 					edit.multiClip('minus');
-				} else if (TIME_TARGETS.includes(sheet.current.target)) {
+				} else if (sheet.isTimeTarget) {
 					edit.timeMinus();
 				}
 			},

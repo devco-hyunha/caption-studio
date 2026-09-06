@@ -40,7 +40,7 @@ const bindToolbar = (sheet, ui) => {
 			sheet.edit.multiClip(command);
 			return;
 		}
-		if (sheet.current.target !== 'starttime' && sheet.current.target !== 'endtime') return;
+		if (!sheet.isTimeTarget) return;
 		if (command === 'plus') {
 			sheet.edit.timePlus();
 			return;

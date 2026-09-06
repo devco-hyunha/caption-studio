@@ -32,7 +32,7 @@ const createDialog = ({ ui, sheet }) => {
 			ui.anotherInput.focus();
 			return;
 		}
-		sheet.active && sheet.active.target.indexOf('time') == -1 && sheet.trigger.input?.focus();
+		sheet.active && sheet.active.target.indexOf('time') === -1 && sheet.trigger.input?.focus();
 	};
 
 	const close = () => {

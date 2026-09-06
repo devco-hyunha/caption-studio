@@ -17,11 +17,11 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.7.0) |
+| # | 목표 | 상태 (2.8.0) |
 |---|------|----------------|
-| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` 분리. `Fn` 일부는 `caption.js` 잔여 |
-| 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — 분리 모듈 camelCase·공개 API 축소 |
-| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — `modules/shortkey` jQuery 제거 완료. ready·Fn 일부 jQuery 잔여 |
+| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
+| 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — `configure`/`mount` · camelCase · 공개 API 축소 |
+| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — caption·shortkey 바닐라. `lib/jquery` 잔여 |
 | 4 | 코드 최신화 및 최적화 | 진행 중 |
 | 5 | UI 개선 | 미정 |
 
@@ -62,8 +62,9 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 ├── public/
 │   ├── css/
 │   └── js/
-│       ├── caption.js          # 부트스트랩 · Fn 잔여
+│       ├── caption.js          # 부트스트랩 (ready · WebFont)
 │       ├── modules/
+│       │   ├── index.js        # bootstrap — 도메인 생성·조립·mount · fonts active
 │       │   ├── i18n/           # 다국어
 │       │   ├── utils/          # storage · DOM · runAction 등
 │       │   ├── subtitle/       # import / export / convert
@@ -71,6 +72,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │       │   ├── sheet/          # 자막 시트
 │       │   ├── ui/             # 셸 UI (toast · dialog · widgets)
 │       │   ├── shortkey/       # 단축키 (Shortcuts 엔진 · keys · 설정 UI)
+│       │   ├── settings/       # 포맷 · 언어 설정 액션
 │       │   ├── analytics/
 │       │   └── ads/
 │       ├── lib/
@@ -83,7 +85,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | 구분 | 설명 |
 |------|------|
 | 부트스트랩 | `public/js/caption.js` |
-| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,shortkey,…}` |
+| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,shortkey,settings,…}` |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
 
 ## 로컬에서 실행
@@ -197,6 +199,8 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | `analytics` | `modules/analytics` |
 | `ads` | `modules/ads` |
 | `shortkey` | `modules/shortkey` — 단축키 · 바닐라 Shortcuts |
+| `settings` | `modules/settings` — 포맷 · 언어 |
+| `bootstrap` | `modules/index.js` · `caption.js` — 도메인 조립 · ready |
 | `jquery` | jQuery·jQuery UI 의존 제거 |
 | `structure` | 전역 변수, 모듈 골격, 네이밍 |
 | `build` | 번들, 빌드 설정 |
@@ -222,7 +226,7 @@ chore: 운영 중인 Caption Studio 레거시 코드를 리팩터링 기준선�
 ```text
 refactor(ui): caption.js Interface 도메인을 modules/ui로 분리
 
-- Why: toast·feedback·dialog·widgets를 caption.js에서 분리하고 공개 API를 ui.init·ui.select로 좁힌다
+- Why: toast·feedback·dialog·widgets를 caption.js에서 분리하고 공개 API를 ui.mount·ui.select로 좁힌다
 - Verify: 다이얼로그·select·alert/confirm 수동 확인
 ```
 

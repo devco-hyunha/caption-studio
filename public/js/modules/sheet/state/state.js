@@ -1,3 +1,8 @@
+import {
+	isTextTarget as checkIsTextTarget,
+	isTimeTarget as checkIsTimeTarget,
+} from '../helpers/targets.js';
+
 /**
  * 시트 가변 상태를 생성한다.
  * DOM 핸들(root, panel, body 등)과 edit/move 등 행위 객체는 포함하지 않는다.
@@ -47,6 +52,16 @@ const createSheetState = () => {
 		/** 마지막 행 인덱스. `timelines.length - 1` (빈 배열이면 -1) */
 		get lastIndex() {
 			return this.timelines.length - 1;
+		},
+
+		/** 현재 셀이 text / memo 인지 */
+		get isTextTarget() {
+			return checkIsTextTarget(this.current.target);
+		},
+
+		/** 현재 셀이 starttime / endtime 인지 */
+		get isTimeTarget() {
+			return checkIsTimeTarget(this.current.target);
 		},
 	};
 

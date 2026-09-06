@@ -66,7 +66,7 @@ const createCommand = ({ sheet }) => {
 		multi: (cmd, currents, backups) => {
 			closeSearchPanel(sheet);
 			sheet.edit.log({
-				command: 'multi.' + cmd,
+				command: `multi.${cmd}`,
 				id: null,
 				after: currents,
 				before: backups,

@@ -1,5 +1,4 @@
 import { storage } from '../utils/storage.js';
-import { TEXT_TARGETS } from './targets.js';
 import { normalizeMask } from './shortcuts.js';
 
 /** 단축키 맵 키 변경 시 이전 storage 키 호환 */
@@ -11,12 +10,12 @@ const LEGACY_CUSTOM_KEY_IDS = {
  * 단축키 등록·런타임 바인딩·설정 UI API를 만든다.
  *
  * - `registerKeys` — default/custom 키를 Shortcuts에 등록 (재호출 가능)
- * - `init` — 최초: 등록 + callback/start(1회) + 설정 UI
+ * - `mount` — 최초: 등록 + callback/start(1회) + 설정 UI
  *
  * @param {{ shortkey: object, sheet: object, ui: object }} deps
- * @returns {{ init: () => void, registerKeys: () => void }}
+ * @returns {{ mount: () => void, registerKeys: () => void }}
  */
-const createInit = ({ shortkey, sheet, ui }) => {
+const createMount = ({ shortkey, sheet, ui }) => {
 	let isRuntimeBound = false;
 
 	const registerKeys = () => {
@@ -44,7 +43,7 @@ const createInit = ({ shortkey, sheet, ui }) => {
 				&& !document.querySelector('.dialog.on')
 				&& !sheet.edit.state
 				&& !sheet.multiple.state
-				&& TEXT_TARGETS.includes(sheet.current.target)
+				&& sheet.isTextTarget
 				&& !event.ctrlKey
 				&& !event.altKey
 				&& !event.isComposing
@@ -57,13 +56,13 @@ const createInit = ({ shortkey, sheet, ui }) => {
 		isRuntimeBound = true;
 	};
 
-	const init = () => {
+	const mount = () => {
 		registerKeys();
 		bindRuntime();
 		shortkey.renderSettings();
 	};
 
-	return { init, registerKeys };
+	return { mount, registerKeys };
 };
 
-export { createInit };
+export { createMount };

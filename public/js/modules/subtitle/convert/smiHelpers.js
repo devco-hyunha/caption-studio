@@ -7,7 +7,7 @@ const smiFromSmiString = (data) => {
 
 	syncChunks.forEach((chunk) => {
 		const sync = new DOMParser()
-			.parseFromString('<sync' + chunk + '</p></sync>', 'text/html')
+			.parseFromString(`<sync${chunk}</p></sync>`, 'text/html')
 			.querySelector('sync');
 		if (!sync) return;
 
@@ -31,7 +31,7 @@ const smiFromSrtArray = (data) => {
 	let prevEnd;
 
 	data.forEach(({ start, end, text, memo = '' }) => {
-		if (prevEnd == start) {
+		if (prevEnd === start) {
 			const lastItem = result.at(-1);
 			lastItem.text = text;
 			lastItem.memo = memo;

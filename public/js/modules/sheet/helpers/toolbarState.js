@@ -1,3 +1,5 @@
+import { isTextTarget, isTimeTarget } from './targets.js';
+
 /**
  * @param {string} selector
  * @param {boolean} disabled
@@ -14,12 +16,10 @@ const setDisabled = (selector, disabled) => {
  * @param {string} target
  */
 const syncToolbar = (target) => {
-	const isTime = target === 'starttime' || target === 'endtime';
-	const isText = target === 'text' || target === 'memo';
-	if (!isTime && !isText) return;
+	if (!isTimeTarget(target) && !isTextTarget(target)) return;
 
-	setDisabled('.btn-text-controls', isTime);
-	setDisabled('.btn-time-controls', isText);
+	setDisabled('.btn-text-controls', isTimeTarget(target));
+	setDisabled('.btn-time-controls', isTextTarget(target));
 };
 
 export { setDisabled, syncToolbar };

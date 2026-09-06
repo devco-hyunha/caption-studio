@@ -125,7 +125,7 @@ const createColorPicker = (host, options = {}) => {
 	}
 
 	const initial = parseColor(options.color || 'ffffff') || { h: 0, s: 0, b: 100 };
-	const id = 'colorpicker_' + Math.floor(Math.random() * 1000);
+	const id = `colorpicker_${Math.floor(Math.random() * 1000)}`;
 	host.dataset.colorpickerId = id;
 
 	const root = document.createElement('div');
@@ -169,15 +169,15 @@ const createColorPicker = (host, options = {}) => {
 
 	const paint = (hsb) => {
 		if (!selector || !selectorIndic || !hueIndic) return;
-		const pure = '#' + hsbToHex({ h: hsb.h, s: 100, b: 100 });
+		const pure = `#${hsbToHex({ h: hsb.h, s: 100, b: 100 })}`;
 		selector.style.backgroundColor = pure;
 		selectorIndic.style.left = `${parseInt((SIZE * hsb.s) / 100, 10)}px`;
 		selectorIndic.style.top = `${parseInt((SIZE * (100 - hsb.b)) / 100, 10)}px`;
-		selectorIndic.style.backgroundColor = '#' + hsbToHex(hsb);
+		selectorIndic.style.backgroundColor = `#${hsbToHex(hsb)}`;
 		hueIndic.style.top = `${parseInt(SIZE - (SIZE * hsb.h) / 360, 10)}px`;
 		hueIndic.style.backgroundColor = pure;
-		newColor.style.backgroundColor = '#' + hsbToHex(hsb);
-		currentColor.style.backgroundColor = '#' + hsbToHex(state.origColor);
+		newColor.style.backgroundColor = `#${hsbToHex(hsb)}`;
+		currentColor.style.backgroundColor = `#${hsbToHex(state.origColor)}`;
 	};
 
 	const applyColor = (hsb, syncFields = true) => {
@@ -318,7 +318,7 @@ const createColorPicker = (host, options = {}) => {
 	submitBtn.addEventListener('mouseleave', () => submitBtn.classList.remove('colorpicker_focus'));
 	submitBtn.addEventListener('click', () => {
 		state.origColor = { ...state.color };
-		currentColor.style.backgroundColor = '#' + hsbToHex(state.origColor);
+		currentColor.style.backgroundColor = `#${hsbToHex(state.origColor)}`;
 		if (typeof state.onSubmit === 'function') {
 			state.onSubmit(state.color, hsbToHex(state.color), hsbToRgb(state.color), host);
 		}

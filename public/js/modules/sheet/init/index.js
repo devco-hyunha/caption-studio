@@ -6,19 +6,19 @@ import { bindToolbar } from './bindToolbar.js';
 import { bindNewSheet } from './bindNewSheet.js';
 
 /**
- * @typedef {Object} InitDeps
+ * @typedef {Object} MountDeps
  * @property {object} sheet
  * @property {{ dialog: object, confirm: Function }} ui
  * @property {{ t: (key: string) => string }} i18n
  */
 
 /**
- * 시트 DOM·스크롤·툴바·편집/검색/설정 UI 이벤트를 바인딩하는 init 함수를 만든다.
+ * 시트 DOM·스크롤·툴바·편집/검색/설정 UI 이벤트를 바인딩하는 mount 함수를 만든다.
  *
- * @param {InitDeps} deps
+ * @param {MountDeps} deps
  * @returns {(target: string) => void}
  */
-const createInit = ({ sheet, ui, i18n }) => (target) => {
+const createMount = ({ sheet, ui, i18n }) => (target) => {
 	if (!bindDom(sheet, target)) return;
 
 	bindPanel(sheet);
@@ -35,4 +35,4 @@ const createInit = ({ sheet, ui, i18n }) => (target) => {
 	bindNewSheet(sheet, ui, i18n);
 };
 
-export { createInit };
+export { createMount };

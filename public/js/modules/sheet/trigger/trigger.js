@@ -47,7 +47,7 @@ const createTrigger = (sheet) => {
 			target: trigger.input,
 			event: 'keydown.sheet-trigger',
 			handler: () => {
-				if (sheet.current.target != 'text' && sheet.current.target != 'memo') {
+				if (!sheet.isTextTarget) {
 					trigger.input.innerHTML = '';
 				}
 			},
@@ -78,7 +78,7 @@ const createTrigger = (sheet) => {
 		clearTimeout(autoFocusTimer);
 		autoFocusTimer = setTimeout(() => {
 			trigger.wrap?.focus();
-			if (sheet.active?.target?.indexOf('time') == -1) trigger.input?.focus();
+			if (sheet.active?.target?.indexOf('time') === -1) trigger.input?.focus();
 		}, 0);
 	};
 

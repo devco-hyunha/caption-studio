@@ -101,10 +101,17 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.7.md](./changelog/2.7.md)
 
+## [2.8.0] — 2026-09-06
+
+`caption.js` 부트스트랩 정리 · `settings` · `bootstrap` · `configure`/`mount` · 셀 타깃 판별 공통화.
+
+상세 변경: [changelog/2.8.md](./changelog/2.8.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
+| 2.8.x | [changelog/2.8.md](./changelog/2.8.md) | caption bootstrap · settings · configure/mount |
 | 2.7.x | [changelog/2.7.md](./changelog/2.7.md) | shortkey 분리 · Shortcuts 바닐라 · 플러그인 삭제 |
 | 2.6.x | [changelog/2.6.md](./changelog/2.6.md) | ui 셸 분리 · initialize API 정리 |
 | 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · init 통합 |

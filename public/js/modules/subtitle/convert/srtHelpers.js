@@ -27,7 +27,7 @@ const srtFromSrtString = (data) => {
 			timeline.start = start;
 			timeline.end = end;
 		} else if (line !== '') {
-			if (timeline.text != '') {
+			if (timeline.text !== '') {
 				timeline.text += '<br>';
 			}
 			timeline.text += line;
@@ -53,7 +53,7 @@ const srtFromSmiArray = (data) => {
 	const setLastEnd = (value) => {
 		if (result.length === 0) return;
 		const lastItem = result.at(-1);
-		if (lastItem.end == 0) lastItem.end = value;
+		if (lastItem.end === 0) lastItem.end = value;
 	};
 	
 	data.forEach(({ start: rawStart, text, memo = '' }) => {
@@ -75,7 +75,7 @@ const srtFromSmiArray = (data) => {
 	});
 
 	const lastItem = result.at(-1);
-	if (lastItem && lastItem.end == 0) lastItem.end = lastItem.start + 99999;
+	if (lastItem && lastItem.end === 0) lastItem.end = lastItem.start + 99999;
 
 	return result;
 };

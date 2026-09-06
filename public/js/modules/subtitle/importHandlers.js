@@ -48,7 +48,7 @@ const createFileImportHandler = ({ ui, sheet, i18n, applyToSheet }, config) => (
 	const { encodeKey, inputSelector, formatPattern, convertFormat, emptyAlertKey, gaAction } = config;
 
 	let encode = storage.get(encodeKey);
-	if (encode == '') encode = null;
+	if (encode === '') encode = null;
 	ui.select({ key: encodeKey, value: encode });
 
 	bindEvent({
@@ -107,7 +107,7 @@ const importHandlers = ({ ui, sheet, i18n }) => {
 				handler: (event) => {
 					event.preventDefault();
 					const data = document.querySelector('#subtitle-text')?.value ?? '';
-					if (data == '') {
+					if (data === '') {
 						ui.alert(i18n.t('please-input-contents'));
 						return;
 					}

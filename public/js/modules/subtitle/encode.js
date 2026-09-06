@@ -23,7 +23,7 @@ export const encode = (input) => {
 		const color = normalizeElementColor(el);
 		if (color) {
 			el.removeAttribute('style');
-			if (el.localName == 'font') {
+			if (el.localName === 'font') {
 				el.setAttribute('color', color);
 			} else {
 				wrapWithFont(el, color);
@@ -31,7 +31,7 @@ export const encode = (input) => {
 		}
 		Array.from(el.attributes).forEach((attr) => {
 			try {
-				if (attr.name != 'color') el.removeAttribute(attr.name);
+				if (attr.name !== 'color') el.removeAttribute(attr.name);
 			} catch (e) { }
 		});
 	});

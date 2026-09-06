@@ -44,7 +44,7 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 		interface: null,
 	};
 
-	const canPlayType = (mediaType) => player.element.canPlayType(mediaType) != '';
+	const canPlayType = (mediaType) => player.element.canPlayType(mediaType) !== '';
 
 	const attachLocalSource = (src) => {
 		player.element.src = src;
@@ -119,7 +119,7 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 		}
 
 		player.subtitle.classList.toggle('visible', Boolean(visible));
-		if (!timeline || sheet.focus == index) return;
+		if (!timeline || sheet.focus === index) return;
 
 		sheet.focus = index;
 		const panel = toElement(sheet.panel);

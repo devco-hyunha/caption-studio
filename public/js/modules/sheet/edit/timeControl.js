@@ -187,7 +187,7 @@ const createTimeControl = ({ edit, sheet, ui }) => ({
 				const positive = timePositive.querySelector('[name="time-positive"]:checked')?.value;
 				const milli = Math.abs(Number(milliSecond.value));
 				if (milli && positive) {
-					if (!sheet.multiple.state) edit['time' + capitalize(positive)](milli);
+					if (!sheet.multiple.state) edit[`time${capitalize(positive)}`](milli);
 					else edit.multiClip(positive, milli);
 				}
 				timeReset.click();

@@ -23,7 +23,7 @@ const createColor = ({ edit, sheet, ui }) => ({
 				'#ffaa00',
 			];
 			colors = storage.get('CaptionColorTemp');
-			if (colors && colors != '' && colors.length > 0) {
+			if (colors && colors !== '' && colors.length > 0) {
 				colors.forEach((color, index) => {
 					edit.color.list[index] = color;
 				});
@@ -66,7 +66,7 @@ const createColor = ({ edit, sheet, ui }) => ({
 				ui.colorPicker
 					.setColor(edit.color.list[eq])
 					.onSubmit((hsb, hex) => {
-						edit.color.list[eq] = '#' + hex;
+						edit.color.list[eq] = `#${hex}`;
 						edit.color.set(edit.color.list);
 					});
 
@@ -79,8 +79,8 @@ const createColor = ({ edit, sheet, ui }) => ({
 	init: () => {
 		edit.color.set();
 		edit.color.list.forEach((_, index) => {
-			const command = 'color' + index;
-			const btn = document.querySelector('#color-' + (index + 1));
+			const command = `color${index}`;
+			const btn = document.querySelector(`#color-${index + 1}`);
 			if (!btn) return;
 
 			bindEvent({
@@ -93,7 +93,7 @@ const createColor = ({ edit, sheet, ui }) => ({
 						edit.multiClip(command);
 						return;
 					}
-					if (sheet.current.target === 'text' || sheet.current.target === 'memo') {
+					if (sheet.isTextTarget) {
 						edit.clip(command);
 					}
 				},

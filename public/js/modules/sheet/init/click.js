@@ -1,3 +1,5 @@
+import { isTextTarget } from '../helpers/targets.js';
+
 /**
  * 셀 클릭으로 현재 선택·트리거·편집 진입을 처리하는 함수를 만든다.
  *
@@ -33,8 +35,7 @@ const createClick = (sheet) => (col, context = false) => {
 		sheet.trigger.focus(col);
 	}
 
-	const isEditableTarget = current.target === 'text' || current.target === 'memo';
-	if (!sheet.multiple?.state && context && isEditableTarget) {
+	if (!sheet.multiple?.state && context && isTextTarget(current.target)) {
 		sheet.edit.on();
 	}
 

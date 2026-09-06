@@ -1,5 +1,3 @@
-import { TEXT_TARGETS } from './targets.js';
-
 /**
  * 고정 단축키 목록을 생성한다. (설정 UI에서 변경 불가)
  *
@@ -14,13 +12,13 @@ const createDefaultKeys = ({ sheet, ui, video }) => {
 			edit.multiClip(clipKey);
 			return;
 		}
-		if (TEXT_TARGETS.includes(sheet.current.target)) {
+		if (sheet.isTextTarget) {
 			edit.clip(clipKey);
 		}
 	};
 
 	const handleClear = () => {
-		if (!multiple.state && TEXT_TARGETS.includes(sheet.current.target) && !edit.state) {
+		if (!multiple.state && sheet.isTextTarget && !edit.state) {
 			edit.clip('clear');
 		}
 	};
@@ -45,7 +43,7 @@ const createDefaultKeys = ({ sheet, ui, video }) => {
 		}, {
 			placeholder: 'sheet-edit-on', mask: 'f2', type: 'hold', preventDefault: true,
 			handler: () => {
-				if (!edit.state && !ui.layer && !multiple.state && TEXT_TARGETS.includes(sheet.current.target)) edit.on();
+				if (!edit.state && !ui.layer && !multiple.state && sheet.isTextTarget) edit.on();
 			},
 		}, {
 			placeholder: 'sheet-edit-off', mask: 'esc', type: 'hold', preventDefault: true,
@@ -67,7 +65,7 @@ const createDefaultKeys = ({ sheet, ui, video }) => {
 				} else if (edit.state) {
 					e.preventDefault();
 					edit.cmd('enter');
-				} else if (!multiple.state && TEXT_TARGETS.includes(sheet.current.target)) {
+				} else if (!multiple.state && sheet.isTextTarget) {
 					edit.on();
 				}
 			},
@@ -189,21 +187,21 @@ const createDefaultKeys = ({ sheet, ui, video }) => {
 		}, {
 			placeholder: 'cut', mask: 'ctrl+x', type: 'down', preventDefault: true,
 			handler: () => {
-				if (!multiple.state && TEXT_TARGETS.includes(sheet.current.target) && !edit.state) {
+				if (!multiple.state && sheet.isTextTarget && !edit.state) {
 					edit.clip();
 				}
 			},
 		}, {
 			placeholder: 'copy', mask: 'ctrl+c', type: 'down', preventDefault: true,
 			handler: () => {
-				if (!multiple.state && TEXT_TARGETS.includes(sheet.current.target) && !edit.state) {
+				if (!multiple.state && sheet.isTextTarget && !edit.state) {
 					edit.clip();
 				}
 			},
 		}, {
 			placeholder: 'paste', mask: 'ctrl+v', type: 'down', preventDefault: true,
 			handler: () => {
-				if (!multiple.state && TEXT_TARGETS.includes(sheet.current.target) && !edit.state) {
+				if (!multiple.state && sheet.isTextTarget && !edit.state) {
 					edit.clip();
 				}
 			},

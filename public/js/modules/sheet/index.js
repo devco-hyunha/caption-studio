@@ -30,10 +30,10 @@ import { createSeek } from './seek.js';
 import { createConfig } from './config.js';
 
 // 5. DOM & 이벤트 바인딩
-import { createInit } from './init/index.js';
+import { createMount } from './init/index.js';
 
 /**
- * @typedef {Object} SheetInitDeps
+ * @typedef {Object} SheetConfigureDeps
  * @property {{ t: (key: string) => string }} i18n
  * @property {{ smi: string[], srt: string[] }} header
  * @property {object} ui - UI 셸
@@ -41,9 +41,9 @@ import { createInit } from './init/index.js';
  */
 
 /**
- * sheet 도메인 객체를 생성한다. `initialize()` 호출 전까지 `stateUpdate` / `convert` / `render` / `set` / `init` / `edit` / `command` / `update` / `insert` / `remove` / `undo` / `redo` / `search` / `rowOffset` / `timeSearch` / `multiple` / `config`는 없다.
+ * sheet 도메인 객체를 생성한다. `configure()` 호출 전까지 `stateUpdate` / `convert` / `render` / `set` / `mount` / `edit` / `command` / `update` / `insert` / `remove` / `undo` / `redo` / `search` / `rowOffset` / `timeSearch` / `multiple` / `config`는 없다.
  *
- * @returns {object & { initialize: (deps: SheetInitDeps) => void }}
+ * @returns {object & { configure: (deps: SheetConfigureDeps) => void }}
  */
 const sheetModule = () => {
 	const sheet = createSheetState();
@@ -53,12 +53,11 @@ const sheetModule = () => {
 	sheet.autoSave = createAutoSave(sheet);
 
 	/**
-	 * 레이아웃·변환·렌더·set·init·edit·mutate·history·search·seek·multiple·config API를 sheet에 주입한다.
-	 * DOM 핸들이 caption.js에 붙은 뒤, `Do.on('ready')`에서 호출한다.
+	 * 레이아웃·변환·렌더·set·mount·edit·mutate·history·search·seek·multiple·config API를 sheet에 주입한다.
 	 *
-	 * @param {SheetInitDeps} deps
+	 * @param {SheetConfigureDeps} deps
 	 */
-	sheet.initialize = ({ i18n, header, ui, subtitle }) => {
+	sheet.configure = ({ i18n, header, ui, subtitle }) => {
 		// 코어 라이프사이클 & 렌더링
 		sheet.stateUpdate = createStateUpdate({ sheet });
 		sheet.convert = createConvert({ sheet });
@@ -92,7 +91,7 @@ const sheetModule = () => {
 		sheet.setCellStyle = (style) => setCellStyle(sheet, style);
 
 		// DOM & 이벤트 바인딩 (모든 하위 API 주입 후 마지막에 바인딩)
-		sheet.init = createInit({ sheet, ui, i18n });
+		sheet.mount = createMount({ sheet, ui, i18n });
 	};
 
 	return sheet;

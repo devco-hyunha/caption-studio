@@ -5,20 +5,20 @@ import { createWidgets } from './widgets.js';
 import { createApplyI18n } from './applyI18n.js';
 
 /**
- * @typedef {Object} UiInitContext
+ * @typedef {Object} UiConfigureContext
  * @property {{ t: (key: string) => string, getLocale: (language?: string) => unknown }} i18n
  * @property {object} sheet
  * @property {object} video
- * @property {object} Fn
+ * @property {object} settings
  * @property {object} shortkey
  * @property {object} [import] - getter로 `subtitle.import` 지연 조회
  * @property {object} [export] - getter로 `subtitle.export` 지연 조회
  */
 
 /**
- * UI 셸 모듈을 생성한다. `initialize()` 호출 전까지 공개 API가 없다.
+ * UI 셸 모듈을 생성한다. `configure()` 호출 전까지 공개 API가 없다.
  *
- * @returns {object & { initialize: (context: UiInitContext) => void, init?: () => void }}
+ * @returns {object & { configure: (context: UiConfigureContext) => void, mount?: () => void }}
  */
 const uiModule = () => {
 	const ui = {};
@@ -29,9 +29,9 @@ const uiModule = () => {
 	 * `i18n`·`sheet`는 UI 조립에 쓰고, 동일 context를 data-action용으로 위젯에 전달한다.
 	 * (`import`/`export` getter는 destructure하지 않고 context 참조를 유지한다)
 	 *
-	 * @param {UiInitContext} context
+	 * @param {UiConfigureContext} context
 	 */
-	ui.initialize = (context) => {
+	ui.configure = (context) => {
 		const { i18n, sheet } = context;
 
 		ui.wrap = document.querySelector('#wrap');
@@ -53,9 +53,9 @@ const uiModule = () => {
 
 		/**
 		 * 위젯·다이얼로그 DOM 바인딩을 한 번에 수행한다.
-		 * `initialize` 이후 ready 시점에 1회 호출한다.
+		 * `configure` 이후 ready 시점에 1회 호출한다.
 		 */
-		ui.init = () => {
+		ui.mount = () => {
 			tab();
 			inputFile();
 			dialog.init();

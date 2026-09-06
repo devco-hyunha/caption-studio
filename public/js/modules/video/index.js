@@ -5,10 +5,10 @@ import { bindEvent, toElement } from '../utils/dom.js';
 import { trackEvent } from '../analytics/track.js';
 
 /**
- * @typedef {Object} VideoInitDeps
- * @property {object} ui - UI ??
- * @property {object} sheet - ??? API
- * @property {object} i18n - i18n ???
+ * @typedef {Object} VideoConfigureDeps
+ * @property {object} ui
+ * @property {object} sheet
+ * @property {object} i18n
  */
 
 const hasSheetFocus = (sheet) => sheet.focus != null;
@@ -16,7 +16,7 @@ const hasSheetFocus = (sheet) => sheet.focus != null;
 const TIME_TRIGGER_HTML = '<button class="vjs-selecttime-control vjs-control vjs-button mt icon-timer" type="button" aria-live="polite"><span class="vjs-control-text">select time</span></button>';
 
 /**
- * @param {VideoInitDeps & { player: object }} deps
+ * @param {VideoConfigureDeps & { player: object }} deps
  */
 const createVideo = ({ player, ui, sheet, i18n }) => {
 	const video = {};
@@ -24,7 +24,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	const currentTimeMs = () => parseInt(video.currentTime() * 1000);
 
 	const handleTimeTriggerClick = () => {
-		if (sheet.format == 'smi' && sheet.current.col > 0) {
+		if (sheet.format === 'smi' && sheet.current.col > 0) {
 			sheet.current.col = 0;
 			sheet.current.target = 'starttime';
 			sheet.move.event();
@@ -33,8 +33,8 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 		if (sheet.multiple.state || target.indexOf('time') < 0) return;
 
 		const timeline = clone(sheet.timelines[sheet.current.row]);
-		if (target == 'starttime') timeline.start = currentTimeMs();
-		else if (target == 'endtime') timeline.end = currentTimeMs();
+		if (target === 'starttime') timeline.start = currentTimeMs();
+		else if (target === 'endtime') timeline.end = currentTimeMs();
 		sheet.command.update(sheet.current, timeline);
 	};
 
@@ -52,7 +52,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 
 	const input = (type, src) => {
 		player.refresh();
-		if (!src || src == '') {
+		if (!src || src === '') {
 			toElement(ui.wrap)?.classList.add('empty');
 			ui.alert(player.empty(type));
 			return;
@@ -72,10 +72,10 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 			player.syncFromTime(this.currentTime());
 		});
 		ui.dialog.close();
-		trackEvent({ category: 'Player', action: type + ' Input', label: 'Video Input' });
+		trackEvent({ category: 'Player', action: `${type} Input`, label: 'Video Input' });
 	};
 
-	video.init = () => {
+	video.mount = () => {
 		player.refresh();
 		document.querySelectorAll('.video-load').forEach((button) => {
 			bindEvent({
@@ -86,7 +86,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 					const panel = tab?.querySelector('.tab-panel.on');
 					const type = panel?.dataset.type;
 					const inputEl = panel?.querySelector('input');
-					const data = type == 'file' ? inputEl?.files[0] : inputEl?.value;
+					const data = type === 'file' ? inputEl?.files[0] : inputEl?.value;
 					input(type, data);
 				},
 			});
@@ -137,7 +137,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	video.fileCheck = (field, file) => {
 		const fieldEl = toElement(field);
 		const format = file ? player.element.canPlayType(file.type) : '';
-		if (!file || format == '') {
+		if (!file || format === '') {
 			fieldEl?.classList.add('empty');
 			const fileInput = fieldEl?.querySelector('input[type="file"]');
 			if (fileInput) fileInput.value = '';
@@ -154,7 +154,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 
 	video.volume = (s) => {
 		if (!player.interface) return 0;
-		if (s || s == 0) {
+		if (s || s === 0) {
 			s = s <= 0 ? 0 : (s > 1 ? 1 : s);
 			player.interface.volume(s);
 			return s;
@@ -164,7 +164,7 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 
 	video.currentTime = (s) => {
 		if (!player.interface) return 0;
-		if (s || s == 0) {
+		if (s || s === 0) {
 			player.interface.currentTime(s);
 			return s;
 		}
@@ -175,11 +175,11 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 };
 
 /**
- * video ?????? ????? ???????. `initialize()` ??? ?????? ???? API?? ????.
+ * video 도메인 모듈을 생성한다. `configure()` 호출 전까지 공개 API가 없다.
  *
  * @returns {{
- *   initialize: (deps: VideoInitDeps) => void,
- *   init?: () => void,
+ *   configure: (deps: VideoConfigureDeps) => void,
+ *   mount?: () => void,
  *   fileCheck?: Function,
  *   toggle?: Function,
  *   volume?: Function,
@@ -190,11 +190,11 @@ const videoModule = () => {
 	const module = {};
 
 	/**
-	 * player?? ????? ???? Video API?? ??????. `Do.on('ready')`???? sheet??ui ??? ?? ??????.
+	 * player를 만들고 Video API를 주입한다.
 	 *
-	 * @param {VideoInitDeps} deps
+	 * @param {VideoConfigureDeps} deps
 	 */
-	module.initialize = ({ ui, sheet, i18n }) => {
+	module.configure = ({ ui, sheet, i18n }) => {
 		const player = createPlayer({ ui, sheet, i18n });
 		Object.assign(module, createVideo({ player, ui, sheet, i18n }));
 	};

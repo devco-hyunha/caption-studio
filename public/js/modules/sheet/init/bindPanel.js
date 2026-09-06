@@ -27,7 +27,7 @@ const bindPanel = (sheet) => {
 				left: matched.dataset.left,
 				target: matched.dataset.target,
 			};
-			if (!clickCurrent || clickCurrent.row == current.row && clickCurrent.col == current.col) {
+			if (!clickCurrent || clickCurrent.row === current.row && clickCurrent.col === current.col) {
 				clickCount++;
 				clickCurrent = current;
 			}
