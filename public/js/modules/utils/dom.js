@@ -1,5 +1,3 @@
-// isJQuery/toElement — jQuery 제거 완료 시 삭제 가능
-
 const eventStore = new WeakMap();
 
 const getStore = (target) => {
@@ -62,7 +60,3 @@ export const bindEvent = ({ target, event, handler, selector }) => {
 	store.set(key, listener);
 	target.addEventListener(type, listener);
 };
-
-export const isJQuery = (value) => value != null && value.jquery != null;
-
-export const toElement = (value) => (isJQuery(value) ? value[0] : value);

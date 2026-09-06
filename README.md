@@ -17,11 +17,11 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.8.0) |
+| # | 목표 | 상태 (2.8.1) |
 |---|------|----------------|
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — `configure`/`mount` · camelCase · 공개 API 축소 |
-| 3 | jQuery 및 jQuery 플러그인 제거 | 진행 중 — caption·shortkey 바닐라. `lib/jquery` 잔여 |
+| 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` · `isJQuery`/`toElement` 제거 |
 | 4 | 코드 최신화 및 최적화 | 진행 중 |
 | 5 | UI 개선 | 미정 |
 
@@ -37,8 +37,8 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │   ├── css/                # 스타일
 │   └── js/
 │       ├── caption.js      # 핵심 로직 (단일 파일)
-│       ├── lib/            # jQuery, Video.js 등
-│       └── plugin/         # (레거시 플러그인 잔여 · 단축키는 modules/shortkey)
+│       ├── lib/            # jQuery, Video.js 등 (기준선)
+│       └── plugin/         # (레거시 플러그인 · 이후 제거)
 ├── favicon/
 ├── CHANGELOG.md
 ├── VERSION
@@ -75,7 +75,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │       │   ├── settings/       # 포맷 · 언어 설정 액션
 │       │   ├── analytics/
 │       │   └── ads/
-│       ├── lib/
+│       └── lib/                # video-js · WebFont · iconv-lite (`jquery` 제거됨)
 ├── favicon/
 ├── CHANGELOG.md
 ├── VERSION
@@ -113,7 +113,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | **2.0.0** | GitHub **첫 커밋**부터 SemVer 시작. `VERSION`, About UI, Git tag `v2.0.0`과 동일 |
 | **2.0.x** | PATCH — `fix`, 사소한 `remove` 등. [changelog/2.0.md](./changelog/2.0.md)에 누적 |
 | **2.1.0+** | MINOR — `feat`, 마일스톤 `refactor`. `changelog/2.x.md` 새 파일 |
-| **3.0.0** | MAJOR — breaking 변경, 대규모 목표 완료 (예: jQuery 완전 제거) |
+| **3.0.0** | MAJOR — 호환이 깨지는 breaking 변경 (API·데이터·동작이 이전과 맞지 않을 때) |
 
 - **현재 버전:** 루트 [VERSION](./VERSION) 파일
 - **변경 이력:** [CHANGELOG.md](./CHANGELOG.md) (목차) → [changelog/](./changelog/) (상세)

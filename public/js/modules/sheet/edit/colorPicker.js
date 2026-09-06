@@ -114,6 +114,48 @@ const pointerPage = (event) => {
 };
 
 /**
+ * 마우스·터치 드래그를 동일하게 바인딩한다 (`rangeSlider`와 같은 패턴).
+ *
+ * @param {HTMLElement} el
+ * @param {{
+ *   onStart?: (event: Event) => boolean | void,
+ *   onMove?: (event: Event) => void,
+ *   onEnd?: (event: Event) => void,
+ * }} handlers - `onStart`가 `false`를 반환하면 드래그를 시작하지 않는다
+ */
+const bindPointerDrag = (el, { onStart, onMove, onEnd } = {}) => {
+	if (!el) return;
+
+	const handleStart = (event) => {
+		if (event.touches && event.touches.length > 1) return;
+		if (event.cancelable) event.preventDefault();
+		if (onStart?.(event) === false) return;
+
+		const handleMove = (moveEvent) => {
+			if (moveEvent.cancelable) moveEvent.preventDefault();
+			onMove?.(moveEvent);
+		};
+		const handleEnd = (endEvent) => {
+			document.removeEventListener('mousemove', handleMove);
+			document.removeEventListener('mouseup', handleEnd);
+			document.removeEventListener('touchmove', handleMove);
+			document.removeEventListener('touchend', handleEnd);
+			document.removeEventListener('touchcancel', handleEnd);
+			onEnd?.(endEvent);
+		};
+
+		document.addEventListener('mousemove', handleMove);
+		document.addEventListener('mouseup', handleEnd);
+		document.addEventListener('touchmove', handleMove, { passive: false });
+		document.addEventListener('touchend', handleEnd);
+		document.addEventListener('touchcancel', handleEnd);
+	};
+
+	el.addEventListener('mousedown', handleStart);
+	el.addEventListener('touchstart', handleStart, { passive: false });
+};
+
+/**
  * @param {HTMLElement} host - `.picker` container
  * @param {{ color?: string }} [options]
  * @returns {{ host: HTMLElement, root: HTMLElement, setColor: Function, onSubmit: Function }}
@@ -231,32 +273,34 @@ const createColorPicker = (host, options = {}) => {
 	});
 
 	cal.querySelectorAll('.colorpicker_field > span').forEach((span) => {
-		span.addEventListener('mousedown', (event) => {
-			event.preventDefault();
-			const field = span.parentElement?.querySelector('input');
-			if (!field) return;
-			field.focus();
-			const parentClass = span.parentElement.className;
-			const max = parentClass.includes('_hsb_h') ? 360 : parentClass.includes('_hsb') ? 100 : 255;
-			const startY = event.pageY;
-			const startVal = parseInt(field.value, 10) || 0;
-			span.parentElement.classList.add('colorpicker_slider');
+		let field = null;
+		let max = 255;
+		let startY = 0;
+		let startVal = 0;
 
-			const onMove = (moveEvent) => {
-				field.value = String(
-					Math.max(0, Math.min(max, startVal + moveEvent.pageY - startY)),
-				);
+		bindPointerDrag(span, {
+			onStart: (event) => {
+				field = span.parentElement?.querySelector('input') ?? null;
+				if (!field) return false;
+				field.focus();
+				const parentClass = span.parentElement.className;
+				max = parentClass.includes('_hsb_h') ? 360 : parentClass.includes('_hsb') ? 100 : 255;
+				startY = pointerPage(event).pageY;
+				startVal = parseInt(field.value, 10) || 0;
+				span.parentElement.classList.add('colorpicker_slider');
+			},
+			onMove: (moveEvent) => {
+				if (!field) return;
+				const { pageY } = pointerPage(moveEvent);
+				field.value = String(Math.max(0, Math.min(max, startVal + pageY - startY)));
 				if (state.livePreview) handleFieldChange(field, true);
-			};
-			const onUp = () => {
+			},
+			onEnd: () => {
+				if (!field) return;
 				handleFieldChange(field, true);
 				span.parentElement.classList.remove('colorpicker_slider');
 				field.focus();
-				document.removeEventListener('mousemove', onMove);
-				document.removeEventListener('mouseup', onUp);
-			};
-			document.addEventListener('mousemove', onMove);
-			document.addEventListener('mouseup', onUp);
+			},
 		});
 	});
 
@@ -268,19 +312,9 @@ const createColorPicker = (host, options = {}) => {
 		handleFieldChange(fields[4], true);
 	};
 
-	hueStrip.addEventListener('mousedown', (event) => {
-		event.preventDefault();
-		updateHueFromPointer(event);
-		const onMove = (moveEvent) => {
-			moveEvent.preventDefault();
-			updateHueFromPointer(moveEvent);
-		};
-		const onUp = () => {
-			document.removeEventListener('mousemove', onMove);
-			document.removeEventListener('mouseup', onUp);
-		};
-		document.addEventListener('mousemove', onMove);
-		document.addEventListener('mouseup', onUp);
+	bindPointerDrag(hueStrip, {
+		onStart: updateHueFromPointer,
+		onMove: updateHueFromPointer,
 	});
 
 	const updateSelectorFromPointer = (event) => {
@@ -295,19 +329,9 @@ const createColorPicker = (host, options = {}) => {
 		handleFieldChange(fields[6], true);
 	};
 
-	selector.addEventListener('mousedown', (event) => {
-		event.preventDefault();
-		updateSelectorFromPointer(event);
-		const onMove = (moveEvent) => {
-			moveEvent.preventDefault();
-			updateSelectorFromPointer(moveEvent);
-		};
-		const onUp = () => {
-			document.removeEventListener('mousemove', onMove);
-			document.removeEventListener('mouseup', onUp);
-		};
-		document.addEventListener('mousemove', onMove);
-		document.addEventListener('mouseup', onUp);
+	bindPointerDrag(selector, {
+		onStart: updateSelectorFromPointer,
+		onMove: updateSelectorFromPointer,
 	});
 
 	currentColor.addEventListener('click', () => {

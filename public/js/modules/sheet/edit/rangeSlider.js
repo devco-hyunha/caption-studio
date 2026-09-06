@@ -47,9 +47,11 @@ const mountRangeSlider = (el, { min, max, step, value = 0, onSlide }) => {
 	};
 
 	const startDrag = (event) => {
-		event.preventDefault();
+		if (event.touches && event.touches.length > 1) return;
+		if (event.cancelable) event.preventDefault();
 		handle.classList.add('ui-state-active');
 		const move = (moveEvent) => {
+			if (moveEvent.cancelable) moveEvent.preventDefault();
 			const clientX = moveEvent.touches?.[0]?.clientX ?? moveEvent.clientX;
 			setValue(valueFromClientX(clientX), true);
 		};
@@ -59,17 +61,19 @@ const mountRangeSlider = (el, { min, max, step, value = 0, onSlide }) => {
 			document.removeEventListener('mouseup', stop);
 			document.removeEventListener('touchmove', move);
 			document.removeEventListener('touchend', stop);
+			document.removeEventListener('touchcancel', stop);
 		};
 		document.addEventListener('mousemove', move);
 		document.addEventListener('mouseup', stop);
 		document.addEventListener('touchmove', move, { passive: false });
 		document.addEventListener('touchend', stop);
+		document.addEventListener('touchcancel', stop);
 		const clientX = event.touches?.[0]?.clientX ?? event.clientX;
 		setValue(valueFromClientX(clientX), true);
 	};
 
 	bindEvent({ target: el, event: 'mousedown', handler: startDrag });
-	bindEvent({ target: el, event: 'touchstart', handler: startDrag });
+	el.addEventListener('touchstart', startDrag, { passive: false });
 	setValue(value, false);
 
 	return { setValue: (val) => setValue(val, false) };

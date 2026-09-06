@@ -1,5 +1,4 @@
 import { formatTimecode } from '../utils/time.js';
-import { toElement } from '../utils/dom.js';
 
 const PLAYER_TARGET = 'player';
 const PLAYER_HTML = '<video id="player" class="video-js" playsinline controls></video>';
@@ -122,7 +121,7 @@ const createPlayer = ({ ui, sheet, i18n }) => {
 		if (!timeline || sheet.focus === index) return;
 
 		sheet.focus = index;
-		const panel = toElement(sheet.panel);
+		const panel = sheet.panel;
 		if (panel) {
 			panel.querySelectorAll('.focus').forEach((row) => row.classList.remove('focus'));
 			panel.querySelector(`.row-${index}`)?.classList.add('focus');

@@ -1,14 +1,13 @@
-import { bindEvent, toElement } from '../../utils/dom.js';
+import { bindEvent } from '../../utils/dom.js';
 import { syncToolbar } from '../helpers/toolbarState.js';
 
 /**
- * @param {unknown} col
+ * @param {Element | null | undefined} col
  * @returns {number | null} offsetParent 기준 top (없으면 null)
  */
 const resolveColTop = (col) => {
-	const el = toElement(col);
-	if (!el) return null;
-	return el.offsetTop;
+	if (!col) return null;
+	return col.offsetTop;
 };
 
 /**
@@ -85,7 +84,7 @@ const createTrigger = (sheet) => {
 	/**
 	 * 현재 셀 위치로 트리거를 이동하고 내용을 채운다.
 	 *
-	 * @param {unknown} [col] - 기준 셀 Element 또는 jQuery 컬렉션
+	 * @param {Element} [col] - 기준 셀 Element
 	 */
 	const focus = (col) => {
 		const colTop = resolveColTop(col);

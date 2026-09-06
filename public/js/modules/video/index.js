@@ -1,7 +1,7 @@
 import { createPlayer } from './player.js';
 import { storage } from '../utils/storage.js';
 import { clone } from '../utils/object.js';
-import { bindEvent, toElement } from '../utils/dom.js';
+import { bindEvent } from '../utils/dom.js';
 import { trackEvent } from '../analytics/track.js';
 
 /**
@@ -53,15 +53,15 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	const input = (type, src) => {
 		player.refresh();
 		if (!src || src === '') {
-			toElement(ui.wrap)?.classList.add('empty');
+			ui.wrap?.classList.add('empty');
 			ui.alert(player.empty(type));
 			return;
 		}
 
-		toElement(ui.wrap)?.classList.remove('empty');
+		ui.wrap?.classList.remove('empty');
 		player.load(type, src);
 		if (!player.interface) {
-			toElement(ui.wrap)?.classList.add('empty');
+			ui.wrap?.classList.add('empty');
 			return;
 		}
 		attachTimeTrigger();
@@ -135,13 +135,12 @@ const createVideo = ({ player, ui, sheet, i18n }) => {
 	};
 
 	video.fileCheck = (field, file) => {
-		const fieldEl = toElement(field);
 		const format = file ? player.element.canPlayType(file.type) : '';
 		if (!file || format === '') {
-			fieldEl?.classList.add('empty');
-			const fileInput = fieldEl?.querySelector('input[type="file"]');
+			field?.classList.add('empty');
+			const fileInput = field?.querySelector('input[type="file"]');
 			if (fileInput) fileInput.value = '';
-			const filename = fieldEl?.querySelector('.i-filename');
+			const filename = field?.querySelector('.i-filename');
 			if (filename) filename.textContent = '';
 			ui.alert(i18n.t('not-support-file-format'));
 		}
