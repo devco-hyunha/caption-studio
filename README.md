@@ -17,10 +17,10 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.8.1) |
+| # | 목표 | 상태 (2.8.2) |
 |---|------|----------------|
-| 1 | 단일 파일 스크립트를 기능별로 분리 | 진행 중 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
-| 2 | 읽기 어려운 변수·스크립트 구조 개선 | 진행 중 — `configure`/`mount` · camelCase · 공개 API 축소 |
+| 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
+| 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |
 | 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` · `isJQuery`/`toElement` 제거 |
 | 4 | 코드 최신화 및 최적화 | 진행 중 |
 | 5 | UI 개선 | 미정 |
@@ -117,6 +117,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 - **현재 버전:** 루트 [VERSION](./VERSION) 파일
 - **변경 이력:** [CHANGELOG.md](./CHANGELOG.md) (목차) → [changelog/](./changelog/) (상세)
+- **changelog/2.x.md 순서:** 오래된 버전 위 · 새 PATCH/MINOR 절은 **아래에 누적**
 - **릴리즈:** Git tag `vX.Y.Z` (검증 완료된 마일스톤마다)
 
 ### dev 커밋 버전 (진행 중 마일스톤)

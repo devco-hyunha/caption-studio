@@ -113,6 +113,12 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.8.md](./changelog/2.8.md)
 
+## [2.8.2] — 2026-09-06
+
+시트 PageUp/PageDown(`move.page`) 기대 동작 정리 — 뷰 안·밖 분기 · 가장자리에서 1화면 점프.
+
+상세 변경: [changelog/2.8.md](./changelog/2.8.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
