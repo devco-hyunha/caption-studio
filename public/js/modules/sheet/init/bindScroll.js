@@ -12,6 +12,8 @@ const bindScroll = (sheet) => {
 		target: sheet.body,
 		event: 'scroll.sheet',
 		handler: () => {
+			const activeDoc = sheet.sheets?.[sheet.activeSheetIndex];
+			if (activeDoc) activeDoc.scroll = sheet.body.scrollTop;
 			sheet.stateUpdate();
 			sheet.render();
 		},

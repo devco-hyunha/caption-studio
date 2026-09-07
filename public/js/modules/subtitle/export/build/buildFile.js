@@ -1,4 +1,5 @@
-import { SMI_CLASS } from './constants.js';
+import { SMI_CLASS, localeToSmiClassKey } from './constants.js';
+import { migrateLanguage } from '../../../i18n/migrateLanguage.js';
 
 const SMI_ENTITY_REPLACEMENTS = [
 	['&amp;', '&'],
@@ -39,12 +40,16 @@ const isStyleChecked = (form) =>
 	Boolean(form.querySelector('[name="is-style"]')?.checked);
 
 /**
- * @param {{ form: HTMLFormElement, data: object[], sheet: object }} options
+ * interim: UI locale → Class/STYLE (구 `sheet.language` + `SMI_CLASS`).
+ * 탭·폼 Class/Name/lang UI가 다시 열리면 폼/시트 우선으로 되돌린다.
+ *
+ * @param {{ form: HTMLFormElement, data: object[], locale?: string }} options
  * @returns {string}
  */
-const buildSmi = ({ form, data, sheet }) => {
-	const langKey = sheet.language ?? '';
+const buildSmi = ({ form, data, locale }) => {
+	const langKey = localeToSmiClassKey(migrateLanguage(locale));
 	const langValue = SMI_CLASS[langKey] ?? '';
+
 	const signatureRaw = fieldValue(form, 'signature');
 	const signature = signatureRaw
 		? `<!--\r\n${signatureRaw}\r\n-->\r\n`

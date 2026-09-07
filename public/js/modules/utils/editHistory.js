@@ -34,6 +34,16 @@ const createEditHistory = () => {
 			history.index = -1;
 			history.entries = [];
 		},
+		getState() {
+			return {
+				entries: history.entries.slice(),
+				index: history.index,
+			};
+		},
+		setState(state) {
+			history.entries = Array.isArray(state?.entries) ? state.entries.slice() : [];
+			history.index = typeof state?.index === 'number' ? state.index : -1;
+		},
 	};
 
 	return history;

@@ -6,6 +6,7 @@ import uiModule from './ui/index.js';
 import shortkeyModule from './shortkey/index.js';
 import createSettings from './settings/index.js';
 import { storage } from './utils/index.js';
+import { loadLocale } from './i18n/migrateLanguage.js';
 
 /**
  * 도메인 모듈을 생성·조립·mount한 뒤, WebFont 연동용 콜백을 담은 객체를 반환한다.
@@ -46,13 +47,12 @@ const bootstrap = () => {
 
 	const onFontsActive = () => {
 		let format = storage.get('format');
-		let language = storage.get('language');
+		const language = loadLocale(storage);
 
 		if (!format || format === '') format = sheet.format;
-		if (!language || language === '' || !i18n.getLocale(language)) language = sheet.language;
 		i18n.setLanguage(language);
 		ui.applyI18n();
-		ui.select({ key: 'language', value: language });
+		ui.select({ key: 'locale', value: language });
 		ui.select({ key: 'format', value: format });
 
 		document.querySelector('#nav-trigger')?.addEventListener('click', () => {

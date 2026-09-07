@@ -11,9 +11,10 @@ import {
  */
 const createSheetState = () => {
 	const sheet = {
-		// document
-		language: 'KRCC',
+		// document (format 전역 · sheets = 탭 문서)
 		format: null,
+		sheets: [],
+		activeSheetIndex: 0,
 		timelines: [],
 
 		// selection

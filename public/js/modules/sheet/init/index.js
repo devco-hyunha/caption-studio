@@ -4,6 +4,8 @@ import { bindScroll } from './bindScroll.js';
 import { bindWindow } from './bindWindow.js';
 import { bindToolbar } from './bindToolbar.js';
 import { bindNewSheet } from './bindNewSheet.js';
+import { bindFooter } from '../tabs/bindFooter.js';
+import { ensureSheetsLoaded } from '../tabs/ensureSheetsLoaded.js';
 
 /**
  * @typedef {Object} MountDeps
@@ -21,9 +23,12 @@ import { bindNewSheet } from './bindNewSheet.js';
 const createMount = ({ sheet, ui, i18n }) => (target) => {
 	if (!bindDom(sheet, target)) return;
 
+	ensureSheetsLoaded(sheet);
+
 	bindPanel(sheet);
 	bindScroll(sheet);
 	bindWindow(sheet);
+	bindFooter(sheet);
 
 	sheet.trigger.init();
 	sheet.edit.color.init();

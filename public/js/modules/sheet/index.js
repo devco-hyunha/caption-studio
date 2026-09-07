@@ -31,6 +31,7 @@ import { createConfig } from './config.js';
 
 // 5. DOM & 이벤트 바인딩
 import { createMount } from './init/index.js';
+import { createTabs } from './tabs/tabs.js';
 
 /**
  * @typedef {Object} SheetConfigureDeps
@@ -58,6 +59,8 @@ const sheetModule = () => {
 	 * @param {SheetConfigureDeps} deps
 	 */
 	sheet.configure = ({ i18n, header, ui, subtitle }) => {
+		sheet.tabs = createTabs({ sheet, i18n, ui });
+
 		// 코어 라이프사이클 & 렌더링
 		sheet.stateUpdate = createStateUpdate({ sheet });
 		sheet.convert = createConvert({ sheet });

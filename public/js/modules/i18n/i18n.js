@@ -1,20 +1,22 @@
-import KRCC from './kr.js';
-import ENCC from './en.js';
-import JPCC from './jp.js';
+import ko from './kr.js';
+import en from './en.js';
+import ja from './jp.js';
+import { migrateLanguage } from './migrateLanguage.js';
 
 const i18n = () => {
 	const locales = {
-		KRCC, ENCC, JPCC
+		ko, en, ja,
 	};
-	
-	let currentLanguage = 'KRCC';
-	
+
+	let currentLanguage = 'ko';
+
 	const getLanguage = () => currentLanguage;
-	
+
 	const setLanguage = (lang) => {
-		if (locales[lang]) currentLanguage = lang;
+		const next = migrateLanguage(lang);
+		if (locales[next]) currentLanguage = next;
 		return currentLanguage;
-	}
+	};
 
 	const getLocale = (lang = currentLanguage) => locales[lang];
 
@@ -27,7 +29,7 @@ const i18n = () => {
 		getLanguage,
 		setLanguage,
 		getLocale,
-		t
+		t,
 	};
 };
 export default i18n;

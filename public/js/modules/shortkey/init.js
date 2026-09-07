@@ -1,5 +1,5 @@
 import { storage } from '../utils/storage.js';
-import { normalizeMask } from './shortcuts.js';
+import { normalizeMask, checkIsInput } from './shortcuts.js';
 
 /** 단축키 맵 키 변경 시 이전 storage 키 호환 */
 const LEGACY_CUSTOM_KEY_IDS = {
@@ -36,6 +36,8 @@ const createMount = ({ shortkey, sheet, ui }) => {
 		if (isRuntimeBound) return;
 
 		shortkey.callback((event) => {
+			if (checkIsInput(event.target)) return;
+
 			const isPrintable = event.key.length === 1 || event.code === 'Space';
 
 			if (

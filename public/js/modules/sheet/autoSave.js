@@ -1,9 +1,12 @@
 import { storage } from '../utils/storage.js';
+import { serializeSubtitleTemp } from './tabs/normalizeTemp.js';
+import { STORAGE_KEY_SHEETS } from './tabs/storageKeys.js';
 
 const AUTO_SAVE_DELAY_MS = 400;
 
 /**
- * timelines를 `SUBTITLE_TEMP`에 디바운스 저장하는 함수를 만든다.
+ * sheets 문서를 `subtitleSheets`에 디바운스 저장하는 함수를 만든다.
+ * 레거시 `SUBTITLE_TEMP`는 갱신하지 않는다.
  *
  * @param {object} sheet
  * @returns {() => void}
@@ -14,7 +17,15 @@ const createAutoSave = (sheet) => {
 	return () => {
 		clearTimeout(timer);
 		timer = setTimeout(() => {
-			storage.set('SUBTITLE_TEMP', sheet.timelines);
+			try {
+				sheet.tabs?.persistActiveView?.();
+				if (!sheet.tabs && sheet.sheets?.[sheet.activeSheetIndex]) {
+					sheet.sheets[sheet.activeSheetIndex].timelines = sheet.timelines;
+				}
+				storage.set(STORAGE_KEY_SHEETS, serializeSubtitleTemp(sheet));
+			} catch (error) {
+				console.error('[sheet.autoSave]', error);
+			}
 		}, AUTO_SAVE_DELAY_MS);
 	};
 };

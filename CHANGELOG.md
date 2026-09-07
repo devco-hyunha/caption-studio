@@ -119,11 +119,17 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.8.md](./changelog/2.8.md)
 
+## [2.8.3] — 2026-09-07
+
+시트 탭 도메인(`sheets` / `active` · `subtitleSheets`) 선반영 · UI `locale`(`ko`/`en`/`ja`) · interim으로 바닐라 탭 UI 숨김 · SMI export는 locale→KRCC 프리셋 호환.
+
+상세 변경: [changelog/2.8.md](./changelog/2.8.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |
 |------|------|------|
-| 2.8.x | [changelog/2.8.md](./changelog/2.8.md) | caption bootstrap · settings · jQuery/`lib` 정리 |
+| 2.8.x | [changelog/2.8.md](./changelog/2.8.md) | caption bootstrap · settings · jQuery/`lib` 정리 · 시트 탭 도메인 interim |
 | 2.7.x | [changelog/2.7.md](./changelog/2.7.md) | shortkey 분리 · Shortcuts 바닐라 · 플러그인 삭제 |
 | 2.6.x | [changelog/2.6.md](./changelog/2.6.md) | ui 셸 분리 · initialize API 정리 |
 | 2.5.x | [changelog/2.5.md](./changelog/2.5.md) | sheet 분리 · init 통합 |

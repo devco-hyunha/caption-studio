@@ -2,6 +2,7 @@ import { storage } from '../utils/storage.js';
 import { clone, extend } from '../utils/object.js';
 import { EMPTY_TIMELINE } from './constants.js';
 import { applyColumnLayout } from './layout/columns.js';
+import { ensureSheetsLoaded } from './tabs/ensureSheetsLoaded.js';
 
 /**
  * @typedef {Object} SetDeps
@@ -43,18 +44,28 @@ const createSet = ({ sheet, i18n, header }) => (options = {}) => {
 		if (sheet.format === 'srt' && current.col > 0) ++current.col;
 	}
 
-	extend(sheet, options);
+	const { timelines: timelinesOption, language: _ignoredLanguage, ...rest } = options;
+	extend(sheet, rest);
 
-	if (!options.timelines && sheet.timelines.length === 0) {
-		sheet.timelines = storage.get('SUBTITLE_TEMP');
-	}
-	if (!sheet.timelines || sheet.timelines === '' || sheet.timelines.length === 0) {
+	ensureSheetsLoaded(sheet);
+
+	if (timelinesOption !== undefined) {
+		const next = (!timelinesOption || timelinesOption === '' || timelinesOption.length === 0)
+			? [clone(EMPTY_TIMELINE)]
+			: timelinesOption;
+		sheet.timelines = next;
+		const activeDoc = sheet.sheets[sheet.activeSheetIndex];
+		if (activeDoc) activeDoc.timelines = next;
+	} else if (!sheet.timelines || sheet.timelines.length === 0) {
 		sheet.timelines = [clone(EMPTY_TIMELINE)];
+		const activeDoc = sheet.sheets[sheet.activeSheetIndex];
+		if (activeDoc) activeDoc.timelines = sheet.timelines;
 	}
-	storage.set('SUBTITLE_TEMP', sheet.timelines);
 
-	sheet.root.className = sheet.format;
-	sheet.head = sheet.root.querySelector('.sheet-head');
+	sheet.autoSave?.();
+
+	if (sheet.root) sheet.root.className = sheet.format;
+	sheet.head = sheet.root?.querySelector('.sheet-head') ?? sheet.head;
 	sheet.headPanel = sheet.head?.querySelector('.sheet-panel') ?? null;
 	if (sheet.headPanel) {
 		sheet.headPanel.innerHTML = buildHeadHtml({
@@ -68,6 +79,7 @@ const createSet = ({ sheet, i18n, header }) => (options = {}) => {
 	convert();
 	sheet.needsRedraw = true;
 	render();
+	sheet.tabs?.renderFooter?.();
 
 	setTimeout(() => {
 		if (Object.keys(current).length === 0) {

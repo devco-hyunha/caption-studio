@@ -196,6 +196,16 @@ const videoModule = () => {
 	module.configure = ({ ui, sheet, i18n }) => {
 		const player = createPlayer({ ui, sheet, i18n });
 		Object.assign(module, createVideo({ player, ui, sheet, i18n }));
+
+		/** 탭 전환 등 활성 타임라인이 바뀐 뒤 오버레이를 현재 시각 기준으로 다시 맞춘다. */
+		sheet.refreshOverlay = () => {
+			sheet.focus = null;
+			if (!player.interface) {
+				player.subtitle?.classList.remove('visible');
+				return;
+			}
+			player.syncFromTime(player.interface.currentTime());
+		};
 	};
 
 	return module;

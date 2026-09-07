@@ -118,7 +118,12 @@ const checkIsInput = (target) => {
 	if (!target || !target.tagName) return false;
 	const name = target.tagName.toLowerCase();
 	const type = target.type;
-	return (name === 'input' && INPUT_TYPES.includes(type)) || name === 'textarea';
+	if ((name === 'input' && INPUT_TYPES.includes(type)) || name === 'textarea') return true;
+	if (target.isContentEditable) return true;
+	if (typeof target.closest === 'function' && target.closest('[contenteditable="true"]')) {
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -291,4 +296,4 @@ const createShortcuts = () => {
 	return shortcuts;
 };
 
-export { createShortcuts, normalizeMask };
+export { createShortcuts, normalizeMask, checkIsInput };

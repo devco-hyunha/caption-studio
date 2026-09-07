@@ -6,6 +6,7 @@ import { formatExportData } from './formatExportData.js';
 import { downloadBytes } from './download/downloadBytes.js';
 import { buildSmi, buildSrt, buildVtt, buildJson } from './build/buildFile.js';
 import { buildExcel } from './build/buildExcel.js';
+import { createExportSheetPicker } from './sheetPicker.js';
 
 const sendExportGa = (eventAction) => {
 	trackEvent({
@@ -27,14 +28,17 @@ const resolveExportFormat = (getConvertFormat, form) =>
 		: getConvertFormat;
 
 const resolveFilename = (form, extension) => {
-	const name = form.querySelector('[name="filename"]')?.value || 'caption';
+	const raw = form.querySelector('[name="filename"]')?.value?.trim() ?? '';
+	const name = raw || 'caption';
 	return `${name}.${extension}`;
 };
 
 /**
  * @typedef {Object} ExportHandlerDeps
  * @property {object} ui - UI 셸 (`select.trigger` 등)
- * @property {object} sheet - 시트 API (`format`, `timelines`, `language`)
+ * @property {object} sheet - 시트 API
+ * @property {{ getLanguage: () => string }} [i18n]
+ * @property {ReturnType<typeof createExportSheetPicker>} sheetPicker
  */
 
 /**
@@ -55,10 +59,10 @@ const resolveFilename = (form, extension) => {
  */
 
 /**
- * @param {ExportHandlerDeps & { convert: (format: string, sheetData?: object) => object }} deps
+ * @param {ExportHandlerDeps & { convert: (format: string, sheetData?: object) => object, i18n?: { getLanguage: () => string } }} deps
  * @param {ExportHandlerConfig} config
  */
-const createExportHandler = ({ ui, sheet, convert }, config) => () => {
+const createExportHandler = ({ ui, sheet, convert, sheetPicker, i18n }, config) => () => {
 	const {
 		storageKey,
 		formSelector,
@@ -67,6 +71,8 @@ const createExportHandler = ({ ui, sheet, convert }, config) => () => {
 		gaAction,
 		clientDownload,
 	} = config;
+
+	sheetPicker.open();
 
 	let stored = storage.get(storageKey);
 	if (defaultWhenEmpty !== undefined && (!stored || stored === '')) {
@@ -82,10 +88,16 @@ const createExportHandler = ({ ui, sheet, convert }, config) => () => {
 		event: 'submit',
 		handler: (event) => {
 			event.preventDefault();
+			sheetPicker.readSmiMetaFromForm();
 
 			const exportFormat = resolveExportFormat(getConvertFormat, form);
-			const data = convert(exportFormat);
-			const payload = clientDownload.build({ form, data, sheet });
+			const data = convert(exportFormat, sheetPicker.getSelectedTimelines());
+			const payload = clientDownload.build({
+				form,
+				data,
+				sheet,
+				locale: i18n?.getLanguage?.(),
+			});
 			const encoding = clientDownload.encodingSelector
 				? (form.querySelector(clientDownload.encodingSelector)?.value
 					|| storage.get(storageKey)
@@ -114,15 +126,17 @@ const createExportHandler = ({ ui, sheet, convert }, config) => () => {
  *   sheetFormat: Record<'json'|'excel', (value: string) => void>,
  * }}
  */
-const exportHandlers = ({ ui, sheet }) => {
+const exportHandlers = ({ ui, sheet, i18n }) => {
+	const sheetPicker = createExportSheetPicker({ sheet, i18n });
+
 	const convert = (format, sheetData) =>
 		formatExportData({
 			exportFormat: format,
 			sheetFormat: sheet.format,
-			sheetData: sheetData ?? sheet.timelines,
+			sheetData: sheetData ?? sheetPicker.getSelectedTimelines(),
 		});
 
-	const deps = { ui, sheet, convert };
+	const deps = { ui, sheet, convert, sheetPicker, i18n };
 
 	return {
 		smi: createExportHandler(deps, {
