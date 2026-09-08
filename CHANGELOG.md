@@ -125,6 +125,12 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.8.md](./changelog/2.8.md)
 
+## [2.8.4] — 2026-09-08
+
+시트 탭명 편집을 `input`으로 전환하고, `checkIsInput`의 contenteditable 판별을 제거해 시트 편집 중 단축키 차단을 해소.
+
+상세 변경: [changelog/2.8.md](./changelog/2.8.md)
+
 ## Releases
 
 | 버전 | 문서 | 요약 |

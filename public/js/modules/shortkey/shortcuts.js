@@ -119,10 +119,6 @@ const checkIsInput = (target) => {
 	const name = target.tagName.toLowerCase();
 	const type = target.type;
 	if ((name === 'input' && INPUT_TYPES.includes(type)) || name === 'textarea') return true;
-	if (target.isContentEditable) return true;
-	if (typeof target.closest === 'function' && target.closest('[contenteditable="true"]')) {
-		return true;
-	}
 	return false;
 };
 

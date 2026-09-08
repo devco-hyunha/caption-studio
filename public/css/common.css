@@ -187,8 +187,8 @@ html {padding-left:320px;min-width:900px;font-family:'Nanum Gothic', sans-serif;
 #sheet .sheet-tab {display:flex;align-items:center;flex:0 0 auto;max-width:160px;margin:0;padding:0 4px 0 10px;border-right:1px solid #444;cursor:pointer;user-select:none;}
 #sheet .sheet-tab.is-active {background:#3a3a3a;box-shadow:inset 0 -2px 0 #8cf;}
 #sheet .sheet-tab-name {display:block;min-width:2em;max-width:120px;padding:6px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;outline:0;}
-#sheet .sheet-tab-name[contenteditable="true"] {background:#fff;color:#222;border-radius:2px;}
-#sheet .sheet-tab-name.is-invalid[contenteditable="true"] {outline:1px solid #e66;background:#fff5f5;}
+#sheet input.sheet-tab-name {box-sizing:border-box;width:100%;border:0;border-radius:2px;background:#fff;color:#222;font:inherit;user-select:text;}
+#sheet input.sheet-tab-name.is-invalid {outline:1px solid #e66;background:#fff5f5;}
 #sheet .sheet-tab-delete {display:flex;align-items:center;justify-content:center;margin:0;padding:0;width:24px;height:24px;border:0;background:transparent;color:#999;cursor:pointer;}
 #sheet .sheet-tab-delete:hover {color:#fff;}
 #sheet .sheet-tab-delete .mt {font-size:16px;line-height:1;}
