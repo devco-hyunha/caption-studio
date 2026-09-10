@@ -1,9 +1,19 @@
 # Caption Studio
 
 온라인 자막 편집 도구입니다.  
-이 저장소는 2017년에 jquery를 기반으로 제작한 [Caption Studio](https://caption.devco.kr)의 레거시 코드를 기준으로, 문제를 하나씩 수정하고 개선하는 과정을 기록합니다.
+이 저장소는 2017년에 jQuery로 만든 [Caption Studio](https://caption.devco.kr) 레거시를 기준으로, 단계를 나눠 개선하는 과정을 기록합니다.
 
 **운영 사이트:** https://caption.devco.kr
+
+### 마이그레이션 단계
+
+| 단계 | 내용 | 상태 |
+|------|------|------|
+| 1차 | jQuery → 바닐라 JS 모듈 분리 | 완료 (`2.1`–`2.8`) |
+| 2차 | 바닐라 JS → React (Vite + TanStack Start) | 진행 중 — **완전 변환 시 `2.9.0`**. 지금: `2.9.0-dev.1` (`feat/tss-setup`) |
+| 이후 | UI 개선 | 미정 |
+
+상세 이력은 [CHANGELOG.md](./CHANGELOG.md) · [changelog/](./changelog/)를 봅니다. README는 **지금 워크트리 기준**만 유지합니다.
 
 ## 주요 기능
 
@@ -17,13 +27,16 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.8.4) |
-|---|------|----------------|
+| # | 목표 | 상태 |
+|---|------|------|
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |
-| 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` · `isJQuery`/`toElement` 제거 |
-| 4 | 코드 최신화 및 최적화 | 진행 중 — 이후 스택: Vite + React + TanStack Router |
+| 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` 제거 (`2.8.x`) |
+| 4 | React 스택으로 전환 | 진행 중 — **`2.9.0` = 완전 변환 완료 시**. 현재 `2.9.0-dev.1` 세팅. `/` 레거시, **`/edit`에서** 이전 |
 | 5 | UI 개선 | 미정 |
+
+- **현재 릴리스 버전:** [VERSION](./VERSION) (`2.8.4` — 1차 바닐라 마일스톤)
+- **진행 중:** `2.9.0` React 완전 변환 — 상세 [changelog/2.9/](./changelog/2.9/). `VERSION`/tag는 완료 후에만 반영
 
 ## 레거시 구조 (기준선)
 
@@ -53,44 +66,54 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 ## 현재 구조
 
-[VERSION](./VERSION) 기준 워크트리 개요입니다.
+`2.9.0` React 변환 진행 중 워크트리 — **React 셸 + 바닐라 도메인** 하이브리드입니다.
 
 ```
 .
-├── index.html
-├── manual.html
+├── package.json / pnpm-lock.yaml / vite.config.ts / tsconfig.json
+├── index.legacy.html           # 1차 정적 셸 파일 백업 (빌드 미포함)
+├── src/                        # TanStack Start 앱
+│   ├── app/styles/
+│   ├── routes/                 # `/` 레거시 홈 · `/edit` React 이전 · `/dev/fonts`
+│   ├── pages/
+│   ├── widgets/                # caption-shell — `/` 레거시 마크업
+│   ├── shared/
+│   ├── router.tsx              # 라우터 생성 (routeTree.gen과 동일 폴더 유지)
+│   └── routeTree.gen.ts        # TanStack Router 자동 생성 — 수동 수정 금지
 ├── public/
+│   ├── favicon/
 │   ├── css/
-│   └── js/
-│       ├── caption.js          # 부트스트랩 (ready · WebFont)
-│       ├── modules/
-│       │   ├── index.js        # bootstrap — 도메인 생성·조립·mount · fonts active
-│       │   ├── i18n/           # 다국어
-│       │   ├── utils/          # storage · DOM · runAction 등
-│       │   ├── subtitle/       # import / export / convert
-│       │   ├── video/          # 플레이어 연동
-│       │   ├── sheet/          # 자막 시트
-│       │   ├── ui/             # 셸 UI (toast · dialog · widgets)
-│       │   ├── shortkey/       # 단축키 (Shortcuts 엔진 · keys · 설정 UI)
-│       │   ├── settings/       # 포맷 · 언어 설정 액션
-│       │   ├── analytics/
-│       │   └── ads/
-│       └── lib/                # video-js · WebFont · iconv-lite (`jquery` 제거됨)
-├── favicon/
+│   └── js/                     # 1차 바닐라 — 아직 편집 본문
+│       ├── caption.js
+│       ├── modules/            # sheet · video · subtitle · …
+│       └── lib/                # video-js · WebFont · iconv-lite
+├── changelog/
 ├── CHANGELOG.md
-├── VERSION
-└── changelog/
+└── VERSION
 ```
 
 | 구분 | 설명 |
 |------|------|
-| 부트스트랩 | `public/js/caption.js` |
-| 도메인 모듈 | `public/js/modules/{i18n,utils,subtitle,video,sheet,ui,shortkey,settings,…}` |
+| `/` | `pnpm dev` 첫 화면 — 레거시 셸(`widgets/caption-shell`) + `public/js` 모듈 |
+| `/edit` | React로 레거시 편집기를 옮기는 자리 (껍데기 → 이후 도메인 이전) |
+| `/dev/fonts` | 폰트 시편 (개발용) |
+| 바닐라 도메인 | `public/js/modules/*` — 아직 `/`에서 동작 |
+| `index.legacy.html` | 1차 정적 셸 **파일 백업** (빌드·배포 미포함, 일상 확인용 아님) |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) |
 
 ## 로컬에서 실행
 
-정적 파일만으로 UI·편집 흐름을 확인할 수 있습니다.
+```bash
+pnpm install
+pnpm dev          # http://localhost:3000 → `/` 에 레거시 Caption Studio
+pnpm typecheck
+pnpm build
+pnpm lint
+```
+
+- **`/`** — 지금 쓰는 편집기(레거시). Vite가 `public/` 스크립트를 그대로 로드합니다.
+- **`/edit`** — 2차 작업: 레거시를 React로 변환·이전하는 화면.
+- **`index.legacy.html`** — Git에만 남겨 둔 백업. `pnpm build` 산출물에는 없고, 평소 확인은 `pnpm dev`의 `/`를 씁니다.
 
 > 운영 동작·전체 기능 확인은 https://caption.devco.kr 를 기준으로 합니다.
 
@@ -126,16 +149,23 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 | 구분 | 규칙 |
 |------|------|
-| **표기** | `X.Y.Z-dev.N` (예: `2.2.2-dev.1`, `2.2.2-dev.2`) |
+| **표기** | `X.Y.Z-dev.N` (예: `2.2.2-dev.1`, `2.9.0-dev.1`) |
 | **`VERSION` / About UI / Git tag** | **마일스톤 완료·검증 후** `X.Y.Z`로 한 번만 반영 |
-| **기록 위치** | [changelog/](./changelog/) 해당 MINOR 파일에 `## X.Y.Z — 진행 중` 아래 `### X.Y.Z-dev.N` 섹션 |
-| **브랜치** | 목표 버전과 맞는 작업 브랜치 (예: `refactor/remove-eval` → 목표 `2.2.2`) |
+| **기록 위치 (일반)** | [changelog/](./changelog/) 해당 MINOR 파일에 `## X.Y.Z — 진행 중` 아래 `### X.Y.Z-dev.N` 섹션 |
+| **기록 위치 (2.9만)** | [changelog/2.9/](./changelog/2.9/) 폴더. 목록은 `README.md`, 단계는 `2.9.0-dev.N.md` **파일 분리**. 완료 후에도 **합치지 않음** |
+| **브랜치** | 목표 버전과 맞는 작업 브랜치 (예: `feat/tss-setup` → `2.9.0-dev.1`) |
 
-**흐름 예**
+**흐름 예 (일반 MINOR)**
 
 1. 브랜치 생성 → changelog에 `## 2.2.2 — 진행 중 (브랜치명)` 추가 (`VERSION`은 이전 릴리스 유지)
-2. 커밋마다 → `2.2.2-dev.1`, `2.2.2-dev.2` … changelog에 누적
-3. merge/push 완료 → `VERSION`, About, `CHANGELOG.md`, tag `v2.2.2` 반영 후 dev 접두 정리
+2. 커밋마다 → `2.2.2-dev.1`, `2.2.2-dev.2` … 같은 파일에 누적
+3. merge/push 완료 → `VERSION`, About, `CHANGELOG.md`, tag `v2.2.2` 반영
+
+**흐름 예 (2.9 React 변환)**
+
+1. `changelog/2.9/2.9.0-dev.N.md` 추가 · 폴더 `README.md` 목록에 한 줄
+2. `VERSION`은 `2.8.4` 유지
+3. React **완전 변환** 후 → `VERSION` / tag `v2.9.0`. `dev.N` 파일은 그대로 둠
 
 `2.2.2.1`처럼 네 번째 숫자는 SemVer에 없으므로 쓰지 않습니다. pre-release는 `-dev.N`을 사용합니다.
 
@@ -204,6 +234,10 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 | `bootstrap` | `modules/index.js` · `caption.js` — 도메인 조립 · ready |
 | `jquery` | jQuery·jQuery UI 의존 제거 |
 | `structure` | 전역 변수, 모듈 골격, 네이밍 |
+| `tss` | TanStack Start / React 앱 골격 (`src/`, Vite 설정) |
+| `shared` | `src/shared` — config · lib · ui |
+| `widgets` | `src/widgets` |
+| `pages` | `src/pages` |
 | `build` | 번들, 빌드 설정 |
 | `docs` | 문서 |
 
