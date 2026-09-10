@@ -54,12 +54,8 @@ const createSet = ({ sheet, i18n, header }) => (options = {}) => {
 			? [clone(EMPTY_TIMELINE)]
 			: timelinesOption;
 		sheet.timelines = next;
-		const activeDoc = sheet.sheets[sheet.activeSheetIndex];
-		if (activeDoc) activeDoc.timelines = next;
 	} else if (!sheet.timelines || sheet.timelines.length === 0) {
 		sheet.timelines = [clone(EMPTY_TIMELINE)];
-		const activeDoc = sheet.sheets[sheet.activeSheetIndex];
-		if (activeDoc) activeDoc.timelines = sheet.timelines;
 	}
 
 	sheet.autoSave?.();

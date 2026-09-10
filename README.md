@@ -17,7 +17,7 @@
 
 ## 작업 목표
 
-| # | 목표 | 상태 (2.8.4) |
+| # | 목표 | 상태 (2.8.5) |
 |---|------|----------------|
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |

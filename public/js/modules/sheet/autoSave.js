@@ -19,9 +19,6 @@ const createAutoSave = (sheet) => {
 		timer = setTimeout(() => {
 			try {
 				sheet.tabs?.persistActiveView?.();
-				if (!sheet.tabs && sheet.sheets?.[sheet.activeSheetIndex]) {
-					sheet.sheets[sheet.activeSheetIndex].timelines = sheet.timelines;
-				}
 				storage.set(STORAGE_KEY_SHEETS, serializeSubtitleTemp(sheet));
 			} catch (error) {
 				console.error('[sheet.autoSave]', error);
