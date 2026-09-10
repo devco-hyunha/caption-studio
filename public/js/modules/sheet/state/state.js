@@ -15,7 +15,16 @@ const createSheetState = () => {
 		format: null,
 		sheets: [],
 		activeSheetIndex: 0,
-		timelines: [],
+
+		/** 활성 탭 timelines. SSOT는 `sheets[activeSheetIndex].timelines` */
+		get timelines() {
+			return this.sheets[this.activeSheetIndex]?.timelines ?? [];
+		},
+		set timelines(next) {
+			const doc = this.sheets[this.activeSheetIndex];
+			if (!doc) return;
+			doc.timelines = next;
+		},
 
 		// selection
 		current: {},

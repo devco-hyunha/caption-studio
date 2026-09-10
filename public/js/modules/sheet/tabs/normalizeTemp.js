@@ -3,7 +3,7 @@ import { EMPTY_TIMELINE } from '../constants.js';
 import { createUniqueSheetName, normalizeTabName } from './names.js';
 
 /**
- * @returns {{ name: string, timelines: object[], scroll: number, current: object, selectedRows: number[], history: { entries: object[], index: number } }}
+ * @returns {{ name: string, timelines: object[], scroll: number, current: object, selectedRows: number[] }}
  */
 const createEmptySheetDoc = (name = 'sheet1') => ({
 	name: normalizeTabName(name),
@@ -13,7 +13,6 @@ const createEmptySheetDoc = (name = 'sheet1') => ({
 	scroll: 0,
 	current: {},
 	selectedRows: [],
-	history: { entries: [], index: -1 },
 });
 
 /**
@@ -35,10 +34,6 @@ const normalizeSheetDoc = (sheetDoc) => {
 			? sheetDoc.current
 			: {},
 		selectedRows: Array.isArray(sheetDoc?.selectedRows) ? sheetDoc.selectedRows : [],
-		history: {
-			entries: Array.isArray(sheetDoc?.history?.entries) ? sheetDoc.history.entries : [],
-			index: typeof sheetDoc?.history?.index === 'number' ? sheetDoc.history.index : -1,
-		},
 	};
 };
 

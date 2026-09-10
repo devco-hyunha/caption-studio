@@ -41,9 +41,7 @@ const ensureSheetsLoaded = (sheet) => {
 	const normalized = normalizeSubtitleTemp(raw);
 	sheet.sheets = normalized.sheets;
 	sheet.activeSheetIndex = normalized.active;
-	const activeDoc = sheet.sheets[sheet.activeSheetIndex];
-	sheet.timelines = activeDoc.timelines;
-	editHistory.setState(activeDoc.history);
+	editHistory.resetForSheets(sheet.sheets.length, sheet.activeSheetIndex);
 	storage.set(STORAGE_KEY_SHEETS, serializeSubtitleTemp(sheet));
 	return true;
 };

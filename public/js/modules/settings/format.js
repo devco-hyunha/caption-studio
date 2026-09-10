@@ -27,9 +27,6 @@ const createFormat = ({ ui, sheet, subtitle, i18n }) => (format) => {
 			sheet.current.col = 0;
 			sheet.move.event();
 			editHistory.clear();
-			if (sheet.sheets[sheet.activeSheetIndex]) {
-				sheet.sheets[sheet.activeSheetIndex].history = { entries: [], index: -1 };
-			}
 			sheet.edit.history();
 		},
 		cancel: () => {

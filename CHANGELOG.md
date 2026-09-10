@@ -131,6 +131,12 @@ analytics 모듈 분리, export GA 보완, 개발 환경에서 GA·wcs·AdSense 
 
 상세 변경: [changelog/2.8.md](./changelog/2.8.md)
 
+## [2.8.5] — 2026-09-10
+
+시트 탭 `timelines` · undo 히스토리의 이중 복사를 제거하고 `activeSheetIndex` 기준으로 SSOT를 통일.
+
+상세 변경: [changelog/2.8.md](./changelog/2.8.md)
+
 ## [2.9.0] — 진행 중
 
 React 완전 변환 (Vite + TanStack Start). 세팅은 `2.9.0-dev.1`, 이후 단계는 `changelog/2.9/`에 `dev.N` 파일로 분리 기록.

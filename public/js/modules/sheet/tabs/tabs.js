@@ -8,28 +8,26 @@ import {
 import { createEmptySheetDoc } from './normalizeTemp.js';
 
 /**
- * 활성 시트의 뷰·히스토리를 문서에 저장한다.
+ * 활성 시트의 뷰 상태를 문서에 저장한다.
  *
  * @param {object} sheet
  */
 const persistActiveView = (sheet) => {
 	const doc = sheet.sheets[sheet.activeSheetIndex];
 	if (!doc) return;
-	doc.timelines = sheet.timelines;
 	doc.scroll = sheet.body?.scrollTop ?? sheet.scroll ?? 0;
 	doc.current = { ...sheet.current };
 	doc.selectedRows = [...(sheet.selectedRows ?? [])];
-	doc.history = editHistory.getState();
 };
 
 /**
- * 문서의 뷰·히스토리를 시트 런타임에 복원한다.
+ * 문서의 뷰 상태를 시트 런타임에 복원한다.
+ * timelines · history는 activeSheetIndex로 활성 대상을 고른다.
  *
  * @param {object} sheet
  * @param {object} doc
  */
 const restoreView = (sheet, doc) => {
-	sheet.timelines = doc.timelines;
 	sheet.current = doc.current && Object.keys(doc.current).length > 0
 		? { ...doc.current }
 		: {};
@@ -39,7 +37,6 @@ const restoreView = (sheet, doc) => {
 	sheet.focus = null;
 	sheet.shift = false;
 	sheet.searchHits = [];
-	editHistory.setState(doc.history ?? { entries: [], index: -1 });
 };
 
 /**
@@ -73,6 +70,7 @@ const createTabs = ({ sheet, i18n, ui }) => {
 	const applyActive = (index, { skipPersist } = {}) => {
 		if (!skipPersist) persistActiveView(sheet);
 		sheet.activeSheetIndex = index;
+		editHistory.setActiveSheetIndex(index);
 		restoreView(sheet, sheet.sheets[index]);
 		sheet.trigger?.reset();
 		sheet.convert?.();
@@ -107,6 +105,7 @@ const createTabs = ({ sheet, i18n, ui }) => {
 		const name = createUniqueSheetName(sheet.sheets.map((doc) => doc.name));
 		const doc = createEmptySheetDoc(name);
 		sheet.sheets.push(doc);
+		editHistory.addStack();
 		applyActive(sheet.sheets.length - 1, { skipPersist: true });
 	};
 
@@ -117,8 +116,6 @@ const createTabs = ({ sheet, i18n, ui }) => {
 		doc.scroll = 0;
 		doc.current = {};
 		doc.selectedRows = [];
-		doc.history = { entries: [], index: -1 };
-		sheet.timelines = doc.timelines;
 		sheet.current = {};
 		sheet.selectedRows = [];
 		sheet.scroll = 0;
@@ -153,6 +150,7 @@ const createTabs = ({ sheet, i18n, ui }) => {
 			success: () => {
 				persistActiveView(sheet);
 				sheet.sheets.splice(index, 1);
+				editHistory.removeStack(index);
 				let next = sheet.activeSheetIndex;
 				if (index < next) next -= 1;
 				else if (index === next) next = Math.min(next, sheet.sheets.length - 1);
