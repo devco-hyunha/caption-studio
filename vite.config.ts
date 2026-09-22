@@ -21,7 +21,9 @@ export default defineConfig({
 				},
 			},
 		}),
-		viteReact(),
+		viteReact({
+			compiler: true,
+		}),
 	],
 	test: {
 		environment: 'jsdom',

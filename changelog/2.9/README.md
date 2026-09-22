@@ -20,3 +20,4 @@
 | 단계 | 문서 | 요약 |
 |------|------|------|
 | dev.1 | [2.9.0-dev.1.md](./2.9.0-dev.1.md) | TanStack Start 세팅 (`feat/tss-setup`) — `/` 레거시, `/edit` 껍데기 |
+| dev.2 | [2.9.0-dev.2.md](./2.9.0-dev.2.md) | Sheet UI · subtitleSheets 영속 · 셀 포커스 이동 |

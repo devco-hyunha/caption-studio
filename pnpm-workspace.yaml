@@ -12,5 +12,3 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/visitor-keys@8.70.0'
   - lucide-react@1.42.0
   - typescript-eslint@8.70.0
-  - '@tanstack/react-virtual@3.14.11'
-  - '@tanstack/virtual-core@3.17.9'

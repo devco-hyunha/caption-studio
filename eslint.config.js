@@ -18,7 +18,7 @@ export default tseslint.config(
 	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
-	reactHooks.configs.flat.recommended,
+	reactHooks.configs.flat['recommended-latest'],
 	reactRefresh.configs.vite,
 	{
 		files: ['**/*.{ts,tsx}'],

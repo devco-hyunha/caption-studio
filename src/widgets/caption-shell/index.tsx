@@ -1,8 +1,8 @@
 import { Fragment } from 'react/jsx-runtime';
 
 /**
- * Legacy index.html body markup ported to JSX for TanStack Start setup.
- * Behavior (caption.js bootstrap) is not wired yet — markup/CSS parity only.
+ * TanStack Start용 셸 마크업.
+ * 동작(bootstrap)은 아직 미연결 — 마크업/CSS parity만.
  */
 export const CaptionShell = () => {
 	return (
