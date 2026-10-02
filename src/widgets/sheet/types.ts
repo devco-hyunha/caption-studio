@@ -234,6 +234,10 @@ export interface UseSheetMoveParams {
 		column: SheetColumnId,
 		options?: { scrollTop?: number | null },
 	) => void;
+	/** Tab 마지막 행 append — insert 후 포커스는 호출측 */
+	onAppendRow?: (cursor: SheetMoveCursor) => void;
+	/** 행 이동 후 multiple 선택 갱신 */
+	onRowMoved?: (row: number, withShift: boolean) => void;
 }
 
 /** shortkey 등 키보드 진입에서 호출하는 이동 API */

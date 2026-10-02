@@ -11,11 +11,17 @@ import {
 	copySheet,
 	createState,
 	deleteSheet,
+	insertActiveTimelineAfter,
 	loadState,
+	removeActiveTimelineAt,
 	toSaveState,
 	renameSheet,
 	selectSheet,
+	setActiveMultipleStart,
+	toggleActiveSelectedRow,
+	toggleMultiple,
 	updateActiveCell,
+	updateSelectedRowTexts,
 	updateSheetScroll,
 } from '../lib/subtitle-sheets';
 
@@ -61,6 +67,39 @@ const useSheetStore = create<SheetStore>()(
 
 			updateSheetScroll: (index, scrollTop) => {
 				set((state) => updateSheetScroll(state, index, scrollTop));
+			},
+
+			toggleMultiple: (currentRow) => {
+				set((state) => toggleMultiple(state, currentRow));
+			},
+
+			toggleSelectedRow: (row, withShift) => {
+				set((state) => toggleActiveSelectedRow(state, row, withShift));
+			},
+
+			setMultipleStart: (row) => {
+				set((state) => setActiveMultipleStart(state, row));
+			},
+
+			insertTimelineAfter: (row, format) => {
+				const result = insertActiveTimelineAfter(get(), row, format);
+				if (!result) return null;
+				set(result.state);
+				return result.insertIndex;
+			},
+
+			removeTimelineAt: (row) => {
+				const result = removeActiveTimelineAt(get(), row);
+				if (!result) return null;
+				set(result.state);
+				return result.focusRow;
+			},
+
+			updateSelectedTexts: (transform) => {
+				const next = updateSelectedRowTexts(get(), transform);
+				if (!next) return false;
+				set(next);
+				return true;
 			},
 		}),
 		{

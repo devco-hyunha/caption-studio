@@ -1,11 +1,18 @@
 import type {
 	SavedState,
 	Sheet,
+	SheetTimelineFormat,
 	SheetTimelineItem,
 	EditableColumn,
 	SheetsState,
 } from '../types';
 import { parseTimecode } from '@/shared/lib/timecode';
+import {
+	enterMultipleSelection,
+	exitMultipleSelection,
+	toggleSelectedRow,
+} from './sheet-selection';
+import { insertTimelineAfter, removeTimelineAt } from './sheet-mutate';
 import {
 	createCopyName,
 	createTabName,
@@ -40,6 +47,8 @@ const createSheet = (name = 'sheet1'): Sheet => ({
 	scroll: 0,
 	current: {},
 	selectedRows: [],
+	multipleActive: false,
+	multipleStart: null,
 });
 
 const normalizeSheet = (sheet: Partial<Sheet> | null | undefined): Sheet => {
@@ -56,6 +65,9 @@ const normalizeSheet = (sheet: Partial<Sheet> | null | undefined): Sheet => {
 		scroll: typeof sheet?.scroll === 'number' ? sheet.scroll : 0,
 		current: sheet?.current && typeof sheet.current === 'object' ? { ...sheet.current } : {},
 		selectedRows: Array.isArray(sheet?.selectedRows) ? [...sheet.selectedRows] : [],
+		multipleActive: sheet?.multipleActive === true,
+		multipleStart:
+			typeof sheet?.multipleStart === 'number' ? sheet.multipleStart : null,
 	};
 };
 
@@ -172,7 +184,151 @@ const cloneSheet = (sheet: Sheet, name: string): Sheet => ({
 	scroll: 0,
 	current: {},
 	selectedRows: [],
+	multipleActive: false,
+	multipleStart: null,
 });
+
+const patchActiveSheet = (
+	state: SheetsState,
+	patch: (sheet: Sheet) => Sheet | null,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+	const nextSheet = patch(sheet);
+	if (!nextSheet || nextSheet === sheet) return null;
+	return {
+		...state,
+		sheets: [
+			...state.sheets.slice(0, state.active),
+			nextSheet,
+			...state.sheets.slice(state.active + 1),
+		],
+	};
+};
+
+/** multiple 모드 on/off */
+const toggleMultiple = (state: SheetsState, currentRow: number): SheetsState => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return state;
+
+	const nextSelection = sheet.multipleActive
+		? exitMultipleSelection()
+		: enterMultipleSelection(Math.max(0, currentRow));
+
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		...nextSelection,
+	}));
+	return next ?? state;
+};
+
+/** Space / Shift 범위. multiple 아니면 no-op */
+const toggleActiveSelectedRow = (
+	state: SheetsState,
+	row: number,
+	withShift: boolean,
+): SheetsState => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.multipleActive) return state;
+
+	const nextSelection = toggleSelectedRow(
+		{ selectedRows: sheet.selectedRows, multipleStart: sheet.multipleStart },
+		row,
+		withShift,
+	);
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		selectedRows: nextSelection.selectedRows,
+		multipleStart: nextSelection.multipleStart,
+	}));
+	return next ?? state;
+};
+
+/** multiple 이동(비-Shift) 앵커 */
+const setActiveMultipleStart = (state: SheetsState, row: number): SheetsState => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.multipleActive) return state;
+	if (sheet.multipleStart === row) return state;
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		multipleStart: row,
+	}));
+	return next ?? state;
+};
+
+/**
+ * 행 삽입. multiple 중이면 null.
+ * 성공 시 `{ state, insertIndex }`.
+ */
+const insertActiveTimelineAfter = (
+	state: SheetsState,
+	row: number,
+	format: SheetTimelineFormat,
+): { state: SheetsState; insertIndex: number } | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet || sheet.multipleActive) return null;
+
+	const { timelines, insertIndex } = insertTimelineAfter(sheet.timelines, row, format);
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		timelines,
+		selectedRows: [],
+		multipleStart: null,
+	}));
+	if (!next) return null;
+	return { state: next, insertIndex };
+};
+
+/**
+ * 행 삭제. multiple 중이면 null.
+ * 성공 시 `{ state, focusRow }`.
+ */
+const removeActiveTimelineAt = (
+	state: SheetsState,
+	row: number,
+): { state: SheetsState; focusRow: number } | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet || sheet.multipleActive) return null;
+
+	const result = removeTimelineAt(sheet.timelines, row);
+	if (!result) return null;
+
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		timelines: result.timelines,
+		selectedRows: [],
+		multipleStart: null,
+	}));
+	if (!next) return null;
+	return { state: next, focusRow: result.focusRow };
+};
+
+/**
+ * multiple 선택 행의 text에 transform 적용.
+ * multiple이 아니거나 선택 없으면 null.
+ */
+const updateSelectedRowTexts = (
+	state: SheetsState,
+	transform: (text: string, rowIndex: number) => string,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.multipleActive) return null;
+	if (sheet.selectedRows.length === 0) return null;
+
+	let changed = false;
+	const timelines = sheet.timelines.map((timeline, index) => {
+		if (!sheet.selectedRows.includes(index)) return timeline;
+		const prev = typeof timeline.text === 'string' ? timeline.text : '';
+		const nextText = transform(prev, index);
+		if (nextText === prev) return timeline;
+		changed = true;
+		return { ...timeline, text: nextText };
+	});
+
+	if (!changed) return null;
+
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
 
 const selectSheet = (state: SheetsState, index: number): SheetsState => {
 	if (index < 0 || index >= state.sheets.length) return state;
@@ -317,14 +473,20 @@ export {
 	createState,
 	deleteSheet,
 	getActiveScroll,
+	insertActiveTimelineAfter,
 	loadState,
 	normalizeState,
 	toSaveState,
+	removeActiveTimelineAt,
 	renameSheet,
 	debounceSaveState,
 	selectSheet,
 	serializeForSave,
+	setActiveMultipleStart,
+	toggleActiveSelectedRow,
+	toggleMultiple,
 	updateActiveCell,
+	updateSelectedRowTexts,
 	updateSheetScroll,
 	saveState,
 };

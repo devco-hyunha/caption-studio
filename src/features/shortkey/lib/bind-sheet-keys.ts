@@ -1,6 +1,7 @@
 import type { SheetShortkeyActions, ShortcutParams, ShortcutsApi } from '../types';
 import {
 	SHEET_SHORTKEY_PLACEHOLDERS,
+	SHORTCUT_TYPE_DOWN,
 	SHORTCUT_TYPE_HOLD,
 } from '../model/default-sheet-key-masks';
 import { useShortkeyStore } from '../model/use-shortkey-store';
@@ -10,7 +11,7 @@ import { checkIsInput } from './shortcuts';
 const isImeKeyEvent = (event: KeyboardEvent) =>
 	event.isComposing || event.keyCode === 229 || event.key === 'Process';
 
-/** S1: 이동 · 에딧 진입/종료만 — mask는 shortkey store에서 조회 */
+/** 시트 이동 · 에딧 · 선택 · insert/remove — mask는 shortkey store에서 조회 */
 const registerSheetNavigationKeys = (
 	shortcuts: ShortcutsApi,
 	getActions: () => SheetShortkeyActions,
@@ -46,6 +47,7 @@ const registerSheetNavigationKeys = (
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
 				const actions = getActions();
+				if (actions.isMultiple()) return;
 				if (!actions.isEditing() && actions.isTextTarget()) actions.beginEdit();
 			},
 		},
@@ -57,6 +59,10 @@ const registerSheetNavigationKeys = (
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
 				const actions = getActions();
+				if (actions.isMultiple()) {
+					actions.toggleMultiple();
+					return;
+				}
 				if (!actions.isEditing()) return;
 				event.stopPropagation();
 				actions.cancelEdit();
@@ -74,6 +80,7 @@ const registerSheetNavigationKeys = (
 					actions.insertEditorLineBreak();
 					return;
 				}
+				if (actions.isMultiple()) return;
 				if (!actions.isTextTarget()) return;
 				event.preventDefault();
 				event.stopPropagation();
@@ -121,6 +128,28 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
+			mask: masks.rowUpSelect,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				actions.moveRowPrev(event);
+			},
+		},
+		{
+			mask: masks.rowDownSelect,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				actions.moveRowNext(event);
+			},
+		},
+		{
 			mask: masks.colLeft,
 			type: SHORTCUT_TYPE_HOLD,
 			preventDefault: true,
@@ -140,6 +169,71 @@ const registerSheetNavigationKeys = (
 				const actions = getActions();
 				if (actions.isEditing()) return;
 				actions.moveColNext(event);
+			},
+		},
+		{
+			mask: masks.rowSelectToggle,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (!actions.isMultiple()) return;
+				actions.toggleRowSelect();
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetInsert,
+			mask: masks.sheetInsert,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.insertRow();
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetRemove,
+			mask: masks.sheetRemove,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.removeRow();
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontBold,
+			mask: masks.fontBold,
+			type: SHORTCUT_TYPE_DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().applyTextFormat('bold');
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontItalic,
+			mask: masks.fontItalic,
+			type: SHORTCUT_TYPE_DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().applyTextFormat('italic');
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontUnderline,
+			mask: masks.fontUnderline,
+			type: SHORTCUT_TYPE_DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().applyTextFormat('underline');
 			},
 		},
 	];
@@ -166,6 +260,7 @@ const bindPrintableEditCallback = (
 		if (checkIsInput(event.target)) return;
 		const actions = getActions();
 		if (actions.isEditing()) return;
+		if (actions.isMultiple()) return;
 		if (!actions.isTextTarget()) return;
 		if (!isPrintableShortcutEvent(event)) return;
 		actions.beginEditFromTyping(event);

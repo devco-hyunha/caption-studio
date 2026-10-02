@@ -1,5 +1,6 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useSheetStore } from '@/entities/subtitle-sheet';
 import type {
 	SheetCellEditTarget,
 	SheetCellEditorMode,
@@ -18,6 +19,12 @@ const TEXT_COLUMNS: SheetColumnId[] = ['text', 'memo'];
 const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
 const isTextColumn = (column: SheetColumnId) => TEXT_COLUMNS.includes(column);
+
+/** multiple 모드 — 레거시 bindPanel: 클릭/에딧 진입 금지 */
+const isMultipleActive = () => {
+	const { active, sheets } = useSheetStore.getState();
+	return sheets[active]?.multipleActive === true;
+};
 
 const insertEditorLineBreak = () => {
 	if (isFirefox) {
@@ -125,7 +132,7 @@ const useSheetCellEdit = ({
 		targetRef.current = target;
 	}, [target]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		rowsRef.current = rows;
 	}, [rows]);
 
@@ -321,6 +328,7 @@ const useSheetCellEdit = ({
 	 * - 영문: DOM 유지, setMode만 microtask
 	 */
 	const activateEditFromTyping = (isIme: boolean) => {
+		if (isMultipleActive()) return;
 		editBootstrapRef.current = { applied: true };
 		modeRef.current = 'edit';
 		showEditingSurface();
@@ -348,6 +356,7 @@ const useSheetCellEdit = ({
 
 	/** 더블클릭/우클릭/Enter — 기존 값 로드 + 전체 선택 */
 	const beginEdit = (rowIndex: number, column: SheetColumnId, cell?: HTMLElement | null) => {
+		if (isMultipleActive()) return;
 		if (!isEditableColumn(format, column)) return;
 		// context 편집은 text/memo만
 		if (!isTextColumn(column)) return;
@@ -431,6 +440,8 @@ const useSheetCellEdit = ({
 	) => {
 		event.preventDefault();
 		event.stopPropagation();
+		// 레거시 bindPanel — multiple 중 셀 클릭(포커스/에딧) 무시
+		if (isMultipleActive()) return;
 
 		if (modeRef.current === 'edit') {
 			const current = targetRef.current;
@@ -457,6 +468,7 @@ const useSheetCellEdit = ({
 	) => {
 		event.preventDefault();
 		event.stopPropagation();
+		if (isMultipleActive()) return;
 		beginEdit(rowIndex, column, event.currentTarget);
 	};
 
@@ -467,6 +479,7 @@ const useSheetCellEdit = ({
 	) => {
 		event.preventDefault();
 		event.stopPropagation();
+		if (isMultipleActive()) return;
 		beginEdit(rowIndex, column, event.currentTarget);
 	};
 
@@ -486,6 +499,7 @@ const useSheetCellEdit = ({
 		nativeEvent?: { isComposing?: boolean; keyCode?: number };
 		keyCode?: number;
 	}) => {
+		if (isMultipleActive()) return false;
 		if (modeRef.current !== 'focus') return false;
 		const current = targetRef.current;
 		if (!current || !isTextColumn(current.column)) return false;
@@ -503,6 +517,7 @@ const useSheetCellEdit = ({
 	};
 
 	const beginEditOnCurrent = () => {
+		if (isMultipleActive()) return;
 		const current = targetRef.current;
 		if (!current || !isTextColumn(current.column)) return;
 		if (modeRef.current === 'edit') return;
@@ -510,6 +525,7 @@ const useSheetCellEdit = ({
 	};
 
 	const beginEditFromTyping: ShortcutKeyHandler = (event) => {
+		if (isMultipleActive()) return;
 		if (modeRef.current !== 'focus') return;
 		const current = targetRef.current;
 		if (!current || !isTextColumn(current.column)) return;

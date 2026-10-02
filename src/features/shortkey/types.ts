@@ -51,6 +51,7 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	isEditing: () => boolean;
 	isTextTarget: () => boolean;
 	hasFocus: () => boolean;
+	isMultiple: () => boolean;
 	/** Tab 직전 등 — 커밋 후 focus 유지 */
 	endEdit: (commit?: boolean) => void;
 	/** F2 / Enter(비에딧) — 기존 값 로드 */
@@ -61,6 +62,16 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	beginEditFromTyping: ShortcutKeyHandler;
 	/** Enter(에딧 중) — 줄바꿈 */
 	insertEditorLineBreak: () => void;
+	/** multiple 모드 토글 */
+	toggleMultiple: () => void;
+	/** Space — multiple 중 현재 행 토글 */
+	toggleRowSelect: () => void;
+	/** 현재 행 뒤 삽입 */
+	insertRow: () => void;
+	/** 현재 행 삭제 */
+	removeRow: () => void;
+	/** bold / italic / underline — multiple·에딧·단건 clip */
+	applyTextFormat: (command: 'bold' | 'italic' | 'underline') => void;
 }
 
 export interface UseSheetShortkeyParams {

@@ -36,8 +36,8 @@ const SheetRow = ({
 			aria-selected={row.isSelected || undefined}
 			className={cn(
 				'relative flex w-full min-w-[var(--sheet-contain-min)] items-stretch border-b border-neutral-100',
-				row.isSelected && 'bg-sky-100',
-				row.isError && 'bg-red-50',
+				row.isSelected && 'bg-[#cef]',
+				row.isError && !row.isSelected && 'bg-red-50',
 			)}
 			style={style}
 		>
@@ -47,7 +47,7 @@ const SheetRow = ({
 				const indexStickyClass =
 					column.id === 'index'
 						? cn(
-								row.isSelected && 'bg-sky-100',
+								row.isSelected && 'bg-[#cef]',
 								row.isError && !row.isSelected && 'bg-red-50',
 							)
 						: undefined;

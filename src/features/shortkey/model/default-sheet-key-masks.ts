@@ -1,4 +1,4 @@
-/** S1 시트 네비게이션·에딧 키 — mask · placeholder · type 상수 */
+/** 시트 네비·에딧·선택·mutate 키 — mask · placeholder · type 상수 */
 
 export const SHEET_SHORTKEY_IDS = [
 	'nextRowMove',
@@ -12,11 +12,19 @@ export const SHEET_SHORTKEY_IDS = [
 	'rowDown',
 	'colLeft',
 	'colRight',
+	'rowUpSelect',
+	'rowDownSelect',
+	'rowSelectToggle',
+	'sheetInsert',
+	'sheetRemove',
+	'fontBold',
+	'fontItalic',
+	'fontUnderline',
 ] as const;
 
 export type SheetShortkeyId = (typeof SHEET_SHORTKEY_IDS)[number];
 
-/** 레거시 defaultKeys mask와 동일 */
+/** 레거시 defaultKeys / customKeys mask와 동일 */
 export const DEFAULT_SHEET_KEY_MASKS: Record<SheetShortkeyId, string> = {
 	nextRowMove: 'tab',
 	prevRowMove: 'shift+tab',
@@ -29,14 +37,27 @@ export const DEFAULT_SHEET_KEY_MASKS: Record<SheetShortkeyId, string> = {
 	rowDown: 'down',
 	colLeft: 'left',
 	colRight: 'right',
+	rowUpSelect: 'shift+up',
+	rowDownSelect: 'shift+down',
+	rowSelectToggle: 'space',
+	sheetInsert: 'ctrl+shift+a',
+	sheetRemove: 'ctrl+shift+d',
+	fontBold: 'ctrl+b',
+	fontItalic: 'ctrl+i',
+	fontUnderline: 'ctrl+u',
 };
 
-/** 레거시 defaultKeys placeholder (i18n) — 있는 키만 */
+/** 레거시 placeholder (i18n) — 있는 키만 */
 export const SHEET_SHORTKEY_PLACEHOLDERS = {
 	nextRowMove: 'next-row-move',
 	prevRowMove: 'prev-row-move',
 	sheetEditOn: 'sheet-edit-on',
 	sheetEditOff: 'sheet-edit-off',
+	sheetInsert: 'sheet-insert',
+	sheetRemove: 'sheet-remove',
+	fontBold: 'font-bold',
+	fontItalic: 'font-italic',
+	fontUnderline: 'font-underline',
 } as const;
 
 export const SHORTCUT_TYPE_HOLD = 'hold' as const;

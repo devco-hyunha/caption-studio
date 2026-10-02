@@ -33,6 +33,8 @@ const useSheetMove = ({
 	scrollRef,
 	endEdit,
 	applyFocus,
+	onAppendRow,
+	onRowMoved,
 }: UseSheetMoveParams): UseSheetMoveResult => {
 	const cursorRef = useRef<SheetMoveCursor | null>(null);
 	const rowsRef = useRef(rows);
@@ -40,6 +42,8 @@ const useSheetMove = ({
 	const isEditingRef = useRef(isEditing);
 	const endEditRef = useRef(endEdit);
 	const applyFocusRef = useRef(applyFocus);
+	const onAppendRowRef = useRef(onAppendRow);
+	const onRowMovedRef = useRef(onRowMoved);
 	const lastMoveAtRef = useRef(0);
 
 	useEffect(() => {
@@ -61,6 +65,14 @@ const useSheetMove = ({
 	useEffect(() => {
 		applyFocusRef.current = applyFocus;
 	}, [applyFocus]);
+
+	useEffect(() => {
+		onAppendRowRef.current = onAppendRow;
+	}, [onAppendRow]);
+
+	useEffect(() => {
+		onRowMovedRef.current = onRowMoved;
+	}, [onRowMoved]);
 
 	useEffect(() => {
 		if (currentRowIndex == null || currentColumn == null) {
@@ -95,6 +107,10 @@ const useSheetMove = ({
 		if (isEditingRef.current()) endEditRef.current(true);
 	};
 
+	const notifyRowMoved = (row: number, event: KeyboardEvent) => {
+		onRowMovedRef.current?.(row, event.shiftKey);
+	};
+
 	const moveTabNext: ShortcutKeyHandler = (event) => {
 		if (shouldThrottle(event)) return;
 		const cursor = cursorRef.current;
@@ -104,7 +120,11 @@ const useSheetMove = ({
 
 		const lastIndex = getLastIndex(rowsRef.current);
 		const next = calcRowNext(cursor, lastIndex, true);
-		if (next == null || next === 'append') return;
+		if (next == null) return;
+		if (next === 'append') {
+			onAppendRowRef.current?.(cursor);
+			return;
+		}
 		applyCursor(next);
 	};
 
@@ -159,6 +179,7 @@ const useSheetMove = ({
 		const next = calcRowPrev(cursor);
 		if (!next) return;
 		applyCursor(next);
+		notifyRowMoved(next.row, event);
 	};
 
 	const moveRowNextAction: ShortcutKeyHandler = (event) => {
@@ -169,6 +190,7 @@ const useSheetMove = ({
 		const next = calcRowNext(cursor, lastIndex, false);
 		if (!next || next === 'append') return;
 		applyCursor(next);
+		notifyRowMoved(next.row, event);
 	};
 
 	const moveColPrevAction: ShortcutKeyHandler = (event) => {

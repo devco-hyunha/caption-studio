@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { SheetWindowResult, UseSheetWindowParams } from '../types';
 import {
 	getRenderRange,
@@ -28,10 +28,6 @@ const useSheetWindow = ({
 	const [sheetWindow, setSheetWindow] = useState<SheetWindowResult>(() =>
 		getRenderRange(rows, restoreScrollTop, 0),
 	);
-
-	useEffect(() => {
-		rowsRef.current = rows;
-	});
 
 	useEffect(() => {
 		onScrollTopChangeRef.current = onScrollTopChange;
@@ -79,7 +75,14 @@ const useSheetWindow = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only setup
 	}, []);
 
-	useEffect(() => {
+	/**
+	 * rows 변경 시 totalHeight를 layout 전에 커밋.
+	 * useEffect면 insert→focus 스크롤이 옛 scrollHeight에 클램프됨.
+	 */
+	useLayoutEffect(() => {
+		rowsRef.current = rows;
+		const element = scrollRef.current;
+		if (element) viewportHeightRef.current = element.clientHeight;
 		commitWindow(scrollTopRef.current, viewportHeightRef.current);
 	}, [rows]);
 

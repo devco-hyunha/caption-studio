@@ -15,8 +15,12 @@ const resolveStart = (timeline: SheetTimelineItem) => {
 
 const asHtmlString = (value: unknown) => (typeof value === 'string' ? value : '');
 
-const mapTimelinesToRows = (timelines: SheetTimelineItem[]): SheetRowView[] =>
-	timelines.map((timeline, index, list) => {
+const mapTimelinesToRows = (
+	timelines: SheetTimelineItem[],
+	selectedRows: readonly number[] = [],
+): SheetRowView[] => {
+	const selectedSet = new Set(selectedRows);
+	return timelines.map((timeline, index, list) => {
 		const start = resolveStart(timeline);
 		const nextStart = list[index + 1] ? resolveStart(list[index + 1]) : undefined;
 		const storedEnd = Number(timeline.end);
@@ -36,13 +40,15 @@ const mapTimelinesToRows = (timelines: SheetTimelineItem[]): SheetRowView[] =>
 			text,
 			memo: asHtmlString(timeline.memo),
 			height: calcRowHeight(text),
+			isSelected: selectedSet.has(index),
 		};
 	});
+};
 
 const getActiveSheetRows = (state: SheetsState): SheetRowView[] => {
 	const sheet = state.sheets[state.active] ?? state.sheets[0];
 	if (!sheet) return mapTimelinesToRows([]);
-	return mapTimelinesToRows(sheet.timelines);
+	return mapTimelinesToRows(sheet.timelines, sheet.selectedRows);
 };
 
 const toSheetTabs = (sheets: SheetsState['sheets']): SheetTabView[] =>
