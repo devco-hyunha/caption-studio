@@ -13,6 +13,7 @@
 | 2차 | 바닐라 JS → React (Vite + TanStack Start) | 진행 중 — **완전 변환 시 `2.9.0`**. 지금: `2.9.0-dev.1` (`feat/tss-setup`) |
 | 이후 | UI 개선 | 미정 |
 
+2차 슬라이스 로드맵: [docs/roadmap/](./docs/roadmap/).  
 상세 이력은 [CHANGELOG.md](./CHANGELOG.md) · [changelog/](./changelog/)를 봅니다. README는 **지금 워크트리 기준**만 유지합니다.
 
 ## 주요 기능
