@@ -2,11 +2,15 @@ import type {
 	ChangeEvent,
 	CSSProperties,
 	FocusEvent,
-	KeyboardEvent,
+	KeyboardEvent as ReactKeyboardEvent,
 	MouseEvent,
 	ReactNode,
 	RefObject,
 } from 'react';
+import type {
+	SheetShortkeyMoveActions,
+	ShortcutKeyHandler,
+} from '@/features/shortkey';
 
 export type SheetFormat = 'smi' | 'srt';
 
@@ -99,7 +103,7 @@ export interface SheetTabProps {
 	onSelect: (index: number) => void;
 	onContextMenu: (event: MouseEvent<HTMLButtonElement>, index: number) => void;
 	onDraftChange: (event: ChangeEvent<HTMLInputElement>, index: number) => void;
-	onDraftKeyDown: (event: KeyboardEvent<HTMLInputElement>, index: number) => void;
+	onDraftKeyDown: (event: ReactKeyboardEvent<HTMLInputElement>, index: number) => void;
 	onDraftBlur: (event: FocusEvent<HTMLInputElement>, index: number) => void;
 }
 
@@ -197,7 +201,7 @@ export interface SheetCellEditorProps {
 	className?: string;
 	wrapRef?: RefObject<HTMLDivElement | null>;
 	inputRef?: RefObject<HTMLDivElement | null>;
-	onInputKeyDown?: (event: KeyboardEvent<HTMLDivElement>) => void;
+	onInputKeyDown?: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
 	onInputClick?: (event: MouseEvent<HTMLDivElement>) => void;
 	onInputBlur?: () => void;
 }
@@ -219,7 +223,8 @@ export interface UseSheetsResult {
 export interface UseSheetMoveParams {
 	format: SheetFormat;
 	rows: SheetRowView[];
-	mode: SheetCellEditorMode;
+	/** React mode 대신 동기 판별 — IME 중 mode state 지연 대비 */
+	isEditing: () => boolean;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	scrollRef: RefObject<HTMLDivElement | null>;
@@ -230,6 +235,9 @@ export interface UseSheetMoveParams {
 		options?: { scrollTop?: number | null },
 	) => void;
 }
+
+/** shortkey 등 키보드 진입에서 호출하는 이동 API */
+export type UseSheetMoveResult = SheetShortkeyMoveActions;
 
 export interface UseSheetWindowParams {
 	rows: readonly RowHeightInfo[];
@@ -253,7 +261,7 @@ export interface UseSheetTabRenameResult {
 	renameInputSize: number;
 	handleBeginRename: (index: number) => void;
 	handleDraftChange: (event: ChangeEvent<HTMLInputElement>, index: number) => void;
-	handleDraftKeyDown: (event: KeyboardEvent<HTMLInputElement>, index: number) => void;
+	handleDraftKeyDown: (event: ReactKeyboardEvent<HTMLInputElement>, index: number) => void;
 	handleDraftBlur: (event: FocusEvent<HTMLInputElement>, index: number) => void;
 	isRenaming: boolean;
 }
@@ -284,8 +292,22 @@ export interface UseSheetCellEditResult {
 	wrapRef: RefObject<HTMLDivElement | null>;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
+	/** shortkey용 — `mode === 'edit'` 동기 판별 */
+	isEditing: () => boolean;
+	/** shortkey용 — text/memo 타깃 */
+	isTextTarget: () => boolean;
+	/** shortkey용 — 셀 포커스(hidden 아님) */
+	hasFocus: () => boolean;
 	/** 편집 중이면 커밋 후 focus 유지 가능 */
 	endEdit: (commit?: boolean) => void;
+	/** F2 / Enter(비에딧) */
+	beginEdit: () => void;
+	/** Esc */
+	cancelEdit: () => void;
+	/** printable / IME → edit (지연 setMode) */
+	beginEditFromTyping: ShortcutKeyHandler;
+	/** Enter(에딧 중) 줄바꿈 */
+	insertEditorLineBreak: () => void;
 	/** 포커스 이동 (스크롤 포함) */
 	applyFocus: (
 		rowIndex: number,
@@ -307,7 +329,7 @@ export interface UseSheetCellEditResult {
 		rowIndex: number,
 		column: SheetColumnId,
 	) => void;
-	handleInputKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
+	handleInputKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
 	handleInputClick: (event: MouseEvent<HTMLDivElement>) => void;
 	handleEditorBlur: () => void;
 }

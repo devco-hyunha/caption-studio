@@ -2,64 +2,45 @@ import { useEffect, useRef } from 'react';
 import type {
 	SheetMoveCursor,
 	UseSheetMoveParams,
+	UseSheetMoveResult,
 } from '../types';
+import type { ShortcutKeyHandler } from '@/features/shortkey';
 import {
 	getEditableColIndex,
 	getEditableColumn,
 	getLastIndex,
-	moveColNext,
-	moveColPrev,
-	movePageNext,
-	movePagePrev,
-	moveRowNext,
-	moveRowPrev,
+	moveColNext as calcColNext,
+	moveColPrev as calcColPrev,
+	movePageNext as calcPageNext,
+	movePagePrev as calcPagePrev,
+	moveRowNext as calcRowNext,
+	moveRowPrev as calcRowPrev,
 } from './sheet-move';
-
-const isEditableDomTarget = (target: EventTarget | null) => {
-	if (!(target instanceof HTMLElement)) return false;
-	if (target.closest('[data-slot="sheet-cell-editor"]')) return false;
-	if (target.isContentEditable) return true;
-	const tag = target.tagName;
-	return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-};
 
 /** 키 홀드(`event.repeat`) 최소 간격 — 중복 이벤트 걸러냄 */
 const MOVE_REPEAT_INTERVAL_MS = 30;
 
-const isSheetMoveKey = (key: string) =>
-	key === 'Tab' ||
-	key === 'ArrowUp' ||
-	key === 'ArrowDown' ||
-	key === 'ArrowLeft' ||
-	key === 'ArrowRight' ||
-	key === 'PageUp' ||
-	key === 'PageDown';
-
 /**
- * Tab / Arrow / Page 셀·행 이동.
- * (Shift+Arrow multiple · Tab 마지막 행 insert는 미이전)
+ * Tab / Arrow / Page 셀·행 이동 API.
+ * 전역 keydown은 shortkey가 소유한다.
  */
 const useSheetMove = ({
 	format,
 	rows,
-	mode,
+	isEditing,
 	currentRowIndex,
 	currentColumn,
 	scrollRef,
 	endEdit,
 	applyFocus,
-}: UseSheetMoveParams) => {
-	const modeRef = useRef(mode);
+}: UseSheetMoveParams): UseSheetMoveResult => {
 	const cursorRef = useRef<SheetMoveCursor | null>(null);
 	const rowsRef = useRef(rows);
 	const formatRef = useRef(format);
+	const isEditingRef = useRef(isEditing);
 	const endEditRef = useRef(endEdit);
 	const applyFocusRef = useRef(applyFocus);
 	const lastMoveAtRef = useRef(0);
-
-	useEffect(() => {
-		modeRef.current = mode;
-	}, [mode]);
 
 	useEffect(() => {
 		rowsRef.current = rows;
@@ -68,6 +49,10 @@ const useSheetMove = ({
 	useEffect(() => {
 		formatRef.current = format;
 	}, [format]);
+
+	useEffect(() => {
+		isEditingRef.current = isEditing;
+	}, [isEditing]);
 
 	useEffect(() => {
 		endEditRef.current = endEdit;
@@ -90,117 +75,131 @@ const useSheetMove = ({
 		cursorRef.current = { row: currentRowIndex, col };
 	}, [currentRowIndex, currentColumn, format]);
 
-	useEffect(() => {
-		if (mode === 'hidden') return;
+	const shouldThrottle = (event: KeyboardEvent) => {
+		if (!event.repeat) return false;
+		return performance.now() - lastMoveAtRef.current < MOVE_REPEAT_INTERVAL_MS;
+	};
 
-		const resolveColumn = (cursor: SheetMoveCursor) =>
-			getEditableColumn(formatRef.current, cursor.col);
+	const resolveColumn = (cursor: SheetMoveCursor) =>
+		getEditableColumn(formatRef.current, cursor.col);
 
-		const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
-			const column = resolveColumn(cursor);
-			if (!column) return;
-			cursorRef.current = cursor;
-			lastMoveAtRef.current = performance.now();
-			applyFocusRef.current(cursor.row, column, { scrollTop });
-		};
+	const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
+		const column = resolveColumn(cursor);
+		if (!column) return;
+		cursorRef.current = cursor;
+		lastMoveAtRef.current = performance.now();
+		applyFocusRef.current(cursor.row, column, { scrollTop });
+	};
 
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (isEditableDomTarget(event.target)) return;
-			if (!isSheetMoveKey(event.key)) return;
+	const endEditIfNeeded = () => {
+		if (isEditingRef.current()) endEditRef.current(true);
+	};
 
-			// 홀드 반복만 throttle — 첫 입력은 즉시
-			if (event.repeat) {
-				const elapsed = performance.now() - lastMoveAtRef.current;
-				if (elapsed < MOVE_REPEAT_INTERVAL_MS) {
-					event.preventDefault();
-					return;
-				}
-			}
+	const moveTabNext: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
 
-			const cursor = cursorRef.current;
-			if (!cursor) return;
+		endEditIfNeeded();
 
-			const isEditing = modeRef.current === 'edit';
-			const lastIndex = getLastIndex(rowsRef.current);
-			const body = scrollRef.current;
-			const viewTop = body?.scrollTop ?? 0;
-			const viewHeight = body?.clientHeight ?? 0;
+		const lastIndex = getLastIndex(rowsRef.current);
+		const next = calcRowNext(cursor, lastIndex, true);
+		if (next == null || next === 'append') return;
+		applyCursor(next);
+	};
 
-			if (event.key === 'Tab') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
+	const moveTabPrev: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
 
-				const next = event.shiftKey ? moveRowPrev(cursor) : moveRowNext(cursor, lastIndex, true);
+		endEditIfNeeded();
 
-				if (next == null || next === 'append') return;
-				applyCursor(next);
-				return;
-			}
+		const next = calcRowPrev(cursor);
+		if (!next) return;
+		applyCursor(next);
+	};
 
-			if (event.key === 'PageUp') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
-				const result = movePagePrev(rowsRef.current, cursor.row, {
-					viewTop,
-					viewHeight,
-				});
-				if (!result) return;
-				applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
-				return;
-			}
+	const movePagePrev: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
 
-			if (event.key === 'PageDown') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
-				const result = movePageNext(rowsRef.current, cursor.row, {
-					viewTop,
-					viewHeight,
-				});
-				if (!result) return;
-				applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
-				return;
-			}
+		endEditIfNeeded();
 
-			// 편집 중 Arrow 이동 없음
-			if (isEditing) return;
+		const body = scrollRef.current;
+		const result = calcPagePrev(rowsRef.current, cursor.row, {
+			viewTop: body?.scrollTop ?? 0,
+			viewHeight: body?.clientHeight ?? 0,
+		});
+		if (!result) return;
+		applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
+	};
 
-			if (event.key === 'ArrowUp') {
-				event.preventDefault();
-				const next = moveRowPrev(cursor);
-				if (!next) return;
-				applyCursor(next);
-				return;
-			}
+	const movePageNext: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
 
-			if (event.key === 'ArrowDown') {
-				event.preventDefault();
-				const next = moveRowNext(cursor, lastIndex, false);
-				if (!next || next === 'append') return;
-				applyCursor(next);
-				return;
-			}
+		endEditIfNeeded();
 
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				const next = moveColPrev(formatRef.current, cursor);
-				if (!next) return;
-				applyCursor(next);
-				return;
-			}
+		const body = scrollRef.current;
+		const result = calcPageNext(rowsRef.current, cursor.row, {
+			viewTop: body?.scrollTop ?? 0,
+			viewHeight: body?.clientHeight ?? 0,
+		});
+		if (!result) return;
+		applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
+	};
 
-			if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				const next = moveColNext(formatRef.current, cursor, lastIndex);
-				if (!next) return;
-				applyCursor(next);
-			}
-		};
+	const moveRowPrevAction: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
+		const next = calcRowPrev(cursor);
+		if (!next) return;
+		applyCursor(next);
+	};
 
-		window.addEventListener('keydown', handleKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [mode, scrollRef]);
+	const moveRowNextAction: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
+		const lastIndex = getLastIndex(rowsRef.current);
+		const next = calcRowNext(cursor, lastIndex, false);
+		if (!next || next === 'append') return;
+		applyCursor(next);
+	};
+
+	const moveColPrevAction: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
+		const next = calcColPrev(formatRef.current, cursor);
+		if (!next) return;
+		applyCursor(next);
+	};
+
+	const moveColNextAction: ShortcutKeyHandler = (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
+		const lastIndex = getLastIndex(rowsRef.current);
+		const next = calcColNext(formatRef.current, cursor, lastIndex);
+		if (!next) return;
+		applyCursor(next);
+	};
+
+	return {
+		moveTabNext,
+		moveTabPrev,
+		moveRowPrev: moveRowPrevAction,
+		moveRowNext: moveRowNextAction,
+		moveColPrev: moveColPrevAction,
+		moveColNext: moveColNextAction,
+		movePagePrev,
+		movePageNext,
+	};
 };
 
 export { useSheetMove };

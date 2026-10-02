@@ -1,5 +1,6 @@
 import type { CSSProperties, UIEvent } from 'react';
 import { useRef } from 'react';
+import { useSheetShortkey, type SheetShortkeyActions } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
 import { useSheetCellEdit } from '../lib/use-sheet-cell-edit';
@@ -14,7 +15,7 @@ import { SheetRow } from './sheet-row';
  * - page(viewport×3) 스냅 · paddingTop 흐름 레이아웃
  * - 탭별 scrollTop 복원
  * - 셀 더블클릭/우클릭/문자 입력 편집 · blur 저장
- * - Arrow / Tab / Page 포커스 이동
+ * - 키보드 진입은 shortkey (이동 · 에딧)
  */
 const SheetBody = ({
 	format,
@@ -42,7 +43,14 @@ const SheetBody = ({
 		wrapRef,
 		currentRowIndex,
 		currentColumn,
+		isEditing,
+		isTextTarget,
+		hasFocus,
 		endEdit,
+		beginEdit,
+		cancelEdit,
+		beginEditFromTyping,
+		insertEditorLineBreak,
 		applyFocus,
 		handleCellClick,
 		handleCellDoubleClick,
@@ -59,16 +67,37 @@ const SheetBody = ({
 		onCommitCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
 	});
 
-	useSheetMove({
+	const move = useSheetMove({
 		format,
 		rows,
-		mode,
+		isEditing,
 		currentRowIndex,
 		currentColumn,
 		scrollRef,
 		endEdit,
 		applyFocus,
 	});
+
+	const getShortkeyActions = (): SheetShortkeyActions => ({
+		isEditing,
+		isTextTarget,
+		hasFocus,
+		endEdit,
+		beginEdit,
+		cancelEdit,
+		beginEditFromTyping,
+		insertEditorLineBreak,
+		moveTabNext: move.moveTabNext,
+		moveTabPrev: move.moveTabPrev,
+		moveRowPrev: move.moveRowPrev,
+		moveRowNext: move.moveRowNext,
+		moveColPrev: move.moveColPrev,
+		moveColNext: move.moveColNext,
+		movePagePrev: move.movePagePrev,
+		movePageNext: move.movePageNext,
+	});
+
+	useSheetShortkey({ getActions: getShortkeyActions });
 
 	const handleBodyScroll = (event: UIEvent<HTMLDivElement>) => {
 		handleScroll();

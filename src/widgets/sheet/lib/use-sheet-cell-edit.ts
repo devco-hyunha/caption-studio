@@ -8,6 +8,7 @@ import type {
 	UseSheetCellEditParams,
 	UseSheetCellEditResult,
 } from '../types';
+import type { ShortcutKeyHandler } from '@/features/shortkey';
 import { COLUMN_WIDTHS, getColumnLeft, isEditableColumn } from './columns';
 import { encodeCellHtml } from './encode-cell-html';
 import { getRowTop, scrollColIntoView, scrollRowIntoView } from './sheet-move';
@@ -69,13 +70,6 @@ const shouldBeginEditFromKey = (event: {
 	return isPrintableKey(event);
 };
 
-const isEditableDomTarget = (target: EventTarget | null) => {
-	if (!(target instanceof HTMLElement)) return false;
-	if (target.isContentEditable) return true;
-	const tag = target.tagName;
-	return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-};
-
 const getCellValue = (row: SheetRowView, column: SheetColumnId): string => {
 	if (column === 'index') return String(row.index + 1);
 	if (column === 'starttime') return row.starttime;
@@ -120,6 +114,8 @@ const useSheetCellEdit = ({
 	const refineRafRef = useRef<number | null>(null);
 	/** 편집 진입 1회 부트스트랩 — Strict Mode 중복 effect 대비 */
 	const editBootstrapRef = useRef<{ applied: boolean } | null>(null);
+	/** IME compositionend / microtask setMode('edit') 무효화 토큰 */
+	const compositionFlushIdRef = useRef(0);
 
 	useEffect(() => {
 		modeRef.current = mode;
@@ -204,11 +200,37 @@ const useSheetCellEdit = ({
 		focusWrapIfNeeded();
 	};
 
+	/** 편집 면 DOM 노출 — IME 조합 중 setMode 금지용 */
+	const showEditingSurface = () => {
+		const wrap = wrapRef.current;
+		if (!wrap) return;
+		wrap.classList.add('on');
+		wrap.style.opacity = '1';
+		wrap.style.zIndex = '3';
+		wrap.style.pointerEvents = 'auto';
+	};
+
+	const clearEditingSurfaceStyles = () => {
+		const wrap = wrapRef.current;
+		if (!wrap) return;
+		wrap.classList.remove('on');
+		wrap.style.opacity = '';
+		wrap.style.zIndex = '';
+		wrap.style.pointerEvents = '';
+	};
+
+	/** Tab/Esc 등으로 편집 종료 시 지연 setMode('edit') 무효화 */
+	const invalidatePendingEditFlush = () => {
+		compositionFlushIdRef.current += 1;
+		clearEditingSurfaceStyles();
+	};
+
 	/** 선택만, 편집 비활성(z-index -1) */
 	const focusTarget = (rowIndex: number, column: SheetColumnId, cell: HTMLElement) => {
 		const next = resolveTarget(rowIndex, column, cell) ?? resolveTargetByIndex(rowIndex, column);
 		if (!next) return;
 
+		invalidatePendingEditFlush();
 		modeRef.current = 'focus';
 		setTarget(next);
 		setMode('focus');
@@ -259,6 +281,7 @@ const useSheetCellEdit = ({
 		}
 
 		const focusSeq = ++focusSeqRef.current;
+		invalidatePendingEditFlush();
 		modeRef.current = 'focus';
 		setTarget(estimated);
 		setMode('focus');
@@ -291,24 +314,6 @@ const useSheetCellEdit = ({
 		selection.addRange(range);
 	};
 
-	/** React 리렌더 없이 편집 면 노출 — IME 조합 중 setMode 금지용 */
-	const showEditingSurface = () => {
-		const wrap = wrapRef.current;
-		if (!wrap) return;
-		wrap.classList.add('on');
-		wrap.style.opacity = '1';
-		wrap.style.zIndex = '3';
-		wrap.style.pointerEvents = 'auto';
-	};
-
-	const clearEditingSurfaceStyles = () => {
-		const wrap = wrapRef.current;
-		if (!wrap) return;
-		wrap.style.opacity = '';
-		wrap.style.zIndex = '';
-		wrap.style.pointerEvents = '';
-	};
-
 	/**
 	 * 문자 키로 편집 시작.
 	 * - text focus 시 input은 비어 있음(타입 투 리플레이스)
@@ -322,10 +327,9 @@ const useSheetCellEdit = ({
 
 		if (isIme) {
 			const input = inputRef.current;
-			let didFlush = false;
+			const flushId = ++compositionFlushIdRef.current;
 			const flushMode = () => {
-				if (didFlush) return;
-				didFlush = true;
+				if (flushId !== compositionFlushIdRef.current) return;
 				clearEditingSurfaceStyles();
 				if (modeRef.current === 'edit') setMode('edit');
 			};
@@ -334,7 +338,9 @@ const useSheetCellEdit = ({
 			return;
 		}
 
+		const flushId = ++compositionFlushIdRef.current;
 		queueMicrotask(() => {
+			if (flushId !== compositionFlushIdRef.current) return;
 			clearEditingSurfaceStyles();
 			if (modeRef.current === 'edit') setMode('edit');
 		});
@@ -365,6 +371,7 @@ const useSheetCellEdit = ({
 		const current = targetRef.current;
 		if (!current || modeRef.current !== 'edit') {
 			if (!keepFocus) {
+				invalidatePendingEditFlush();
 				setMode('hidden');
 				setTarget(null);
 			}
@@ -382,15 +389,15 @@ const useSheetCellEdit = ({
 		}
 
 		if (keepFocus) {
+			invalidatePendingEditFlush();
 			modeRef.current = 'focus';
-			clearEditingSurfaceStyles();
 			setMode('focus');
 			requestAnimationFrame(() => focusSelectionTarget(current.column));
 			return;
 		}
 
+		invalidatePendingEditFlush();
 		modeRef.current = 'hidden';
-		clearEditingSurfaceStyles();
 		setMode('hidden');
 		setTarget(null);
 	};
@@ -398,8 +405,8 @@ const useSheetCellEdit = ({
 	/** ESC 취소 — 값은 되돌리고 셀 선택(focus)은 유지 */
 	const cancelEdit = () => {
 		if (modeRef.current !== 'edit') return;
+		invalidatePendingEditFlush();
 		modeRef.current = 'focus';
-		clearEditingSurfaceStyles();
 		setMode('focus');
 		requestAnimationFrame(() => focusSelectionTarget());
 	};
@@ -411,8 +418,8 @@ const useSheetCellEdit = ({
 			commitEdit(true);
 			return;
 		}
+		invalidatePendingEditFlush();
 		modeRef.current = 'focus';
-		clearEditingSurfaceStyles();
 		setMode('focus');
 		requestAnimationFrame(() => focusSelectionTarget());
 	};
@@ -466,6 +473,7 @@ const useSheetCellEdit = ({
 	/**
 	 * 키 입력으로 편집 시작.
 	 * IME 조합을 끊지 않도록 첫 키에서 innerHTML/selectAll/즉시 setMode 금지.
+	 * 전역 진입은 shortkey — 에디터 로컬 keydown 대비로도 유지.
 	 */
 	const tryBeginEditFromKey = (event: {
 		ctrlKey: boolean;
@@ -493,6 +501,38 @@ const useSheetCellEdit = ({
 		activateEditFromTyping(isImeStartKey(event));
 		return true;
 	};
+
+	const beginEditOnCurrent = () => {
+		const current = targetRef.current;
+		if (!current || !isTextColumn(current.column)) return;
+		if (modeRef.current === 'edit') return;
+		beginEdit(current.rowIndex, current.column);
+	};
+
+	const beginEditFromTyping: ShortcutKeyHandler = (event) => {
+		if (modeRef.current !== 'focus') return;
+		const current = targetRef.current;
+		if (!current || !isTextColumn(current.column)) return;
+		if (event.key === 'Enter') {
+			beginEdit(current.rowIndex, current.column);
+			return;
+		}
+		if (!shouldBeginEditFromKey(event)) return;
+		activateEditFromTyping(isImeStartKey(event));
+	};
+
+	const handleInsertEditorLineBreak = () => {
+		insertEditorLineBreak();
+	};
+
+	const isEditing = () => modeRef.current === 'edit';
+
+	const isTextTarget = () => {
+		const current = targetRef.current;
+		return current != null && isTextColumn(current.column);
+	};
+
+	const hasFocus = () => modeRef.current !== 'hidden' && targetRef.current != null;
 
 	const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
 		if (tryBeginEditFromKey(event)) return;
@@ -532,22 +572,6 @@ const useSheetCellEdit = ({
 		}, 0);
 	};
 
-	// text 선택 + 미편집 시 문자 입력 → 편집 시작
-	useEffect(() => {
-		if (mode !== 'focus') return;
-		if (!target || !isTextColumn(target.column)) return;
-
-		const handleWindowKeyDown = (event: globalThis.KeyboardEvent) => {
-			if (isEditableDomTarget(event.target)) return;
-			tryBeginEditFromKey(event);
-		};
-
-		window.addEventListener('keydown', handleWindowKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleWindowKeyDown);
-		};
-	}, [mode, target]);
-
 	useEffect(() => {
 		if (!target || !inputRef.current) return;
 		if (mode === 'hidden') return;
@@ -578,7 +602,14 @@ const useSheetCellEdit = ({
 		wrapRef,
 		currentRowIndex: target?.rowIndex ?? null,
 		currentColumn: target?.column ?? null,
+		isEditing,
+		isTextTarget,
+		hasFocus,
 		endEdit,
+		beginEdit: beginEditOnCurrent,
+		cancelEdit,
+		beginEditFromTyping,
+		insertEditorLineBreak: handleInsertEditorLineBreak,
 		applyFocus,
 		handleCellClick,
 		handleCellDoubleClick,
