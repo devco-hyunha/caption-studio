@@ -20,6 +20,7 @@ const SheetRow = ({
 	style,
 	'data-index': dataIndex,
 	currentColumn,
+	searchHitKeys,
 	onCellClick,
 	onCellDoubleClick,
 	onCellContextMenu,
@@ -44,6 +45,7 @@ const SheetRow = ({
 			{columns.map((column) => {
 				const value = getCellValue(row, column.id);
 				const isCurrent = currentColumn === column.id;
+				const isSearchHit = searchHitKeys?.has(`${row.index}:${column.id}`) === true;
 				const indexStickyClass =
 					column.id === 'index'
 						? cn(
@@ -60,6 +62,7 @@ const SheetRow = ({
 							rowIndex={row.index}
 							editable={column.editable}
 							isCurrent={isCurrent}
+							isSearchHit={isSearchHit}
 							html={value}
 							className={indexStickyClass}
 							onCellClick={onCellClick}
@@ -76,6 +79,7 @@ const SheetRow = ({
 						rowIndex={row.index}
 						editable={column.editable}
 						isCurrent={isCurrent}
+						isSearchHit={isSearchHit}
 						className={indexStickyClass}
 						onCellClick={onCellClick}
 						onCellDoubleClick={onCellDoubleClick}

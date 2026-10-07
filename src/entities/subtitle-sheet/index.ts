@@ -25,11 +25,14 @@ export {
 } from './lib/sheet-selection';
 
 export {
+	cloneTimeline,
 	createEmptyTimeline,
 	fillDefaultTimes,
 	insertTimelineAfter,
 	insertTimelineAt,
 	removeTimelineAt,
+	replaceTimelineAt,
+	spliceTimelineAt,
 } from './lib/sheet-mutate';
 
 export {
@@ -44,8 +47,11 @@ export {
 	normalizeState,
 	removeActiveTimelineAt,
 	renameSheet,
+	replaceActiveTimelineAt,
+	replaceActiveTimelinePatches,
 	selectSheet,
 	setActiveMultipleStart,
+	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	updateActiveCell,

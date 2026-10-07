@@ -99,10 +99,45 @@ const removeTimelineAt = (
 	return { timelines: next, focusRow: Math.max(0, focusRow), cleared: false };
 };
 
+/**
+ * 인덱스에 타임라인 삽입 (기본 시각 채움 없음 — undo/redo 복원용).
+ */
+const spliceTimelineAt = (
+	timelines: readonly SheetTimelineItem[],
+	index: number,
+	data: SheetTimelineItem,
+): SheetTimelineItem[] => {
+	const clamped = Math.max(0, Math.min(index, timelines.length));
+	return [
+		...timelines.slice(0, clamped),
+		cloneTimeline(data),
+		...timelines.slice(clamped),
+	];
+};
+
+/**
+ * 특정 행 타임라인 교체.
+ */
+const replaceTimelineAt = (
+	timelines: readonly SheetTimelineItem[],
+	row: number,
+	data: SheetTimelineItem,
+): SheetTimelineItem[] | null => {
+	if (row < 0 || row >= timelines.length) return null;
+	return [
+		...timelines.slice(0, row),
+		cloneTimeline(data),
+		...timelines.slice(row + 1),
+	];
+};
+
 export {
+	cloneTimeline,
 	createEmptyTimeline,
 	fillDefaultTimes,
 	insertTimelineAfter,
 	insertTimelineAt,
 	removeTimelineAt,
+	replaceTimelineAt,
+	spliceTimelineAt,
 };

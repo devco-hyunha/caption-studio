@@ -82,4 +82,12 @@ export interface SheetStore extends SheetsState {
 	 * 성공 여부.
 	 */
 	updateSelectedTexts: (transform: (text: string, rowIndex: number) => string) => boolean;
+	/** undo/redo — 한 행 교체 */
+	replaceTimelineAt: (row: number, data: SheetTimelineItem) => boolean;
+	/** undo/redo — 인덱스 삽입(자동 시각 채움 없음) */
+	spliceTimelineAt: (index: number, data: SheetTimelineItem) => boolean;
+	/** undo/redo — multi 패치 */
+	replaceTimelinePatches: (
+		patches: readonly { index: number; data: SheetTimelineItem }[],
+	) => boolean;
 }

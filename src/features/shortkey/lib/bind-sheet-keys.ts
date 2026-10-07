@@ -236,6 +236,30 @@ const registerSheetNavigationKeys = (
 				getActions().applyTextFormat('underline');
 			},
 		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.undo,
+			mask: masks.undo,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				actions.undo();
+			},
+		},
+		{
+			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.redo,
+			mask: masks.redo,
+			type: SHORTCUT_TYPE_HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				actions.redo();
+			},
+		},
 	];
 
 	keys.forEach((entry) => {

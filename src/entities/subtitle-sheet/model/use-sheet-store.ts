@@ -16,8 +16,11 @@ import {
 	removeActiveTimelineAt,
 	toSaveState,
 	renameSheet,
+	replaceActiveTimelineAt,
+	replaceActiveTimelinePatches,
 	selectSheet,
 	setActiveMultipleStart,
+	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	updateActiveCell,
@@ -97,6 +100,27 @@ const useSheetStore = create<SheetStore>()(
 
 			updateSelectedTexts: (transform) => {
 				const next = updateSelectedRowTexts(get(), transform);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			replaceTimelineAt: (row, data) => {
+				const next = replaceActiveTimelineAt(get(), row, data);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			spliceTimelineAt: (index, data) => {
+				const next = spliceActiveTimelineAt(get(), index, data);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			replaceTimelinePatches: (patches) => {
+				const next = replaceActiveTimelinePatches(get(), patches);
 				if (!next) return false;
 				set(next);
 				return true;

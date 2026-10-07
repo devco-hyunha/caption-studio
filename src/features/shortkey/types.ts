@@ -72,6 +72,10 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	removeRow: () => void;
 	/** bold / italic / underline — multiple·에딧·단건 clip */
 	applyTextFormat: (command: 'bold' | 'italic' | 'underline') => void;
+	/** Ctrl+Z — 에딧 중이 아닐 때만 */
+	undo: () => void;
+	/** Ctrl+Y */
+	redo: () => void;
 }
 
 export interface UseSheetShortkeyParams {

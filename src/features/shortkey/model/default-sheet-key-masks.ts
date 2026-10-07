@@ -20,6 +20,8 @@ export const SHEET_SHORTKEY_IDS = [
 	'fontBold',
 	'fontItalic',
 	'fontUnderline',
+	'undo',
+	'redo',
 ] as const;
 
 export type SheetShortkeyId = (typeof SHEET_SHORTKEY_IDS)[number];
@@ -45,6 +47,8 @@ export const DEFAULT_SHEET_KEY_MASKS: Record<SheetShortkeyId, string> = {
 	fontBold: 'ctrl+b',
 	fontItalic: 'ctrl+i',
 	fontUnderline: 'ctrl+u',
+	undo: 'ctrl+z',
+	redo: 'ctrl+y',
 };
 
 /** 레거시 placeholder (i18n) — 있는 키만 */
@@ -58,6 +62,8 @@ export const SHEET_SHORTKEY_PLACEHOLDERS = {
 	fontBold: 'font-bold',
 	fontItalic: 'font-italic',
 	fontUnderline: 'font-underline',
+	undo: 'undo',
+	redo: 'redo',
 } as const;
 
 export const SHORTCUT_TYPE_HOLD = 'hold' as const;

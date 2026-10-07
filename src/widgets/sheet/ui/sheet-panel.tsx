@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 import {
 	DEFAULT_CELL_STYLE,
@@ -37,6 +37,7 @@ const SheetPanel = ({
 }: SheetPanelProps) => {
 	const columnVars = createColumnVars(format, DEFAULT_FONT_SIZE);
 	const headPanelRef = useRef<HTMLDivElement>(null);
+	const [chromePortalEl, setChromePortalEl] = useState<HTMLDivElement | null>(null);
 	const resolvedActiveIndex = Math.min(
 		Math.max(0, activeTabIndex),
 		Math.max(0, tabs.length - 1),
@@ -76,6 +77,12 @@ const SheetPanel = ({
 				} as CSSProperties
 			}
 		>
+			{/* Verify 툴바·검색 — sheet-head 위 (SheetBody가 portal) */}
+			<div
+				ref={setChromePortalEl}
+				data-slot="sheet-verify-chrome"
+				className="shrink-0"
+			/>
 			<div data-slot="sheet-head" className="shrink-0 overflow-hidden">
 				<div
 					ref={headPanelRef}
@@ -101,6 +108,7 @@ const SheetPanel = ({
 					onScrollTopChange={onScrollTopChange}
 					onHorizontalScroll={handleHorizontalScroll}
 					onUpdateCell={onUpdateCell}
+					chromePortalEl={chromePortalEl}
 				/>
 			</div>
 			<SheetFooter

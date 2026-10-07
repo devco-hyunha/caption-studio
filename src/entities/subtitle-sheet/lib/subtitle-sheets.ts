@@ -12,7 +12,12 @@ import {
 	exitMultipleSelection,
 	toggleSelectedRow,
 } from './sheet-selection';
-import { insertTimelineAfter, removeTimelineAt } from './sheet-mutate';
+import {
+	insertTimelineAfter,
+	removeTimelineAt,
+	replaceTimelineAt,
+	spliceTimelineAt,
+} from './sheet-mutate';
 import {
 	createCopyName,
 	createTabName,
@@ -330,6 +335,56 @@ const updateSelectedRowTexts = (
 	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
 };
 
+/** undo/redo — 활성 시트 한 행 교체 */
+const replaceActiveTimelineAt = (
+	state: SheetsState,
+	row: number,
+	data: SheetTimelineItem,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+	const timelines = replaceTimelineAt(sheet.timelines, row, data);
+	if (!timelines) return null;
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
+/** undo/redo — 인덱스에 행 삽입 (시각 자동 채움 없음) */
+const spliceActiveTimelineAt = (
+	state: SheetsState,
+	index: number,
+	data: SheetTimelineItem,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+	const timelines = spliceTimelineAt(sheet.timelines, index, data);
+	return patchActiveSheet(state, (active) => ({
+		...active,
+		timelines,
+		selectedRows: [],
+		multipleStart: null,
+	}));
+};
+
+/** undo/redo — multi 패치 일괄 적용 */
+const replaceActiveTimelinePatches = (
+	state: SheetsState,
+	patches: readonly { index: number; data: SheetTimelineItem }[],
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet || patches.length === 0) return null;
+
+	let timelines = sheet.timelines;
+	let changed = false;
+	for (const patch of patches) {
+		const next = replaceTimelineAt(timelines, patch.index, patch.data);
+		if (!next) continue;
+		timelines = next;
+		changed = true;
+	}
+	if (!changed) return null;
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
 const selectSheet = (state: SheetsState, index: number): SheetsState => {
 	if (index < 0 || index >= state.sheets.length) return state;
 	if (index === state.active) return state;
@@ -479,10 +534,13 @@ export {
 	toSaveState,
 	removeActiveTimelineAt,
 	renameSheet,
+	replaceActiveTimelineAt,
+	replaceActiveTimelinePatches,
 	debounceSaveState,
 	selectSheet,
 	serializeForSave,
 	setActiveMultipleStart,
+	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	updateActiveCell,

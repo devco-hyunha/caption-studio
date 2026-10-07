@@ -1,6 +1,14 @@
 import type { CSSProperties, UIEvent } from 'react';
 import { useLayoutEffect, useRef } from 'react';
-import { useSheetStore } from '@/entities/subtitle-sheet';
+import { createPortal } from 'react-dom';
+import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import {
+	SheetSearchPanel,
+	cloneTimelineSnapshot,
+	emptyTimelineSnapshot,
+	useSheetSessionStore,
+	type SearchHit,
+} from '@/features/sheet-session';
 import { useSheetShortkey, type SheetShortkeyActions } from '@/features/shortkey';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
@@ -17,12 +25,14 @@ import type { SheetBodyProps, SheetColumnId, SheetMoveCursor } from '../types';
 import { SheetCellEditor } from './sheet-cell-editor';
 import { SheetRow } from './sheet-row';
 
+const EMPTY_TIMELINES: readonly SheetTimelineItem[] = [];
+
 /**
  * 시트 body 윈도 + 행 렌더.
  * - page(viewport×3) 스냅 · paddingTop 흐름 레이아웃
  * - 탭별 scrollTop 복원
  * - 셀 더블클릭/우클릭/문자 입력 편집 · blur 저장
- * - 키보드 진입은 shortkey (이동 · 에딧 · 선택 · mutate)
+ * - 키보드 진입은 shortkey (이동 · 에딧 · 선택 · mutate · undo/redo)
  * - Verify용 임시 버튼 (툴바 셸과 별도)
  */
 const SheetBody = ({
@@ -35,6 +45,7 @@ const SheetBody = ({
 	onScrollTopChange,
 	onHorizontalScroll,
 	onUpdateCell,
+	chromePortalEl = null,
 }: SheetBodyProps) => {
 	const scrollContentRef = useRef<HTMLDivElement>(null);
 	/** insert 직후 rows 커밋을 기다렸다가 포커스 (동기 applyFocus는 구 rows로 early return) */
@@ -112,9 +123,30 @@ const SheetBody = ({
 		return index >= 0 ? index : 0;
 	};
 
+	const closeSearchPanel = () => {
+		useSheetSessionStore.getState().closeSearchPanel();
+	};
+
+	const pushInsertHistory = (insertIndex: number, focusRow: number, focusCol: number) => {
+		const after =
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[
+				insertIndex
+			];
+		if (!after) return;
+		useSheetSessionStore.getState().pushHistory({
+			command: 'insert',
+			id: insertIndex,
+			before: null,
+			after: cloneTimelineSnapshot(after),
+			current: { row: focusRow, col: focusCol },
+		});
+	};
+
 	const handleAppendRow = (cursor: SheetMoveCursor) => {
+		closeSearchPanel();
 		const insertIndex = insertTimelineAfterAction(cursor.row, format);
 		if (insertIndex == null) return;
+		pushInsertHistory(insertIndex, cursor.row, cursor.col);
 		const column = getEditableColumn(format, cursor.col);
 		if (!column) return;
 		pendingFocusRef.current = { row: insertIndex, column };
@@ -132,10 +164,12 @@ const SheetBody = ({
 
 	const handleInsertAtFocus = () => {
 		if (isEditing()) endEdit(true);
+		closeSearchPanel();
 		const row = resolveFocusRow();
 		const col = resolveFocusCol();
 		const insertIndex = insertTimelineAfterAction(row, format);
 		if (insertIndex == null) return;
+		pushInsertHistory(insertIndex, row, col);
 		const column = getEditableColumn(format, col);
 		if (!column) return;
 		pendingFocusRef.current = { row: insertIndex, column };
@@ -143,10 +177,37 @@ const SheetBody = ({
 
 	const handleRemoveAtFocus = () => {
 		if (isEditing()) endEdit(true);
+		closeSearchPanel();
 		const row = resolveFocusRow();
 		const col = resolveFocusCol();
+		const store = useSheetStore.getState();
+		const sheet = store.sheets[store.active];
+		const before = sheet?.timelines[row];
+		if (!before) return;
+		const beforeSnap = cloneTimelineSnapshot(before);
+		const wasLast = (sheet?.timelines.length ?? 0) <= 1;
+
 		const focusRow = removeTimelineAtAction(row);
 		if (focusRow == null) return;
+
+		if (wasLast) {
+			useSheetSessionStore.getState().pushHistory({
+				command: 'update',
+				id: row,
+				before: beforeSnap,
+				after: emptyTimelineSnapshot(),
+				current: { row, col },
+			});
+		} else {
+			useSheetSessionStore.getState().pushHistory({
+				command: 'remove',
+				id: row,
+				before: beforeSnap,
+				after: null,
+				current: { row, col },
+			});
+		}
+
 		const column = getEditableColumn(format, col);
 		if (!column) return;
 		pendingFocusRef.current = { row: focusRow, column };
@@ -158,6 +219,9 @@ const SheetBody = ({
 	};
 
 	const handleApplyTextFormat = (command: TextFormatCommand) => {
+		// 레거시 edit.clip / command.multi — mutate·클립 전 검색 패널 닫기
+		closeSearchPanel();
+
 		// 에딧 중 — 레거시 clip: 현재 에디터에 execCommand
 		if (isEditing()) {
 			inputRef.current?.focus();
@@ -168,20 +232,93 @@ const SheetBody = ({
 		const store = useSheetStore.getState();
 		const sheet = store.sheets[store.active];
 		if (!sheet) return;
+		const focusRow = resolveFocusRow();
+		const focusCol = resolveFocusCol();
 
 		// multiple — 선택 행 text 일괄
 		if (sheet.multipleActive) {
-			updateSelectedTextsAction((text) => applyTextFormatCommand(text, command));
+			const selected = [...sheet.selectedRows].sort((a, b) => a - b);
+			if (selected.length === 0) return;
+
+			const backups = selected.map((index) => ({
+				index,
+				data: cloneTimelineSnapshot(sheet.timelines[index] ?? emptyTimelineSnapshot()),
+			}));
+
+			const ok = updateSelectedTextsAction((text) =>
+				applyTextFormatCommand(text, command),
+			);
+			if (!ok) return;
+
+			const nextSheet =
+				useSheetStore.getState().sheets[useSheetStore.getState().active];
+			if (!nextSheet) return;
+
+			const currents = selected.map((index) => ({
+				index,
+				data: cloneTimelineSnapshot(
+					nextSheet.timelines[index] ?? emptyTimelineSnapshot(),
+				),
+			}));
+
+			useSheetSessionStore.getState().pushHistory({
+				command: `multi.${command}`,
+				id: null,
+				before: backups,
+				after: currents,
+				current: { row: focusRow, col: focusCol },
+			});
 			return;
 		}
 
 		// 단건 — 레거시 clip (text 타깃)
 		if (!isTextTarget()) return;
-		const row = resolveFocusRow();
-		const prev = typeof sheet.timelines[row]?.text === 'string' ? sheet.timelines[row].text! : '';
+		const row = focusRow;
+		const prevTimeline = sheet.timelines[row];
+		if (!prevTimeline) return;
+		const beforeSnap = cloneTimelineSnapshot(prevTimeline);
+		const prev = typeof prevTimeline.text === 'string' ? prevTimeline.text : '';
 		const next = applyTextFormatCommand(prev, command);
 		if (next === prev) return;
-		updateActiveCellAction(row, 'text', next);
+		const ok = updateActiveCellAction(row, 'text', next);
+		if (!ok) return;
+		const after =
+			useSheetStore.getState().sheets[store.active]?.timelines[row] ??
+			emptyTimelineSnapshot();
+		useSheetSessionStore.getState().pushHistory({
+			command: 'update',
+			id: row,
+			before: beforeSnap,
+			after: cloneTimelineSnapshot(after),
+			current: { row, col: focusCol },
+		});
+	};
+
+	const handleSearchJump = (hit: SearchHit) => {
+		if (isEditing()) endEdit(true);
+		const column = getEditableColumn(format, hit.col);
+		if (!column) return;
+		applyFocus(hit.row, column);
+	};
+
+	const handleUndo = () => {
+		if (isEditing()) return;
+		closeSearchPanel();
+		const focus = useSheetSessionStore.getState().undo();
+		if (!focus) return;
+		const column = getEditableColumn(format, focus.col);
+		if (!column) return;
+		pendingFocusRef.current = { row: focus.row, column };
+	};
+
+	const handleRedo = () => {
+		if (isEditing()) return;
+		closeSearchPanel();
+		const focus = useSheetSessionStore.getState().redo();
+		if (!focus) return;
+		const column = getEditableColumn(format, focus.col);
+		if (!column) return;
+		pendingFocusRef.current = { row: focus.row, column };
 	};
 
 	const move = useSheetMove({
@@ -219,6 +356,8 @@ const SheetBody = ({
 		insertRow: handleInsertAtFocus,
 		removeRow: handleRemoveAtFocus,
 		applyTextFormat: handleApplyTextFormat,
+		undo: handleUndo,
+		redo: handleRedo,
 		moveTabNext: move.moveTabNext,
 		moveTabPrev: move.moveTabPrev,
 		moveRowPrev: move.moveRowPrev,
@@ -236,8 +375,32 @@ const SheetBody = ({
 		onHorizontalScroll?.(event.currentTarget.scrollLeft);
 	};
 
-	return (
-		<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+	const timelines = useSheetStore(
+		(state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
+	);
+	const searchHits = useSheetSessionStore((state) => state.searchHits);
+	const canUndo = useSheetSessionStore((state) => {
+		const stack = state.stacks[state.activeSheetIndex];
+		if (!stack) return false;
+		return stack.entries.length > 0 && stack.index >= 0;
+	});
+	const canRedo = useSheetSessionStore((state) => {
+		const stack = state.stacks[state.activeSheetIndex];
+		if (!stack) return false;
+		return stack.entries.length > 0 && stack.index < stack.entries.length - 1;
+	});
+	const searchHitKeys = (() => {
+		const keys = new Set<string>();
+		for (const hit of searchHits) {
+			const column = getEditableColumn(format, hit.col);
+			if (!column) continue;
+			keys.add(`${hit.row}:${column}`);
+		}
+		return keys;
+	})();
+
+	const verifyChrome = (
+		<>
 			<div
 				role="toolbar"
 				aria-label="Verify sheet controls"
@@ -305,7 +468,39 @@ const SheetBody = ({
 				>
 					U
 				</Button>
+				<span className="bg-border mx-1 h-4 w-px" aria-hidden />
+				<Button
+					type="button"
+					size="sm"
+					variant="outline"
+					aria-label="Undo"
+					disabled={!canUndo}
+					onClick={handleUndo}
+				>
+					Undo
+				</Button>
+				<Button
+					type="button"
+					size="sm"
+					variant="outline"
+					aria-label="Redo"
+					disabled={!canRedo}
+					onClick={handleRedo}
+				>
+					Redo
+				</Button>
 			</div>
+			<SheetSearchPanel
+				format={format}
+				timelines={timelines}
+				onJump={handleSearchJump}
+			/>
+		</>
+	);
+
+	return (
+		<>
+			{chromePortalEl ? createPortal(verifyChrome, chromePortalEl) : null}
 			<div
 				ref={scrollRef}
 				data-slot="sheet-body"
@@ -358,6 +553,7 @@ const SheetBody = ({
 									currentColumn={
 										currentRowIndex === row.index ? currentColumn : null
 									}
+									searchHitKeys={searchHitKeys}
 									onCellClick={handleCellClick}
 									onCellDoubleClick={handleCellDoubleClick}
 									onCellContextMenu={handleCellContextMenu}
@@ -373,7 +569,7 @@ const SheetBody = ({
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

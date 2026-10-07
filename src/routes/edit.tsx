@@ -22,7 +22,7 @@ const EditPage = () => {
 		handleRenameTab,
 		handleCopyTab,
 		handleUpdateCell,
-	} = useSheets();
+	} = useSheets(format);
 
 	const handleFormatSmi = () => {
 		setFormat('smi');

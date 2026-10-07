@@ -1,6 +1,8 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetSessionStore } from '@/features/sheet-session';
+import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type {
 	SheetCellEditTarget,
 	SheetCellEditorMode,
@@ -9,7 +11,6 @@ import type {
 	UseSheetCellEditParams,
 	UseSheetCellEditResult,
 } from '../types';
-import type { ShortcutKeyHandler } from '@/features/shortkey';
 import { COLUMN_WIDTHS, getColumnLeft, isEditableColumn } from './columns';
 import { encodeCellHtml } from './encode-cell-html';
 import { getRowTop, scrollColIntoView, scrollRowIntoView } from './sheet-move';
@@ -360,6 +361,12 @@ const useSheetCellEdit = ({
 		if (!isEditableColumn(format, column)) return;
 		// context 편집은 text/memo만
 		if (!isTextColumn(column)) return;
+
+		// 레거시 edit.on — search.state면 에딧 진입 차단
+		if (useSheetSessionStore.getState().searchInputFocused) return;
+
+		// 레거시 edit.on — 검색 패널이 열려 있으면 닫음
+		useSheetSessionStore.getState().closeSearchPanel();
 
 		const next =
 			cell != null
