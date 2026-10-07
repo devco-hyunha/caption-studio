@@ -24,3 +24,5 @@
 | dev.2 | [2.9.0-dev.2.md](./2.9.0-dev.2.md) | Sheet UI · subtitleSheets 영속 · 셀 포커스 이동 |
 | dev.3 | [2.9.0-dev.3.md](./2.9.0-dev.3.md) | Shortkey 엔진 · 시트 이동·에딧 키 이관 (`feat/edit-shortkey`) |
 | dev.4 | [2.9.0-dev.4.md](./2.9.0-dev.4.md) | Sheet 행 다중 선택 · CRUD · shortkey 연결 (`feat/edit-sheet-crud`) |
+| dev.5 | [2.9.0-dev.5.md](./2.9.0-dev.5.md) | Sheet 검색 · undo/redo 세션 (`feat/edit-search-undo`) |
+| dev.6 | [2.9.0-dev.6.md](./2.9.0-dev.6.md) | shortkey 상수 맵 · 탭 scroll 복원 |
