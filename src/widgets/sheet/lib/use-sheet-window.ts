@@ -9,7 +9,7 @@ import {
  * page 스냅 시트 윈도.
  * - page = viewport 높이 단위
  * - page 변경 시에만 윈도 commit
- * - 탭별 scrollTop 복원 (restoreKey 변경 시)
+ * - 탭별 scrollTop 복원: totalHeight 커밋 다음 layout에서 scrollTop 적용
  */
 const useSheetWindow = ({
 	rows,
@@ -24,6 +24,11 @@ const useSheetWindow = ({
 	const rafRef = useRef<number | null>(null);
 	const rowsRef = useRef(rows);
 	const onScrollTopChangeRef = useRef(onScrollTopChange);
+	const prevRestoreKeyRef = useRef(restoreKey);
+	/** 탭 복원 목표 scrollTop — totalHeight 반영 후 layout에서 적용 */
+	const pendingRestoreRef = useRef<number | null>(null);
+	/** pending을 건 직후 같은 layout 패스에서는 DOM이 옛 높이일 수 있어 1회 스킵 */
+	const skipRestoreApplyRef = useRef(false);
 
 	const [sheetWindow, setSheetWindow] = useState<SheetWindowResult>(() =>
 		getRenderRange(rows, restoreScrollTop, 0),
@@ -36,10 +41,21 @@ const useSheetWindow = ({
 	const commitWindow = (scrollTop: number, viewportHeight: number) => {
 		const next = getRenderRange(rowsRef.current, scrollTop, viewportHeight);
 		const prev = windowRef.current;
-		if (prev && isSameRenderRange(prev, next)) return;
+		if (prev && isSameRenderRange(prev, next)) return false;
 
 		windowRef.current = next;
 		setSheetWindow(next);
+		return true;
+	};
+
+	const applyRestoredScroll = (element: HTMLElement, nextScroll: number) => {
+		element.scrollTop = nextScroll;
+		const applied = element.scrollTop;
+		scrollTopRef.current = applied;
+		onScrollTopChangeRef.current?.(applied);
+		if (applied !== nextScroll) {
+			commitWindow(applied, element.clientHeight);
+		}
 	};
 
 	const scheduleCommit = () => {
@@ -76,27 +92,57 @@ const useSheetWindow = ({
 	}, []);
 
 	/**
-	 * rows 변경 시 totalHeight를 layout 전에 커밋.
-	 * useEffect면 insert→focus 스크롤이 옛 scrollHeight에 클램프됨.
+	 * rows 변경 · 탭 전환 시 윈도 커밋.
+	 * 탭 복원은 pending만 걸고, scrollTop 적용은 totalHeight 갱신 후 layout에서 한다.
 	 */
 	useLayoutEffect(() => {
 		rowsRef.current = rows;
 		const element = scrollRef.current;
 		if (element) viewportHeightRef.current = element.clientHeight;
-		commitWindow(scrollTopRef.current, viewportHeightRef.current);
-	}, [rows]);
 
-	// 탭 전환 후 body.scrollTop = savedScroll
-	useEffect(() => {
+		const isTabRestore = prevRestoreKeyRef.current !== restoreKey;
+		prevRestoreKeyRef.current = restoreKey;
+
+		if (!isTabRestore) {
+			commitWindow(scrollTopRef.current, viewportHeightRef.current);
+			return;
+		}
+
+		const nextScroll = Math.max(0, restoreScrollTop);
+		scrollTopRef.current = nextScroll;
+		const didUpdate = commitWindow(nextScroll, viewportHeightRef.current);
+
+		if (!element) {
+			onScrollTopChangeRef.current?.(nextScroll);
+			return;
+		}
+
+		if (didUpdate) {
+			pendingRestoreRef.current = nextScroll;
+			skipRestoreApplyRef.current = true;
+			return;
+		}
+
+		// 윈도 범위가 같아 setState가 없으면 바로 적용 (이미 높이 확보된 경우)
+		applyRestoredScroll(element, nextScroll);
+	}, [rows, restoreKey, restoreScrollTop]);
+
+	/** pending 복원 — sheetWindow(totalHeight)가 반영된 다음 layout에서 scrollTop 설정 */
+	useLayoutEffect(() => {
+		const pending = pendingRestoreRef.current;
+		if (pending == null) return;
+
+		if (skipRestoreApplyRef.current) {
+			skipRestoreApplyRef.current = false;
+			return;
+		}
+
 		const element = scrollRef.current;
 		if (!element) return;
 
-		const nextScroll = Math.max(0, restoreScrollTop);
-		element.scrollTop = nextScroll;
-		scrollTopRef.current = nextScroll;
-		onScrollTopChangeRef.current?.(nextScroll);
-		commitWindow(nextScroll, viewportHeightRef.current || element.clientHeight);
-	}, [restoreKey, restoreScrollTop]);
+		pendingRestoreRef.current = null;
+		applyRestoredScroll(element, pending);
+	}, [sheetWindow, restoreKey]);
 
 	const handleScroll = () => {
 		const element = scrollRef.current;
