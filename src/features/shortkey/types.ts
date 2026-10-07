@@ -1,6 +1,6 @@
 /** shortkey 엔진 · 시트 키 바인딩 타입 */
 
-import type { SheetShortkeyId } from './model/default-sheet-key-masks';
+import type { SheetShortkeyId } from './model/default-sheet-shortkey-masks';
 
 export type ShortcutType = 'down' | 'hold' | 'up';
 

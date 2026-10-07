@@ -1,0 +1,97 @@
+/** 시트 네비·에딧·선택·mutate 키 — id · mask · placeholder · type 상수 */
+
+export const SHORTKEY_IDS = {
+	NEXT_ROW_MOVE: 'nextRowMove',
+	PREV_ROW_MOVE: 'prevRowMove',
+	SHEET_EDIT_ON: 'sheetEditOn',
+	SHEET_EDIT_OFF: 'sheetEditOff',
+	SHEET_EDIT_ENTER: 'sheetEditEnter',
+	PAGE_UP: 'pageUp',
+	PAGE_DOWN: 'pageDown',
+	ROW_UP: 'rowUp',
+	ROW_DOWN: 'rowDown',
+	COL_LEFT: 'colLeft',
+	COL_RIGHT: 'colRight',
+	ROW_UP_SELECT: 'rowUpSelect',
+	ROW_DOWN_SELECT: 'rowDownSelect',
+	ROW_SELECT_TOGGLE: 'rowSelectToggle',
+	SHEET_INSERT: 'sheetInsert',
+	SHEET_REMOVE: 'sheetRemove',
+	FONT_BOLD: 'fontBold',
+	FONT_ITALIC: 'fontItalic',
+	FONT_UNDERLINE: 'fontUnderline',
+	UNDO: 'undo',
+	REDO: 'redo',
+} as const;
+
+export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
+
+/** 레거시 defaultKeys / customKeys mask 문자열 */
+export const SHORTKEY_MASKS = {
+	TAB: 'tab',
+	SHIFT_TAB: 'shift+tab',
+	F2: 'f2',
+	ESC: 'esc',
+	ENTER: 'enter',
+	PAGE_UP: 'pageup',
+	PAGE_DOWN: 'pagedown',
+	UP: 'up',
+	DOWN: 'down',
+	LEFT: 'left',
+	RIGHT: 'right',
+	SHIFT_UP: 'shift+up',
+	SHIFT_DOWN: 'shift+down',
+	SPACE: 'space',
+	CTRL_SHIFT_A: 'ctrl+shift+a',
+	CTRL_SHIFT_D: 'ctrl+shift+d',
+	CTRL_B: 'ctrl+b',
+	CTRL_I: 'ctrl+i',
+	CTRL_U: 'ctrl+u',
+	CTRL_Z: 'ctrl+z',
+	CTRL_Y: 'ctrl+y',
+} as const;
+
+/** 레거시 defaultKeys / customKeys mask와 동일 */
+export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
+	[SHORTKEY_IDS.NEXT_ROW_MOVE]: SHORTKEY_MASKS.TAB,
+	[SHORTKEY_IDS.PREV_ROW_MOVE]: SHORTKEY_MASKS.SHIFT_TAB,
+	[SHORTKEY_IDS.SHEET_EDIT_ON]: SHORTKEY_MASKS.F2,
+	[SHORTKEY_IDS.SHEET_EDIT_OFF]: SHORTKEY_MASKS.ESC,
+	[SHORTKEY_IDS.SHEET_EDIT_ENTER]: SHORTKEY_MASKS.ENTER,
+	[SHORTKEY_IDS.PAGE_UP]: SHORTKEY_MASKS.PAGE_UP,
+	[SHORTKEY_IDS.PAGE_DOWN]: SHORTKEY_MASKS.PAGE_DOWN,
+	[SHORTKEY_IDS.ROW_UP]: SHORTKEY_MASKS.UP,
+	[SHORTKEY_IDS.ROW_DOWN]: SHORTKEY_MASKS.DOWN,
+	[SHORTKEY_IDS.COL_LEFT]: SHORTKEY_MASKS.LEFT,
+	[SHORTKEY_IDS.COL_RIGHT]: SHORTKEY_MASKS.RIGHT,
+	[SHORTKEY_IDS.ROW_UP_SELECT]: SHORTKEY_MASKS.SHIFT_UP,
+	[SHORTKEY_IDS.ROW_DOWN_SELECT]: SHORTKEY_MASKS.SHIFT_DOWN,
+	[SHORTKEY_IDS.ROW_SELECT_TOGGLE]: SHORTKEY_MASKS.SPACE,
+	[SHORTKEY_IDS.SHEET_INSERT]: SHORTKEY_MASKS.CTRL_SHIFT_A,
+	[SHORTKEY_IDS.SHEET_REMOVE]: SHORTKEY_MASKS.CTRL_SHIFT_D,
+	[SHORTKEY_IDS.FONT_BOLD]: SHORTKEY_MASKS.CTRL_B,
+	[SHORTKEY_IDS.FONT_ITALIC]: SHORTKEY_MASKS.CTRL_I,
+	[SHORTKEY_IDS.FONT_UNDERLINE]: SHORTKEY_MASKS.CTRL_U,
+	[SHORTKEY_IDS.UNDO]: SHORTKEY_MASKS.CTRL_Z,
+	[SHORTKEY_IDS.REDO]: SHORTKEY_MASKS.CTRL_Y,
+};
+
+/** 레거시 placeholder (i18n) — 있는 키만 */
+export const SHORTKEY_PLACEHOLDERS = {
+	NEXT_ROW_MOVE: 'next-row-move',
+	PREV_ROW_MOVE: 'prev-row-move',
+	SHEET_EDIT_ON: 'sheet-edit-on',
+	SHEET_EDIT_OFF: 'sheet-edit-off',
+	SHEET_INSERT: 'sheet-insert',
+	SHEET_REMOVE: 'sheet-remove',
+	FONT_BOLD: 'font-bold',
+	FONT_ITALIC: 'font-italic',
+	FONT_UNDERLINE: 'font-underline',
+	UNDO: 'undo',
+	REDO: 'redo',
+} as const;
+
+export const SHORTKEY_TYPES = {
+	HOLD: 'hold',
+	DOWN: 'down',
+} as const;

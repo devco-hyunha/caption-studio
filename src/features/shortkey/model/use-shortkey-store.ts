@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import type { ShortkeyStore } from '../types';
-import { DEFAULT_SHEET_KEY_MASKS } from './default-sheet-key-masks';
+import { DEFAULT_SHEET_SHORTKEY_MASKS } from './default-sheet-shortkey-masks';
 import { normalizeMask } from '../lib/shortcuts';
 
 const useShortkeyStore = create<ShortkeyStore>((set) => ({
-	masks: { ...DEFAULT_SHEET_KEY_MASKS },
+	masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS },
 
 	setMask: (id, mask) => {
 		set((state) => ({
@@ -16,7 +16,7 @@ const useShortkeyStore = create<ShortkeyStore>((set) => ({
 	},
 
 	resetMasks: () => {
-		set({ masks: { ...DEFAULT_SHEET_KEY_MASKS } });
+		set({ masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS } });
 	},
 }));
 

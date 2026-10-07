@@ -1,9 +1,9 @@
 import type { SheetShortkeyActions, ShortcutParams, ShortcutsApi } from '../types';
 import {
-	SHEET_SHORTKEY_PLACEHOLDERS,
-	SHORTCUT_TYPE_DOWN,
-	SHORTCUT_TYPE_HOLD,
-} from '../model/default-sheet-key-masks';
+	SHORTKEY_IDS,
+	SHORTKEY_PLACEHOLDERS,
+	SHORTKEY_TYPES,
+} from '../model/default-sheet-shortkey-masks';
 import { useShortkeyStore } from '../model/use-shortkey-store';
 import { checkIsInput } from './shortcuts';
 
@@ -20,9 +20,9 @@ const registerSheetNavigationKeys = (
 
 	const keys: ShortcutParams[] = [
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.nextRowMove,
-			mask: masks.nextRowMove,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.NEXT_ROW_MOVE,
+			mask: masks[SHORTKEY_IDS.NEXT_ROW_MOVE],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -30,9 +30,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.prevRowMove,
-			mask: masks.prevRowMove,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.PREV_ROW_MOVE,
+			mask: masks[SHORTKEY_IDS.PREV_ROW_MOVE],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -40,9 +40,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetEditOn,
-			mask: masks.sheetEditOn,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.SHEET_EDIT_ON,
+			mask: masks[SHORTKEY_IDS.SHEET_EDIT_ON],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -52,9 +52,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetEditOff,
-			mask: masks.sheetEditOff,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.SHEET_EDIT_OFF,
+			mask: masks[SHORTKEY_IDS.SHEET_EDIT_OFF],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -69,8 +69,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.sheetEditEnter,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.SHEET_EDIT_ENTER],
+			type: SHORTKEY_TYPES.HOLD,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
 				const actions = getActions();
@@ -88,8 +88,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.pageUp,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.PAGE_UP],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -97,8 +97,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.pageDown,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.PAGE_DOWN],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -106,8 +106,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.rowUp,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.ROW_UP],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -117,8 +117,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.rowDown,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.ROW_DOWN],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -128,8 +128,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.rowUpSelect,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.ROW_UP_SELECT],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -139,8 +139,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.rowDownSelect,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.ROW_DOWN_SELECT],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -150,8 +150,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.colLeft,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.COL_LEFT],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -161,8 +161,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.colRight,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.COL_RIGHT],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -172,8 +172,8 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			mask: masks.rowSelectToggle,
-			type: SHORTCUT_TYPE_HOLD,
+			mask: masks[SHORTKEY_IDS.ROW_SELECT_TOGGLE],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -183,9 +183,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetInsert,
-			mask: masks.sheetInsert,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.SHEET_INSERT,
+			mask: masks[SHORTKEY_IDS.SHEET_INSERT],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -195,9 +195,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.sheetRemove,
-			mask: masks.sheetRemove,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.SHEET_REMOVE,
+			mask: masks[SHORTKEY_IDS.SHEET_REMOVE],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -207,9 +207,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontBold,
-			mask: masks.fontBold,
-			type: SHORTCUT_TYPE_DOWN,
+			placeholder: SHORTKEY_PLACEHOLDERS.FONT_BOLD,
+			mask: masks[SHORTKEY_IDS.FONT_BOLD],
+			type: SHORTKEY_TYPES.DOWN,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -217,9 +217,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontItalic,
-			mask: masks.fontItalic,
-			type: SHORTCUT_TYPE_DOWN,
+			placeholder: SHORTKEY_PLACEHOLDERS.FONT_ITALIC,
+			mask: masks[SHORTKEY_IDS.FONT_ITALIC],
+			type: SHORTKEY_TYPES.DOWN,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -227,9 +227,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.fontUnderline,
-			mask: masks.fontUnderline,
-			type: SHORTCUT_TYPE_DOWN,
+			placeholder: SHORTKEY_PLACEHOLDERS.FONT_UNDERLINE,
+			mask: masks[SHORTKEY_IDS.FONT_UNDERLINE],
+			type: SHORTKEY_TYPES.DOWN,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -237,9 +237,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.undo,
-			mask: masks.undo,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.UNDO,
+			mask: masks[SHORTKEY_IDS.UNDO],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
@@ -249,9 +249,9 @@ const registerSheetNavigationKeys = (
 			},
 		},
 		{
-			placeholder: SHEET_SHORTKEY_PLACEHOLDERS.redo,
-			mask: masks.redo,
-			type: SHORTCUT_TYPE_HOLD,
+			placeholder: SHORTKEY_PLACEHOLDERS.REDO,
+			mask: masks[SHORTKEY_IDS.REDO],
+			type: SHORTKEY_TYPES.HOLD,
 			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
