@@ -11,14 +11,14 @@ const isTimelineItem = (value: unknown): value is SheetTimelineItem =>
 const isPatchList = (value: unknown): value is HistoryTimelinePatch[] =>
 	Array.isArray(value);
 
-/** 레거시 history undo update 가드 — JSON.stringify 동등 */
+/** history undo update 가드 — JSON.stringify 동등 */
 const timelineSnapshotEquals = (
 	left: SheetTimelineItem | null | undefined,
 	right: SheetTimelineItem | null | undefined,
 ): boolean => JSON.stringify(left) === JSON.stringify(right);
 
 /**
- * undo — entry before로 복원 + 레거시 `move.event`에 해당하는 포커스 반환.
+ * undo — entry before로 복원 + 포커스 좌표 반환.
  * insert undo → remove 후 clamp된 행 (Tab으로 넣은 마지막 행이면 한 줄 위).
  */
 const applyHistoryUndo = (entry: HistoryEntry): HistoryCursor | null => {
@@ -50,7 +50,7 @@ const applyHistoryUndo = (entry: HistoryEntry): HistoryCursor | null => {
 		}
 		const sheet = store.sheets[store.active];
 		const current = sheet?.timelines[entry.id];
-		// 레거시: timelines[id] === after 일 때만 복원
+		// timelines[id] === after 일 때만 복원
 		if (!timelineSnapshotEquals(current, entry.after)) return null;
 		if (!store.replaceTimelineAt(entry.id, entry.before)) return null;
 		return { row: entry.current.row, col };
@@ -61,7 +61,7 @@ const applyHistoryUndo = (entry: HistoryEntry): HistoryCursor | null => {
 
 /**
  * redo — entry after 재적용 + 포커스.
- * insert redo → 삽입된 행으로 이동 (레거시 `sheet.insert` current.row = insertIndex).
+ * insert redo → 삽입된 행으로 이동 (current.row = insertIndex).
  */
 const applyHistoryRedo = (entry: HistoryEntry): HistoryCursor | null => {
 	const store = useSheetStore.getState();

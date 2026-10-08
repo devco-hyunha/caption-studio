@@ -7,20 +7,11 @@ import type {
 	ReactNode,
 	RefObject,
 } from 'react';
-import type {
-	SheetShortkeyMoveActions,
-	ShortcutKeyHandler,
-} from '@/features/shortkey';
+import type { SheetShortkeyMoveActions, ShortcutKeyHandler } from '@/features/shortkey';
 
 export type SheetFormat = 'smi' | 'srt';
 
-export type SheetColumnId =
-	| 'index'
-	| 'starttime'
-	| 'endtime'
-	| 'dur'
-	| 'text'
-	| 'memo';
+export type SheetColumnId = 'index' | 'starttime' | 'endtime' | 'dur' | 'text' | 'memo';
 
 export interface SheetTimelineRow {
 	id: string;
@@ -172,7 +163,6 @@ export interface SheetCellProps {
 	html?: string;
 	editable?: boolean;
 	isCurrent?: boolean;
-	/** 레거시 `.col.search` — `#ffff95` */
 	isSearchHit?: boolean;
 	className?: string;
 	tabIndex?: number;

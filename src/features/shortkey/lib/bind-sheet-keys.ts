@@ -275,7 +275,7 @@ const isPrintableShortcutEvent = (event: KeyboardEvent) => {
 	return false;
 };
 
-/** 레거시 shortkey.callback — printable → edit.on */
+/** printable → edit.on */
 const bindPrintableEditCallback = (
 	shortcuts: ShortcutsApi,
 	getActions: () => SheetShortkeyActions,

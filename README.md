@@ -1,7 +1,7 @@
 # Caption Studio
 
 온라인 자막 편집 도구입니다.  
-이 저장소는 2017년에 jQuery로 만든 [Caption Studio](https://caption.devco.kr) 레거시를 기준으로, 단계를 나눠 개선하는 과정을 기록합니다.
+이 저장소는 2017년에 jQuery로 만든 [Caption Studio](https://caption.devco.kr)를 기준으로, 단계를 나눠 개선하는 과정을 기록합니다.
 
 **운영 사이트:** https://caption.devco.kr
 
@@ -33,15 +33,15 @@
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |
 | 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` 제거 (`2.8.x`) |
-| 4 | React 스택으로 전환 | 진행 중 — **`2.9.0` = 완전 변환 완료 시**. 현재 `2.9.0-dev.1` 세팅. `/` 레거시, **`/edit`에서** 이전 |
+| 4 | React 스택으로 전환 | 진행 중 — **`2.9.0` = 완전 변환 완료 시**. 현재 `2.9.0-dev.1` 세팅. `/`, **`/edit`에서** 이전 |
 | 5 | UI 개선 | 미정 |
 
 - **현재 릴리스 버전:** [VERSION](./VERSION) (`2.8.4` — 1차 바닐라 마일스톤)
 - **진행 중:** `2.9.0` React 완전 변환 — 상세 [changelog/2.9/](./changelog/2.9/). `VERSION`/tag는 완료 후에만 반영
 
-## 레거시 구조 (기준선)
+## 기준선 구조
 
-Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입니다. 이후 모듈 분리는 [CHANGELOG](./CHANGELOG.md) · [changelog/](./changelog/)를 참고합니다.
+Git **2.0.0** 기준선 — 운영 `/`와 같은 정적 앱 출발점입니다. 이후 모듈 분리는 [CHANGELOG](./CHANGELOG.md) · [changelog/](./changelog/)를 참고합니다.
 
 ```
 .
@@ -52,7 +52,7 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 │   └── js/
 │       ├── caption.js      # 핵심 로직 (단일 파일)
 │       ├── lib/            # jQuery, Video.js 등 (기준선)
-│       └── plugin/         # (레거시 플러그인 · 이후 제거)
+│       └── plugin/         # (플러그인 · 이후 제거)
 ├── favicon/
 ├── CHANGELOG.md
 ├── VERSION
@@ -75,9 +75,9 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 ├── index.legacy.html           # 1차 정적 셸 파일 백업 (빌드 미포함)
 ├── src/                        # TanStack Start 앱
 │   ├── app/styles/
-│   ├── routes/                 # `/` 레거시 홈 · `/edit` React 이전 · `/dev/fonts`
+│   ├── routes/                 # `/` 홈 · `/edit` React 이전 · `/dev/fonts`
 │   ├── pages/
-│   ├── widgets/                # caption-shell — `/` 레거시 마크업
+│   ├── widgets/                # caption-shell — `/` 마크업
 │   ├── shared/
 │   ├── router.tsx              # 라우터 생성 (routeTree.gen과 동일 폴더 유지)
 │   └── routeTree.gen.ts        # TanStack Router 자동 생성 — 수동 수정 금지
@@ -95,8 +95,8 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 | 구분 | 설명 |
 |------|------|
-| `/` | `pnpm dev` 첫 화면 — 레거시 셸(`widgets/caption-shell`) + `public/js` 모듈 |
-| `/edit` | React로 레거시 편집기를 옮기는 자리 (껍데기 → 이후 도메인 이전) |
+| `/` | `pnpm dev` 첫 화면 — `/` 셸(`widgets/caption-shell`) + `public/js` 모듈 |
+| `/edit` | React로 편집기를 옮기는 자리 (껍데기 → 이후 도메인 이전) |
 | `/dev/fonts` | 폰트 시편 (개발용) |
 | 바닐라 도메인 | `public/js/modules/*` — 아직 `/`에서 동작 |
 | `index.legacy.html` | 1차 정적 셸 **파일 백업** (빌드·배포 미포함, 일상 확인용 아님) |
@@ -106,21 +106,21 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:3000 → `/` 에 레거시 Caption Studio
+pnpm dev          # http://localhost:3000 → `/` Caption Studio
 pnpm typecheck
 pnpm build
 pnpm lint
 ```
 
-- **`/`** — 지금 쓰는 편집기(레거시). Vite가 `public/` 스크립트를 그대로 로드합니다.
-- **`/edit`** — 2차 작업: 레거시를 React로 변환·이전하는 화면.
+- **`/`** — 지금 쓰는 편집기. Vite가 `public/` 스크립트를 그대로 로드합니다.
+- **`/edit`** — 2차 작업: `/` 편집기를 React로 변환·이전하는 화면.
 - **`index.legacy.html`** — Git에만 남겨 둔 백업. `pnpm build` 산출물에는 없고, 평소 확인은 `pnpm dev`의 `/`를 씁니다.
 
 > 운영 동작·전체 기능 확인은 https://caption.devco.kr 를 기준으로 합니다.
 
 ## 작업 방식
 
-1. **기준선 고정** — 레거시가 동작하는 상태를 먼저 기록한다
+1. **기준선 고정** — `/`가 동작하는 상태를 먼저 기록한다
 2. **한 번에 하나** — 버그 수정, 구조 정리, UX 개선 중 한 가지에 집중한다
 3. **검증 후 전진** — 깨지면 롤백하고, 통과한 변경만 남긴다
 4. **문서화** — 왜 바꿨는지, 어떻게 확인했는지 짧게 남긴다
@@ -133,7 +133,7 @@ pnpm lint
 
 | 구분 | 설명 |
 |------|------|
-| **1.9.8** | Git 이전 운영 [Caption Studio](https://caption.devco.kr) 레거시 최종. CHANGELOG [Legacy](./CHANGELOG.md#legacy) 참고 |
+| **1.9.8** | Git 이전 운영 [Caption Studio](https://caption.devco.kr) 최종. CHANGELOG [Legacy](./CHANGELOG.md#legacy) 참고 |
 | **2.0.0** | GitHub **첫 커밋**부터 SemVer 시작. `VERSION`, About UI, Git tag `v2.0.0`과 동일 |
 | **2.0.x** | PATCH — `fix`, 사소한 `remove` 등. [changelog/2.0.md](./changelog/2.0.md)에 누적 |
 | **2.1.0+** | MINOR — `feat`, 마일스톤 `refactor`. `changelog/2.x.md` 새 파일 |
@@ -199,7 +199,7 @@ pnpm lint
 
 | type | 사용 시점 | 예시 |
 |------|-----------|------|
-| `chore` | 기능·동작과 무관한 정리. 기준선 추가, 설정, 의존성, 빌드 스크립트 | `chore: 운영 레거시 코드를 리팩터링 기준선으로 추가` |
+| `chore` | 기능·동작과 무관한 정리. 기준선 추가, 설정, 의존성, 빌드 스크립트 | `chore: 운영 기준선 코드를 리팩터링 기준선으로 추가` |
 | `refactor` | **동작은 유지**하면서 구조 개선. 모듈 분리, 변수 정리, 파일 이동 | `refactor(sheet): caption.js의 draw 로직을 sheet/draw.js로 분리` |
 | `fix` | 잘못된 동작·버그 수정 | `fix(subtitle): SMI import 시 인코딩 깨짐 수정` |
 | `feat` | 새 기능 추가 (기존에 없던 동작) | `feat(shortkey): 자막 검색 단축키 추가` |
@@ -256,7 +256,7 @@ pnpm lint
 ### 예시
 
 ```text
-chore: 운영 중인 Caption Studio 레거시 코드를 리팩터링 기준선으로 추가
+chore: 운영 중인 Caption Studio 코드를 리팩터링 기준선으로 추가
 ```
 
 ```text

@@ -20,7 +20,7 @@ const cloneTimeline = (timeline: SheetTimelineItem = EMPTY_TIMELINE): SheetTimel
 const createEmptyTimeline = (): SheetTimelineItem => cloneTimeline();
 
 /**
- * 이웃 행 기준으로 기본 시각 채움 — 레거시 `insert.fillDefaultTimes`.
+ * 이웃 행 기준으로 기본 시각 채움.
  */
 const fillDefaultTimes = (
 	data: SheetTimelineItem,
@@ -77,7 +77,7 @@ const insertTimelineAfter = (
 };
 
 /**
- * 행 삭제. 마지막 1행이면 빈 타임라인으로 교체(레거시 command.remove).
+ * 행 삭제. 마지막 1행이면 빈 타임라인으로 교체.
  */
 const removeTimelineAt = (
 	timelines: readonly SheetTimelineItem[],

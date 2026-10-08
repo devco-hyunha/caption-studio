@@ -11,7 +11,7 @@ dev.2에서 남은 sheet gap(다중 선택·행 mutate)을 닫는다.
 
 - Shift+Arrow **multi-select** (`selectedRows` 런타임 · 행 하이라이트)
 - Tab 마지막 행 **insert**, 행 **추가/삭제** entity API + 스토어 액션
-- shortkey에 레거시 `defaultKeys`/`customKeys`의 selection·insert/remove 핸들러 연결 (시트에 전역 keydown 추가 금지)
+- shortkey에 `defaultKeys`/`customKeys`의 selection·insert/remove 핸들러 연결 (시트에 전역 keydown 추가 금지)
 - 선택·insert/delete **순수 함수 Vitest**
 
 ## Out of scope
@@ -22,7 +22,7 @@ dev.2에서 남은 sheet gap(다중 선택·행 mutate)을 닫는다.
 - `use-sheet-cell-edit` 대규모 분해, 동명 파일 rename
 - persist `beforeunload` flush (별도 chore)
 
-## 레거시 기준
+## `/`·`public/js` 기준
 
 | 영역 | 경로 |
 |------|------|

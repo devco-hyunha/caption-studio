@@ -36,7 +36,7 @@ export interface SheetSessionStore {
 	searchQuery: string;
 	searchHits: SearchHit[];
 	searchCurrent: number;
-	/** 레거시 `search.state` — 검색 input 포커스 중 에딧 차단 */
+	/** 검색 input 포커스 중 에딧 차단 */
 	searchInputFocused: boolean;
 
 	resetForSheets: (sheetCount: number, activeIndex?: number) => void;
@@ -47,7 +47,7 @@ export interface SheetSessionStore {
 	clearActiveHistory: () => void;
 
 	pushHistory: (entry: HistoryEntry) => void;
-	/** 성공 시 포커스할 cursor (레거시 move.event parity) */
+	/** 성공 시 포커스할 cursor */
 	undo: () => HistoryCursor | null;
 	redo: () => HistoryCursor | null;
 	canUndo: () => boolean;
@@ -55,9 +55,9 @@ export interface SheetSessionStore {
 
 	setSearchPanelOpen: (open: boolean) => void;
 	toggleSearchPanel: () => void;
-	/** 레거시 `closeSearchPanel` — 열려 있을 때만 닫고 hits/query 초기화 */
+	/** 열려 있을 때만 닫고 hits/query 초기화 */
 	closeSearchPanel: () => void;
-	/** 탭 전환 시 hits만 비움 (레거시 restoreView) */
+	/** 탭 전환 시 hits만 비움 */
 	clearSearchHits: () => void;
 	setSearchInputFocused: (focused: boolean) => void;
 	runSearch: (
@@ -129,7 +129,7 @@ const useSheetSessionStore = create<SheetSessionStore>((set, get) => ({
 		const active = getActiveStack(state.stacks, state.activeSheetIndex);
 		const result = prevEntry(active);
 		if (!result) return null;
-		// 레거시: prev() 선반영 후 update 가드 실패해도 스택은 소비
+		// prev() 선반영 후 update 가드 실패해도 스택은 소비
 		const focus = applyHistoryUndo(result.entry);
 		const stacks = [...state.stacks];
 		stacks[state.activeSheetIndex] = result.stack;

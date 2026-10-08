@@ -26,7 +26,7 @@ export const SHORTKEY_IDS = {
 
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
 
-/** 레거시 defaultKeys / customKeys mask 문자열 */
+/** defaultKeys / customKeys mask 문자열 */
 export const SHORTKEY_MASKS = {
 	TAB: 'tab',
 	SHIFT_TAB: 'shift+tab',
@@ -51,7 +51,7 @@ export const SHORTKEY_MASKS = {
 	CTRL_Y: 'ctrl+y',
 } as const;
 
-/** 레거시 defaultKeys / customKeys mask와 동일 */
+/** defaultKeys / customKeys mask */
 export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.NEXT_ROW_MOVE]: SHORTKEY_MASKS.TAB,
 	[SHORTKEY_IDS.PREV_ROW_MOVE]: SHORTKEY_MASKS.SHIFT_TAB,
@@ -76,7 +76,7 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.REDO]: SHORTKEY_MASKS.CTRL_Y,
 };
 
-/** 레거시 placeholder (i18n) — 있는 키만 */
+/** placeholder (i18n) — 있는 키만 */
 export const SHORTKEY_PLACEHOLDERS = {
 	NEXT_ROW_MOVE: 'next-row-move',
 	PREV_ROW_MOVE: 'prev-row-move',

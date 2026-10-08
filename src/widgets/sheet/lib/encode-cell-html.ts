@@ -1,4 +1,4 @@
-/** 편집 HTML 정규화 — 레거시 `subtitle/valid.js`와 동일 */
+/** 편집 HTML 정규화 */
 const validCellHtml = (text: string) =>
 	text
 		.replace(/<strong/gi, '<b')

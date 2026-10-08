@@ -36,7 +36,7 @@ const SheetSearchPanel = ({ format, timelines, onJump }: SheetSearchPanelProps) 
 		if (nextOpen) {
 			setTimeout(() => inputRef.current?.focus(), 0);
 		}
-		// 닫을 때 hits/query는 toggleSearchPanel이 초기화 (레거시 loop(''))
+		// 닫을 때 hits/query는 toggleSearchPanel이 초기화
 	};
 
 	const handleSearchFocus = () => {

@@ -1,4 +1,4 @@
-/** 다중 선택 순수 로직 — 레거시 `multiple.toggleRow` parity */
+/** 다중 선택 순수 로직 */
 
 export interface SheetSelectionState {
 	selectedRows: number[];

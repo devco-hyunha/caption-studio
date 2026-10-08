@@ -4,13 +4,13 @@
 
 ## 목적
 
-`/edit`가 레거시 스크립트 없이 편집 가능한지 **체크리스트로 확인**하고, `2.9.0` 반영 조건을 정리한다.  
+`/edit`가 `public/js` 없이 편집 가능한지 **체크리스트로 확인**하고, `2.9.0` 반영 조건을 정리한다.  
 **VERSION / Git tag는 사용자가 판단·수행**한다.
 
 ## 범위
 
 - `/edit` parity 수동 체크리스트
-- `/edit`가 레거시 `public/js` modules를 런타임 의존하지 않는지 확인
+- `/edit`가 `public/js` modules를 런타임 의존하지 않는지 확인
 - Remaining 정리 (iconv, YT/Vimeo, 커스텀 키 UI 등)
 - changelog 2.9 완료 조건 대조
 - (선택) analytics/ads — 기능 parity 밖
@@ -21,7 +21,7 @@
 - UI 개선 에픽
 - 강제 VERSION/tag
 
-## 레거시 기준
+## `/`·`public/js` 기준
 
 | 영역 | 경로 |
 |------|------|
@@ -42,7 +42,7 @@
 | 게이트 | 채택 | 대안 | 이유 / 기각 | 상태 |
 |--------|------|------|-------------|------|
 | cutover 시점 | 체크리스트 통과 후 `2.9.0` 후보 | 부분 이전 상태로 태그 | 완료 조건 문서와 일치 | 기본채택 |
-| `/` 레거시 | 당분간 유지 · 단일 진입은 별도 | cutover와 동시 `/` 제거 | 리스크 분리 | 기본채택 |
+| `/` | 당분간 유지 · 단일 진입은 별도 | cutover와 동시 `/` 제거 | 리스크 분리 | 기본채택 |
 | analytics/ads | 마지막·최소 또는 Remaining | S7에 본격 이전 | 기능 parity 밖 | 기본채택 |
 
 ## 완료 조건 (DoD)
@@ -50,7 +50,7 @@
 | 종류 | 내용 |
 |------|------|
 | 체크리스트 | Shortkey·Sheet·Subtitle·Video·스토리지 승격 |
-| 의존 | `/edit`에 레거시 modules 런타임 의존 없음 |
+| 의존 | `/edit`에 modules 런타임 의존 없음 |
 | 테스트 | `pnpm test:run`, lint/typecheck |
 | 문서 | Remaining + changelog 링크 |
 | 릴리스 | **사용자**가 VERSION / tag |

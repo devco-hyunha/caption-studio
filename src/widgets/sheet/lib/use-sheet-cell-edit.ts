@@ -21,7 +21,7 @@ const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
 const isTextColumn = (column: SheetColumnId) => TEXT_COLUMNS.includes(column);
 
-/** multiple 모드 — 레거시 bindPanel: 클릭/에딧 진입 금지 */
+/** multiple 모드 — 클릭/에딧 진입 금지 */
 const isMultipleActive = () => {
 	const { active, sheets } = useSheetStore.getState();
 	return sheets[active]?.multipleActive === true;
@@ -362,10 +362,10 @@ const useSheetCellEdit = ({
 		// context 편집은 text/memo만
 		if (!isTextColumn(column)) return;
 
-		// 레거시 edit.on — search.state면 에딧 진입 차단
+		// search.state면 에딧 진입 차단
 		if (useSheetSessionStore.getState().searchInputFocused) return;
 
-		// 레거시 edit.on — 검색 패널이 열려 있으면 닫음
+		// 검색 패널이 열려 있으면 닫음
 		useSheetSessionStore.getState().closeSearchPanel();
 
 		const next =
@@ -447,7 +447,7 @@ const useSheetCellEdit = ({
 	) => {
 		event.preventDefault();
 		event.stopPropagation();
-		// 레거시 bindPanel — multiple 중 셀 클릭(포커스/에딧) 무시
+		// multiple 중 셀 클릭(포커스/에딧) 무시
 		if (isMultipleActive()) return;
 
 		if (modeRef.current === 'edit') {

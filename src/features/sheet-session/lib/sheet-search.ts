@@ -1,7 +1,7 @@
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import type { SearchHit, SheetSessionFormat } from '../types';
 
-/** format별 text/memo editable col — 레거시 search.loop */
+/** format별 text/memo editable col */
 const TEXT_MEMO_COLS: Record<
 	SheetSessionFormat,
 	{ text: number; memo: number }

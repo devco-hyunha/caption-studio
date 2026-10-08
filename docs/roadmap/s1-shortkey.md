@@ -4,19 +4,19 @@
 
 ## 목적
 
-레거시와 같이 **키보드 진입을 shortkey**로 둔다.  
+기존 `/`와 같이 **키보드 진입을 shortkey**로 둔다.  
 dev.2에서 시트 widget에 붙은 이동·에딧 `window` keydown을 shortkey로 이관하면, 이후 CRUD·검색·video 키도 같은 흐름으로 붙일 수 있다.
 
 ## 범위
 
 - 단축키 **매칭 엔진** 포팅 (`shortcuts` — mask, hold/down, preventDefault)
-- 레거시 `defaultKeys` 중 **시트 이동·편집 진입**에 해당하는 키를 shortkey 핸들러로 연결:
+- `defaultKeys` 중 **시트 이동·편집 진입**에 해당하는 키를 shortkey 핸들러로 연결:
   - Tab / Shift+Tab, ←↑→↓, PageUp/PageDown
   - Enter / Esc / F2 (edit on/off·레이어 등은 Decision 범위 내)
 - 시트 쪽은 **동작 API 유지** (`sheet-move` 순수 함수, 셀 edit on/off·커밋 API)
 - widget의 **전역 keydown 리스너 제거** (`use-sheet-move` / `use-sheet-cell-edit`의 `window` 키 소유 이관)
 - 키 매칭 **Vitest** (엔진)
-- **포커스·에딧 모드 vs 키 분기는 아래 Decision — 착수 전 레거시 확인 필수** (범위에 “웹 표준 input 무시”를 기본값으로 넣지 않음)
+- **포커스·에딧 모드 vs 키 분기는 아래 Decision — 착수 전 확인 필수** (범위에 “웹 표준 input 무시”를 기본값으로 넣지 않음)
 
 ## Out of scope
 
@@ -27,7 +27,7 @@ dev.2에서 시트 widget에 붙은 이동·에딧 `window` keydown을 shortkey�
 - 새 단축키 라이브러리 (기본 도입 안 함)
 - `use-sheet-cell-edit` 대규모 구조 분해 (키 이관만)
 
-## 레거시 기준
+## `/`·`public/js` 기준
 
 | 영역 | 경로 |
 |------|------|
@@ -52,9 +52,9 @@ dev.2에서 시트 widget에 붙은 이동·에딧 `window` keydown을 shortkey�
 
 | 게이트 | 채택 | 대안 | 이유 / 기각 | 상태 |
 |--------|------|------|-------------|------|
-| 엔진 | 레거시 shortkey 포팅 | hotkeys-js / mousetrap 등 라이브러리 | parity·YAGNI. 라이브러리는 사용자 확인 | 기본채택 |
-| 키 소유 | shortkey만 전역 키 | 시트 widget `window` keydown 유지(dev.2) | 레거시 `defaultKeys` 진입 | 잠김 |
-| **시트 포커스·에딧 모델** | (후보) 에딧 보이기/숨김(`edit.state`)으로 키 분기 · 시트는 항상 에딧 영역 전제 | DOM 포커스 기반 — contenteditable/input이면 전역 키 무시 | 레거시 가설 vs React 관례. **착수 전 레거시 확인** | **미확정** |
+| 엔진 | `public/js` shortkey 포팅 | hotkeys-js / mousetrap 등 라이브러리 | parity·YAGNI. 라이브러리는 사용자 확인 | 기본채택 |
+| 키 소유 | shortkey만 전역 키 | 시트 widget `window` keydown 유지(dev.2) | `defaultKeys` 진입 | 잠김 |
+| **시트 포커스·에딧 모델** | (후보) 에딧 보이기/숨김(`edit.state`)으로 키 분기 · 시트는 항상 에딧 영역 전제 | DOM 포커스 기반 — contenteditable/input이면 전역 키 무시 | 가설 vs React 관례. **착수 전 확인** | **미확정** |
 | 설정 등 진짜 `input` | (후보) `checkIsInput`을 시트 셀과 분리 | 모든 포커스 가능 요소에 동일 무시 규칙 | 설정 UI vs 시트 셀 구분 | **미확정** |
 | 커스텀 키 UI | 이번 슬라이스 제외(후속) | S1에 설정 UI까지 포함 | YAGNI | 기본채택 |
 

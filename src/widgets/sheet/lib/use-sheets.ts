@@ -1,13 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
-import {
-	getActiveScroll,
-	isEditableColumn,
-	useSheetStore,
-} from '@/entities/subtitle-sheet';
-import {
-	cloneTimelineSnapshot,
-	useSheetSessionStore,
-} from '@/features/sheet-session';
+import { getActiveScroll, isEditableColumn, useSheetStore } from '@/entities/subtitle-sheet';
+import { cloneTimelineSnapshot, useSheetSessionStore } from '@/features/sheet-session';
 import { getEditableColIndex } from './sheet-move';
 import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../types';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
@@ -54,7 +47,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		persistActiveScroll();
 		selectSheetAction(index);
 		useSheetSessionStore.getState().setActiveSheetIndex(index);
-		// 레거시 restoreView — searchHits 초기화
+		// restoreView — searchHits 초기화
 		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
@@ -101,7 +94,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		const before = sheet?.timelines[rowIndex];
 		if (!before) return false;
 
-		// 레거시 command.update — mutate 전 검색 패널 닫기
+		// command.update — mutate 전 검색 패널 닫기
 		useSheetSessionStore.getState().closeSearchPanel();
 
 		const beforeSnap = cloneTimelineSnapshot(before);

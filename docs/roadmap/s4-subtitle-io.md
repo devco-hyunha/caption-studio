@@ -8,21 +8,21 @@
 
 ## 범위 (이번 슬라이스 · 브랜치 `feat/edit-subtitle-io`)
 
-- SMI / SRT / VTT / JSON / Excel(zip) **parse · serialize** (레거시 export 포맷 parity)
+- SMI / SRT / VTT / JSON / Excel(zip) **parse · serialize** (export 포맷 parity)
 - 가져오기·내보내기 UI/핸들러 (`features/subtitle-io`) — Verify용 최소 진입점
-- encode/valid 등 레거시와 동등한 정규화
+- encode/valid 등 기존 `/`와 동등한 정규화
 - 파서/직렬화 **Vitest** (한글·특수문자)
 
 ## 이번 슬라이스에 안 넣는 것
 
 - 풀 import/export 모달 · 전체 i18n 셸 → S6 (UI 셸만 · 포맷 로직은 여기 S4)
 - video (→ S5)
-- 서버 API (레거시에도 클라이언트 I/O가 본선)
+- 서버 API (기존 `/`에도 클라이언트 I/O가 본선)
 - shortkey 엔진 (S1)
 
 Excel / VTT / JSON을 Remaining·다른 슬라이스로 빼지 않는다. **지금 I/O 브랜치 범위.**
 
-## 레거시 기준
+## `/`·`public/js` 기준
 
 | 영역 | 경로 |
 |------|------|
@@ -45,12 +45,12 @@ Excel / VTT / JSON을 Remaining·다른 슬라이스로 빼지 않는다. **지�
 | 게이트 | 채택 | 대안 | 이유 / 기각 | 상태 |
 |--------|------|------|-------------|------|
 | 파서 위치 | `entities/subtitle` 순수 · UI는 `features/*-io` | 전부 feature / shared에 파서 | FSD | 잠김 |
-| 인코딩 경로 | 클라이언트 only | 서버 API 신설 | 레거시 클라이언트 I/O parity | 잠김 |
+| 인코딩 경로 | 클라이언트 only | 서버 API 신설 | 클라이언트 I/O parity | 잠김 |
 | iconv 다중 인코딩 | `iconv-lite` npm (EUC-KR 등 parity) | UTF-8만 (Web API) | `/` 다중 인코딩 parity | 잠김 |
 | 포맷 범위 | SMI/SRT/VTT/JSON/Excel — **이 브랜치(S4)** | Remaining·S6로 분리 | I/O 도메인 = 현재 브랜치 | **잠김** |
-| import/export UI | Verify용 최소 진입점 · 풀 셸은 S6 | 이번 작업에 레거시 동등 풀 UI | 수동 Verify. 풀 셸은 S6 | 잠김 |
+| import/export UI | Verify용 최소 진입점 · 풀 셸은 S6 | 풀 UI를 이번 작업에 포함 | 수동 Verify. 풀 셸은 S6 | 잠김 |
 | import 후 시트 | 활성 탭 timelines 교체 | 항상 새 탭 | `/` parity | 잠김 |
-| import 인코딩 UX | UI 선택 + FileReader (BOM 브라우저 우선) | 휴리스틱 자동 감지 | 레거시 parity | 잠김 |
+| import 인코딩 UX | UI 선택 + FileReader (BOM 브라우저 우선) | 휴리스틱 자동 감지 | parity | 잠김 |
 
 ## 완료 조건 (DoD)
 

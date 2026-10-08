@@ -21,7 +21,7 @@ const toggleWrapTag = (html: string, tag: 'b' | 'i' | 'u'): string => {
 };
 
 /**
- * 레거시 multiClip(selectAll → execCommand → encode) parity.
+ * multiClip(selectAll → execCommand → encode).
  * 문서에 임시 contenteditable을 붙여 bold/italic/underline을 토글한다.
  */
 const applyTextFormatCommand = (html: string, command: TextFormatCommand): string => {

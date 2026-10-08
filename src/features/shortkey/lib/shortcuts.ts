@@ -1,5 +1,5 @@
 /**
- * 레거시 `public/js/modules/shortkey/shortcuts.js` TS 포팅.
+ * shortkey 마스크 매칭 유틸.
  * API: code · callback · start · stop · add · remove · removeAll · search
  */
 

@@ -1,6 +1,6 @@
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
-/** 히스토리 포커스 좌표 — editable col index (레거시 parity) */
+/** 히스토리 포커스 좌표 — editable col index */
 export interface HistoryCursor {
 	row: number;
 	col: number;
@@ -17,7 +17,7 @@ export type HistoryCommand =
 	| 'update'
 	| `multi.${string}`;
 
-/** 레거시 `editHistory` 엔트리 */
+/** editHistory 엔트리 */
 export interface HistoryEntry {
 	command: HistoryCommand;
 	id: number | null;
