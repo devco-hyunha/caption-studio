@@ -20,6 +20,7 @@ import {
 	replaceActiveTimelinePatches,
 	selectSheet,
 	setActiveMultipleStart,
+	setActiveTimelines as replaceActiveSheetTimelines,
 	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
@@ -121,6 +122,13 @@ const useSheetStore = create<SheetStore>()(
 
 			replaceTimelinePatches: (patches) => {
 				const next = replaceActiveTimelinePatches(get(), patches);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			setActiveTimelines: (timelines) => {
+				const next = replaceActiveSheetTimelines(get(), timelines);
 				if (!next) return false;
 				set(next);
 				return true;

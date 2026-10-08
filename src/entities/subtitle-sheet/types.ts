@@ -90,4 +90,6 @@ export interface SheetStore extends SheetsState {
 	replaceTimelinePatches: (
 		patches: readonly { index: number; data: SheetTimelineItem }[],
 	) => boolean;
+	/** import — 활성 탭 timelines 통째 교체 (multiple·스크롤 초기화) */
+	setActiveTimelines: (timelines: readonly SheetTimelineItem[]) => boolean;
 }

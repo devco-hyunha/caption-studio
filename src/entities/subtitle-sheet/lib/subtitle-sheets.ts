@@ -385,6 +385,30 @@ const replaceActiveTimelinePatches = (
 	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
 };
 
+/** import — 활성 탭 timelines 통째 교체 */
+const setActiveTimelines = (
+	state: SheetsState,
+	timelines: readonly SheetTimelineItem[],
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+
+	const nextTimelines =
+		timelines.length === 0
+			? [cloneTimeline()]
+			: timelines.map((item) => cloneTimeline(item));
+
+	return patchActiveSheet(state, (active) => ({
+		...active,
+		timelines: nextTimelines,
+		scroll: 0,
+		selectedRows: [],
+		multipleActive: false,
+		multipleStart: null,
+		current: {},
+	}));
+};
+
 const selectSheet = (state: SheetsState, index: number): SheetsState => {
 	if (index < 0 || index >= state.sheets.length) return state;
 	if (index === state.active) return state;
@@ -540,6 +564,7 @@ export {
 	selectSheet,
 	serializeForSave,
 	setActiveMultipleStart,
+	setActiveTimelines,
 	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,

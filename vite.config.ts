@@ -8,8 +8,17 @@ export default defineConfig({
 	server: {
 		port: 3000,
 	},
+	define: {
+		global: 'globalThis',
+	},
 	resolve: {
 		tsconfigPaths: true,
+		alias: {
+			buffer: 'buffer/',
+		},
+	},
+	optimizeDeps: {
+		include: ['buffer', 'iconv-lite'],
 	},
 	plugins: [
 		tailwindcss(),

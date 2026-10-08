@@ -26,3 +26,4 @@
 | dev.4 | [2.9.0-dev.4.md](./2.9.0-dev.4.md) | Sheet 행 다중 선택 · CRUD · shortkey 연결 (`feat/edit-sheet-crud`) |
 | dev.5 | [2.9.0-dev.5.md](./2.9.0-dev.5.md) | Sheet 검색 · undo/redo 세션 (`feat/edit-search-undo`) |
 | dev.6 | [2.9.0-dev.6.md](./2.9.0-dev.6.md) | shortkey 상수 맵 · 탭 scroll 복원 |
+| dev.7 | [2.9.0-dev.7.md](./2.9.0-dev.7.md) | Subtitle I/O SMI/SRT/VTT/JSON/Excel (`feat/edit-subtitle-io`) |

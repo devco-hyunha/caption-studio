@@ -1,5 +1,5 @@
 import type { CSSProperties, UIEvent } from 'react';
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
 import {
@@ -10,12 +10,10 @@ import {
 	type SearchHit,
 } from '@/features/sheet-session';
 import { useSheetShortkey, type SheetShortkeyActions } from '@/features/shortkey';
+import { SubtitleIoPanel } from '@/features/subtitle-io';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
-import {
-	applyTextFormatCommand,
-	type TextFormatCommand,
-} from '../lib/apply-text-format';
+import { applyTextFormatCommand, type TextFormatCommand } from '../lib/apply-text-format';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
 import { getEditableColIndex, getEditableColumn } from '../lib/sheet-move';
 import { useSheetCellEdit } from '../lib/use-sheet-cell-edit';
@@ -67,6 +65,16 @@ const SheetBody = ({
 	const removeTimelineAtAction = useSheetStore((state) => state.removeTimelineAt);
 	const updateSelectedTextsAction = useSheetStore((state) => state.updateSelectedTexts);
 	const updateActiveCellAction = useSheetStore((state) => state.updateActiveCell);
+	const setActiveTimelinesAction = useSheetStore((state) => state.setActiveTimelines);
+	const storeSheets = useSheetStore((state) => state.sheets);
+	const workbookTabs = useMemo(
+		() =>
+			storeSheets.map((sheet) => ({
+				name: sheet.name,
+				timelines: sheet.timelines,
+			})),
+		[storeSheets],
+	);
 
 	const {
 		mode,
@@ -129,9 +137,7 @@ const SheetBody = ({
 
 	const pushInsertHistory = (insertIndex: number, focusRow: number, focusCol: number) => {
 		const after =
-			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[
-				insertIndex
-			];
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[insertIndex];
 		if (!after) return;
 		useSheetSessionStore.getState().pushHistory({
 			command: 'insert',
@@ -219,10 +225,10 @@ const SheetBody = ({
 	};
 
 	const handleApplyTextFormat = (command: TextFormatCommand) => {
-		// 레거시 edit.clip / command.multi — mutate·클립 전 검색 패널 닫기
+		// mutate·클립 전 검색 패널 닫기
 		closeSearchPanel();
 
-		// 에딧 중 — 레거시 clip: 현재 에디터에 execCommand
+		// 에딧 중 — clip: 현재 에디터에 execCommand
 		if (isEditing()) {
 			inputRef.current?.focus();
 			document.execCommand(command, false);
@@ -245,20 +251,15 @@ const SheetBody = ({
 				data: cloneTimelineSnapshot(sheet.timelines[index] ?? emptyTimelineSnapshot()),
 			}));
 
-			const ok = updateSelectedTextsAction((text) =>
-				applyTextFormatCommand(text, command),
-			);
+			const ok = updateSelectedTextsAction((text) => applyTextFormatCommand(text, command));
 			if (!ok) return;
 
-			const nextSheet =
-				useSheetStore.getState().sheets[useSheetStore.getState().active];
+			const nextSheet = useSheetStore.getState().sheets[useSheetStore.getState().active];
 			if (!nextSheet) return;
 
 			const currents = selected.map((index) => ({
 				index,
-				data: cloneTimelineSnapshot(
-					nextSheet.timelines[index] ?? emptyTimelineSnapshot(),
-				),
+				data: cloneTimelineSnapshot(nextSheet.timelines[index] ?? emptyTimelineSnapshot()),
 			}));
 
 			useSheetSessionStore.getState().pushHistory({
@@ -271,7 +272,7 @@ const SheetBody = ({
 			return;
 		}
 
-		// 단건 — 레거시 clip (text 타깃)
+		// 단건 — clip (text 타깃)
 		if (!isTextTarget()) return;
 		const row = focusRow;
 		const prevTimeline = sheet.timelines[row];
@@ -283,8 +284,7 @@ const SheetBody = ({
 		const ok = updateActiveCellAction(row, 'text', next);
 		if (!ok) return;
 		const after =
-			useSheetStore.getState().sheets[store.active]?.timelines[row] ??
-			emptyTimelineSnapshot();
+			useSheetStore.getState().sheets[store.active]?.timelines[row] ?? emptyTimelineSnapshot();
 		useSheetSessionStore.getState().pushHistory({
 			command: 'update',
 			id: row,
@@ -339,8 +339,7 @@ const SheetBody = ({
 		isTextTarget,
 		hasFocus,
 		isMultiple: () =>
-			useSheetStore.getState().sheets[useSheetStore.getState().active]?.multipleActive ===
-			true,
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.multipleActive === true,
 		endEdit,
 		beginEdit,
 		cancelEdit,
@@ -399,8 +398,23 @@ const SheetBody = ({
 		return keys;
 	})();
 
+	const handleSubtitleImported = (nextTimelines: SheetTimelineItem[]) => {
+		endEdit(false);
+		setActiveTimelinesAction(nextTimelines);
+		useSheetSessionStore.getState().clearActiveHistory();
+		useSheetSessionStore.getState().clearSearchHits();
+		setScrollTop(0);
+		applyFocus(0, 'text');
+	};
+
 	const verifyChrome = (
 		<>
+			<SubtitleIoPanel
+				sheetFormat={format}
+				timelines={timelines}
+				workbookTabs={workbookTabs}
+				onImported={handleSubtitleImported}
+			/>
 			<div
 				role="toolbar"
 				aria-label="Verify sheet controls"
@@ -490,11 +504,7 @@ const SheetBody = ({
 					Redo
 				</Button>
 			</div>
-			<SheetSearchPanel
-				format={format}
-				timelines={timelines}
-				onJump={handleSearchJump}
-			/>
+			<SheetSearchPanel format={format} timelines={timelines} onJump={handleSearchJump} />
 		</>
 	);
 
@@ -541,8 +551,7 @@ const SheetBody = ({
 							const row = rows[rowIndex];
 							if (!row) return null;
 
-							const rowHeight =
-								row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
+							const rowHeight = row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
 
 							return (
 								<SheetRow
@@ -550,9 +559,7 @@ const SheetBody = ({
 									format={format}
 									row={row}
 									data-index={rowIndex}
-									currentColumn={
-										currentRowIndex === row.index ? currentColumn : null
-									}
+									currentColumn={currentRowIndex === row.index ? currentColumn : null}
 									searchHitKeys={searchHitKeys}
 									onCellClick={handleCellClick}
 									onCellDoubleClick={handleCellDoubleClick}

@@ -51,6 +51,7 @@ export {
 	replaceActiveTimelinePatches,
 	selectSheet,
 	setActiveMultipleStart,
+	setActiveTimelines,
 	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,

@@ -4,6 +4,7 @@ import { Button } from '@/shared/ui/button';
 import {
 	DEFAULT_ESTIMATE_ROW_HEIGHT,
 	SheetPanel,
+	applySheetFormatChange,
 	useSheets,
 	type SheetFormat,
 } from '@/widgets/sheet';
@@ -25,10 +26,14 @@ const EditPage = () => {
 	} = useSheets(format);
 
 	const handleFormatSmi = () => {
+		if (format === 'smi') return;
+		applySheetFormatChange(format, 'smi');
 		setFormat('smi');
 	};
 
 	const handleFormatSrt = () => {
+		if (format === 'srt') return;
+		applySheetFormatChange(format, 'srt');
 		setFormat('srt');
 	};
 

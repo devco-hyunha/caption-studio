@@ -33,6 +33,7 @@ export {
 	toSheetTabs,
 } from './lib/subtitle-sheets';
 export { useSheets } from './lib/use-sheets';
+export { applySheetFormatChange } from './lib/apply-sheet-format';
 export { SheetPanel } from './ui/sheet-panel';
 export { SheetHeader } from './ui/sheet-header';
 export { SheetBody } from './ui/sheet-body';

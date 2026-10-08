@@ -111,7 +111,7 @@ flowchart TD
 |------|------|
 | **채택** | 이번에 쓸 기술·구조·모델 (로드맵 기본값 또는 잠긴 결정) |
 | **대안** | 검토한 다른 선택지 **1개 이상** (없으면 “대안 없음 + 이유”를 명시 — 생략 금지) |
-| **이유** | 채택 이유 · 대안을 버리는 이유 (parity / YAGNI / 잠긴 결정 / 비용) |
+| **이유** | 채택 이유 · 대안을 버리는 이유 (**레거시 parity** / 잠긴 결정 / 비용). **레거시 기능을 “필요 없다”고 제외하는 이유로 쓰지 않는다** |
 | **상태** | `잠김` · `기본채택` · `미확정(확인필요)` · `사용자확인` |
 
 changelog를 작성할 때 `changelog/2.9/2.9.0-dev.N.md`의 `### Decision`에도 동일 형식으로 남긴다 (작성은 사용자 지시 시에만).
@@ -136,6 +136,7 @@ changelog를 작성할 때 `changelog/2.9/2.9.0-dev.N.md`의 `### Decision`에�
 - 새 **런타임 의존성** 추가
 - 레거시와 **의도적으로 다른 UX/데이터 스키마**
 - localStorage **키·스키마 파괴적 변경** (migrate 경로 포함)
+- **레거시에 있는 기능을 이번 슬라이스/작업에서 빼거나 뒤로 미루는 경우** (후속 슬라이스·Remaining에 **넣을 곳**을 같이 제시)
 - 로드맵에 `미확정` / `사용자확인`으로 표시된 게이트
 
 ## 검증 정책
@@ -157,19 +158,31 @@ changelog를 작성할 때 `changelog/2.9/2.9.0-dev.N.md`의 `### Decision`에�
 | S1 | Shortkey (엔진 + 시트 이동·에딧 키 이관) | [s1-shortkey.md](./s1-shortkey.md) | 미착수 |
 | S2 | Sheet: 행 선택 + 행 CRUD | [s2-sheet-crud-select.md](./s2-sheet-crud-select.md) | 미착수 |
 | S3 | Sheet: 검색 + undo/redo | [s3-search-undo.md](./s3-search-undo.md) | 미착수 |
-| S4 | Subtitle I/O (SMI/SRT) | [s4-subtitle-io.md](./s4-subtitle-io.md) | 미착수 |
+| S4 | Subtitle I/O (SMI/SRT/VTT/JSON/Excel) | [s4-subtitle-io.md](./s4-subtitle-io.md) | 진행 중 (`feat/edit-subtitle-io`) |
 | S5 | Video ↔ Sheet sync | [s5-video-sync.md](./s5-video-sync.md) | 미착수 |
 | S6 | UI 셸 + i18n/settings | [s6-ui-i18n-settings.md](./s6-ui-i18n-settings.md) | 미착수 |
 | S7 | Cutover (완전 변환 점검) | [s7-cutover.md](./s7-cutover.md) | 미착수 |
 
-## 의도적으로 뒤로 미루는 것
+## Remaining — 레거시 기능 (후속 일정)
 
-기능 슬라이스와 **섞지 않는다**. 필요하면 별도 chore 슬라이스로만.
+레거시 `/`에 있는 기능은 **버리지 않는다**. 한 슬라이스에 다 못 넣으면 여기로 모으고, **넣을 곳·상태는 사용자가 확정**한다. (에이전트가 단독으로 “제외 확정” 금지)
+
+| 항목 | 레거시 | 넣을 곳 | 상태 |
+|------|--------|---------|------|
+| 풀 import/export 모달 · i18n 셸 | caption-shell 다이얼로그 | S6 (UI 셸만 · 포맷 로직은 S4) | 가이드 기본 |
+| shortkey 커스텀 키 설정 UI | settings / customKeys UI | S6 또는 별도 작업 | **사용자 확정 필요** |
+
+SMI/SRT/VTT/JSON/Excel · zip — **Remaining 아님. S4 (`feat/edit-subtitle-io`) I/O 범위.**
+
+상세 슬라이스 문서의 Out of scope는 “이번 작업에 안 넣음 → Remaining(또는 넣을 슬라이스)”만 적는다.
+
+## 구조·리팩터 (기능 아님)
+
+구조 chore만. 기능 슬라이스와 섞지 않는다. 일정·범위는 사용자 확정.
 
 - `use-sheet-cell-edit` 대규모 분해 (키 이관과 무관한 구조 분해)
 - widget/entity 동명 파일 rename
 - persist `beforeunload` flush
 - analytics / ads
 - 빈 `features/` · `pages/` 선제 생성
-- shortkey **커스텀 키 설정 UI** 전부 (S1 Decision에서 후속으로 명시 가능)
-- video 재생 키 바인딩 (S5 이후 shortkey에 추가)
+- video 재생 키 바인딩 (S5 shortkey 핸들러 — 기능은 S5)
