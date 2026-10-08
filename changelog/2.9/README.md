@@ -27,3 +27,4 @@
 | dev.5 | [2.9.0-dev.5.md](./2.9.0-dev.5.md) | Sheet 검색 · undo/redo 세션 (`feat/edit-search-undo`) |
 | dev.6 | [2.9.0-dev.6.md](./2.9.0-dev.6.md) | shortkey 상수 맵 · 탭 scroll 복원 |
 | dev.7 | [2.9.0-dev.7.md](./2.9.0-dev.7.md) | Subtitle I/O SMI/SRT/VTT/JSON/Excel (`feat/edit-subtitle-io`) |
+| dev.8 | [2.9.0-dev.8.md](./2.9.0-dev.8.md) | Video ↔ Sheet sync · react-player (`feat/edit-video-sync`) |

@@ -4,6 +4,9 @@ export type {
 	Sheet,
 	SheetTimelineFormat,
 	SheetTimelineItem,
+	TimeSearchAllHit,
+	TimeSearchHit,
+	TimeSlotIndex,
 	EditableColumn,
 	SheetsState,
 } from './types';
@@ -34,6 +37,25 @@ export {
 	replaceTimelineAt,
 	spliceTimelineAt,
 } from './lib/sheet-mutate';
+
+export { OPEN_END_MS, resolveEndMs, timeSearch, timeSearchAll } from './lib/time-search';
+
+export { resolveStartMs } from './lib/time-range';
+
+export {
+	findNextStartNeighborIndex,
+	findPrevStartNeighborIndex,
+} from './lib/start-neighbor';
+
+export {
+	MINUTE_MS,
+	candidateRowIndicesAt,
+	insertRowTimeSlot,
+	rebuildTimeSlotIndex,
+	removeRowTimeSlot,
+	shiftTimeSlotIndices,
+	syncRowTimeSlot,
+} from './lib/time-slot-index';
 
 export {
 	addSheet,

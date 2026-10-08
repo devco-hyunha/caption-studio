@@ -7,6 +7,24 @@ export interface SheetTimelineItem {
 	memo?: string;
 }
 
+/** `timeSearch` 결과 — 재생 ms → 행 매핑 (`/` sheet.seek.timeSearch parity) */
+export interface TimeSearchHit {
+	index: number;
+	/** 구간 안이면 true, start 이전 갭이면 false */
+	visible: boolean;
+	/** 매칭 행 스냅샷. 없으면 null */
+	timeline: SheetTimelineItem | null;
+}
+
+/** 분(minute) 버킷 → 행 index 목록. 세션용 · 비영속 */
+export type TimeSlotIndex = Map<number, number[]>;
+
+/** 겹침 포함 활성 행들 (개선: 다중 라인) */
+export interface TimeSearchAllHit {
+	/** `start <= ms < end` 인 행 index (오름차순) */
+	indices: number[];
+}
+
 /** insert/remove 시각 채움용 — 위젯 SheetFormat과 동일 유니온 */
 export type SheetTimelineFormat = 'smi' | 'srt';
 

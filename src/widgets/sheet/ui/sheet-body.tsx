@@ -1,7 +1,11 @@
 import type { CSSProperties, UIEvent } from 'react';
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import {
+	timeSearch,
+	useSheetStore,
+	type SheetTimelineItem,
+} from '@/entities/subtitle-sheet';
 import {
 	SheetSearchPanel,
 	cloneTimelineSnapshot,
@@ -11,6 +15,17 @@ import {
 } from '@/features/sheet-session';
 import { useSheetShortkey, type SheetShortkeyActions } from '@/features/shortkey';
 import { SubtitleIoPanel } from '@/features/subtitle-io';
+import {
+	adjustVideoVolume,
+	getVideoPlayerSeekApi,
+	rebuildVideoTimeSlotsFromActiveSheet,
+	seekPlayerToRowIndex,
+	seekVideoBySeconds,
+	syncVideoTimeSlotsAfterInsert,
+	syncVideoTimeSlotsAfterRemove,
+	toggleVideoPlayback,
+	useVideoSyncStore,
+} from '@/features/video-sync';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { applyTextFormatCommand, type TextFormatCommand } from '../lib/apply-text-format';
@@ -152,6 +167,7 @@ const SheetBody = ({
 		closeSearchPanel();
 		const insertIndex = insertTimelineAfterAction(cursor.row, format);
 		if (insertIndex == null) return;
+		syncVideoTimeSlotsAfterInsert(insertIndex);
 		pushInsertHistory(insertIndex, cursor.row, cursor.col);
 		const column = getEditableColumn(format, cursor.col);
 		if (!column) return;
@@ -175,6 +191,7 @@ const SheetBody = ({
 		const col = resolveFocusCol();
 		const insertIndex = insertTimelineAfterAction(row, format);
 		if (insertIndex == null) return;
+		syncVideoTimeSlotsAfterInsert(insertIndex);
 		pushInsertHistory(insertIndex, row, col);
 		const column = getEditableColumn(format, col);
 		if (!column) return;
@@ -197,6 +214,7 @@ const SheetBody = ({
 		if (focusRow == null) return;
 
 		if (wasLast) {
+			rebuildVideoTimeSlotsFromActiveSheet();
 			useSheetSessionStore.getState().pushHistory({
 				command: 'update',
 				id: row,
@@ -205,6 +223,7 @@ const SheetBody = ({
 				current: { row, col },
 			});
 		} else {
+			syncVideoTimeSlotsAfterRemove(row);
 			useSheetSessionStore.getState().pushHistory({
 				command: 'remove',
 				id: row,
@@ -306,6 +325,7 @@ const SheetBody = ({
 		closeSearchPanel();
 		const focus = useSheetSessionStore.getState().undo();
 		if (!focus) return;
+		rebuildVideoTimeSlotsFromActiveSheet();
 		const column = getEditableColumn(format, focus.col);
 		if (!column) return;
 		pendingFocusRef.current = { row: focus.row, column };
@@ -316,6 +336,7 @@ const SheetBody = ({
 		closeSearchPanel();
 		const focus = useSheetSessionStore.getState().redo();
 		if (!focus) return;
+		rebuildVideoTimeSlotsFromActiveSheet();
 		const column = getEditableColumn(format, focus.col);
 		if (!column) return;
 		pendingFocusRef.current = { row: focus.row, column };
@@ -357,6 +378,55 @@ const SheetBody = ({
 		applyTextFormat: handleApplyTextFormat,
 		undo: handleUndo,
 		redo: handleRedo,
+		videoJump: () => {
+			if (
+				useSheetStore.getState().sheets[useSheetStore.getState().active]
+					?.multipleActive === true
+			) {
+				return;
+			}
+			seekPlayerToRowIndex(resolveFocusRow());
+		},
+		sheetJump: () => {
+			const sheetState = useSheetStore.getState();
+			const sheet = sheetState.sheets[sheetState.active];
+			if (!sheet || sheet.multipleActive) return;
+
+			const { activeIndices } = useVideoSyncStore.getState();
+			let targetRow: number | null = null;
+
+			if (activeIndices.length > 0) {
+				targetRow = Math.min(...activeIndices);
+			} else {
+				const api = getVideoPlayerSeekApi();
+				const seconds = api?.getCurrentTime();
+				const ms =
+					seconds != null && Number.isFinite(seconds)
+						? Math.max(0, Math.trunc(seconds * 1000))
+						: 0;
+				const hit = timeSearch(sheet.timelines, ms);
+				if (hit.index >= 0) targetRow = hit.index;
+			}
+
+			if (targetRow == null) return;
+			if (isEditing()) endEdit(true);
+			applyFocus(targetRow, currentColumn ?? 'text');
+		},
+		videoPlayToggle: () => {
+			toggleVideoPlayback();
+		},
+		videoSeekPrev: () => {
+			seekVideoBySeconds(-10);
+		},
+		videoSeekNext: () => {
+			seekVideoBySeconds(10);
+		},
+		volumeUp: () => {
+			adjustVideoVolume(0.1);
+		},
+		volumeDown: () => {
+			adjustVideoVolume(-0.1);
+		},
 		moveTabNext: move.moveTabNext,
 		moveTabPrev: move.moveTabPrev,
 		moveRowPrev: move.moveRowPrev,
@@ -378,6 +448,11 @@ const SheetBody = ({
 		(state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
 	);
 	const searchHits = useSheetSessionStore((state) => state.searchHits);
+	const playbackActiveIndices = useVideoSyncStore((state) => state.activeIndices);
+	const playbackSet = useMemo(
+		() => new Set(playbackActiveIndices),
+		[playbackActiveIndices],
+	);
 	const canUndo = useSheetSessionStore((state) => {
 		const stack = state.stacks[state.activeSheetIndex];
 		if (!stack) return false;
@@ -401,6 +476,7 @@ const SheetBody = ({
 	const handleSubtitleImported = (nextTimelines: SheetTimelineItem[]) => {
 		endEdit(false);
 		setActiveTimelinesAction(nextTimelines);
+		rebuildVideoTimeSlotsFromActiveSheet();
 		useSheetSessionStore.getState().clearActiveHistory();
 		useSheetSessionStore.getState().clearSearchHits();
 		setScrollTop(0);
@@ -552,12 +628,15 @@ const SheetBody = ({
 							if (!row) return null;
 
 							const rowHeight = row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
+							const rowView = playbackSet.has(row.index)
+								? { ...row, isPlaybackActive: true }
+								: row;
 
 							return (
 								<SheetRow
 									key={row.index}
 									format={format}
-									row={row}
+									row={rowView}
 									data-index={rowIndex}
 									currentColumn={currentRowIndex === row.index ? currentColumn : null}
 									searchHitKeys={searchHitKeys}

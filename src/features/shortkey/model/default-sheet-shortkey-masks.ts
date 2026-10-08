@@ -22,6 +22,13 @@ export const SHORTKEY_IDS = {
 	FONT_UNDERLINE: 'fontUnderline',
 	UNDO: 'undo',
 	REDO: 'redo',
+	VIDEO_JUMP: 'videoJump',
+	SHEET_JUMP: 'sheetJump',
+	VIDEO_PLAY: 'videoPlay',
+	VIDEO_SEEK_PREV: 'videoSeekPrev',
+	VIDEO_SEEK_NEXT: 'videoSeekNext',
+	VOLUME_UP: 'volumeUp',
+	VOLUME_DOWN: 'volumeDown',
 } as const;
 
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
@@ -49,6 +56,13 @@ export const SHORTKEY_MASKS = {
 	CTRL_U: 'ctrl+u',
 	CTRL_Z: 'ctrl+z',
 	CTRL_Y: 'ctrl+y',
+	CTRL_Q: 'ctrl+q',
+	ALT_Q: 'alt+q',
+	CTRL_SPACE: 'ctrl+space',
+	CTRL_LEFT: 'ctrl+left',
+	CTRL_RIGHT: 'ctrl+right',
+	CTRL_UP: 'ctrl+up',
+	CTRL_DOWN: 'ctrl+down',
 } as const;
 
 /** defaultKeys / customKeys mask */
@@ -74,6 +88,13 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.FONT_UNDERLINE]: SHORTKEY_MASKS.CTRL_U,
 	[SHORTKEY_IDS.UNDO]: SHORTKEY_MASKS.CTRL_Z,
 	[SHORTKEY_IDS.REDO]: SHORTKEY_MASKS.CTRL_Y,
+	[SHORTKEY_IDS.VIDEO_JUMP]: SHORTKEY_MASKS.CTRL_Q,
+	[SHORTKEY_IDS.SHEET_JUMP]: SHORTKEY_MASKS.ALT_Q,
+	[SHORTKEY_IDS.VIDEO_PLAY]: SHORTKEY_MASKS.CTRL_SPACE,
+	[SHORTKEY_IDS.VIDEO_SEEK_PREV]: SHORTKEY_MASKS.CTRL_LEFT,
+	[SHORTKEY_IDS.VIDEO_SEEK_NEXT]: SHORTKEY_MASKS.CTRL_RIGHT,
+	[SHORTKEY_IDS.VOLUME_UP]: SHORTKEY_MASKS.CTRL_UP,
+	[SHORTKEY_IDS.VOLUME_DOWN]: SHORTKEY_MASKS.CTRL_DOWN,
 };
 
 /** placeholder (i18n) — 있는 키만 */
@@ -89,6 +110,13 @@ export const SHORTKEY_PLACEHOLDERS = {
 	FONT_UNDERLINE: 'font-underline',
 	UNDO: 'undo',
 	REDO: 'redo',
+	VIDEO_JUMP: 'timeline-current',
+	SHEET_JUMP: 'move-current',
+	VIDEO_PLAY: 'play-stop',
+	VIDEO_SEEK_PREV: 'video-prev',
+	VIDEO_SEEK_NEXT: 'video-next',
+	VOLUME_UP: 'volume-up',
+	VOLUME_DOWN: 'volume-down',
 } as const;
 
 export const SHORTKEY_TYPES = {

@@ -35,10 +35,13 @@ const SheetRow = ({
 			data-row={row.index}
 			aria-rowindex={row.index + 1}
 			aria-selected={row.isSelected || undefined}
+			data-playback-active={row.isPlaybackActive || undefined}
 			className={cn(
 				'relative flex w-full min-w-[var(--sheet-contain-min)] items-stretch border-b border-neutral-100',
 				row.isSelected && 'bg-[#cef]',
 				row.isError && !row.isSelected && 'bg-red-50',
+				row.isPlaybackActive && !row.isSelected && 'bg-sky-50',
+				row.isPlaybackActive && 'shadow-[inset_3px_0_0_0] shadow-sky-500',
 			)}
 			style={style}
 		>
@@ -51,6 +54,7 @@ const SheetRow = ({
 						? cn(
 								row.isSelected && 'bg-[#cef]',
 								row.isError && !row.isSelected && 'bg-red-50',
+								row.isPlaybackActive && !row.isSelected && 'bg-sky-50',
 							)
 						: undefined;
 

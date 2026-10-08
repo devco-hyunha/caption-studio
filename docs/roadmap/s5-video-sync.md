@@ -9,17 +9,18 @@
 
 ## 범위
 
-- Video.js 기반 플레이어 마운트 (`/edit`)
-- 시간 ↔ 행 매핑 순수 함수
+- react-player 기반 플레이어 마운트 (`/edit`) + 커스텀 컨트롤 UI
+- 소스: file · URL · YouTube · Vimeo
+- 시간 ↔ 행 매핑: 분 슬롯 인덱스 + `timeSearchAll`(다중 라인) · 전체 재빌드/행 단위 갱신
 - seek / 재생 / 일시정지 시 시트 싱크
-- shortkey에 video 관련 defaultKeys 연결 (볼륨·재생 등 Decision 범위)
+- shortkey에 video 관련 키 연결 (볼륨·재생 등)
 - 루프 방지 설계
 
 ## Out of scope
 
 - shortkey 엔진 본체 (→ S1)
 - 전체 i18n/settings 셸 (→ S6)
-- 플레이어 교체 에픽
+- `/` Video.js 하이브리드 교체 (→ S7 cutover 전까지 `/` 유지)
 
 ## `/`·`public/js` 기준
 
@@ -34,7 +35,8 @@
 | 구분 | 경로 / 이름 |
 |------|-------------|
 | 기존 | `widgets/sheet`, `entities/subtitle-sheet`, `features/shortkey` |
-| 신설 예정 이름 | `widgets/video-player` — **착수 시에만** |
+| 신설 | `features/video-sync` (슬롯·activeIndices 스토어) |
+| 신설 예정 | `widgets/video-player` — **착수 시에만** |
 
 ## Decision 게이트
 
@@ -42,19 +44,21 @@
 
 | 게이트 | 채택 | 대안 | 이유 / 기각 | 상태 |
 |--------|------|------|-------------|------|
-| 플레이어 | Video.js 유지 | 다른 플레이어로 교체 | parity. 교체는 별도 에픽 | 기본채택 |
-| 동기 방향 | 단방향 이벤트 + 명시적 seek | 양방향 자동 동기 | 루프 방지 | 기본채택 |
-| YouTube/Vimeo | (후보) 로컬·URL 먼저 / 포함 | 전부 한 슬라이스 | 착수 전 범위 | **미확정** |
-| video.js 도입 | (후보) `public/js/lib` 재사용 vs npm | — | npm이면 사용자 확인 | **미확정** |
+| 플레이어 코어 | pnpm `react-player` | Video.js / native만 | 가벼움 · React 친화 · YT/Vimeo 기본. 커스텀 UI 전제 | **잠김** |
+| 컨트롤 UI | widget 밖 커스텀 | Video.js bar DOM 삽입 | bar 해킹 폐기 | **잠김** |
+| 소스 범위 | file · URL · YouTube · Vimeo | 로컬·URL만 | `/` parity | **잠김** |
+| 활성 자막 | 다중 `indices[]` | 첫 행만 | 겹침 개선 | **잠김** |
+| 시간 인덱스 | 분 슬롯 · 전체+행단위 | 매 틱 전체 스캔 / TextTrack | 후보 축소 · 그래프 재사용 | **잠김** |
+| 동기 방향 | 단방향 이벤트 + 명시적 seek | 양방향 자동 동기 | 루프 방지 | 잠김 |
 | 키 | shortkey 핸들러 추가 | video widget 전용 keydown | 키보드 진입=shortkey | 잠김 |
 
 ## 완료 조건 (DoD)
 
 | 종류 | 내용 |
 |------|------|
-| Parity | quality-verification **Video** (Decision 소스 범위) |
-| Vitest | time→row 매핑 |
-| 수동 | 플레이어 + 행 클릭 seek + (범위 내) 단축키 |
+| Parity | quality-verification **Video** (file/URL/YT/Vimeo) |
+| Vitest | timeSearch · timeSearchAll · time-slot-index |
+| 수동 | 플레이어 + Ctrl+Q seek · Alt+Q 시트 이동 + 단축키 |
 | 기록 | 사용자 지시 시 `changelog/2.9/2.9.0-dev.N.md` |
 
 ## 의존

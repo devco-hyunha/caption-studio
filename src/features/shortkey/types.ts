@@ -76,6 +76,20 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	undo: () => void;
 	/** Ctrl+Y */
 	redo: () => void;
+	/** Ctrl+Q — 현재 행 start로 플레이어 seek */
+	videoJump: () => void;
+	/** Alt+Q — 재생 중 출력 행으로 시트 포커스·스크롤 (영상 seek 없음) */
+	sheetJump: () => void;
+	/** Ctrl+Space — 재생/일시정지 */
+	videoPlayToggle: () => void;
+	/** Ctrl+← — −10초 */
+	videoSeekPrev: () => void;
+	/** Ctrl+→ — +10초 */
+	videoSeekNext: () => void;
+	/** Ctrl+↑ — 볼륨 +0.1 */
+	volumeUp: () => void;
+	/** Ctrl+↓ — 볼륨 −0.1 */
+	volumeDown: () => void;
 }
 
 export interface UseSheetShortkeyParams {

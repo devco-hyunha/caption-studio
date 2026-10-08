@@ -8,6 +8,7 @@ import {
 	useSheets,
 	type SheetFormat,
 } from '@/widgets/sheet';
+import { VideoPlayer } from '@/widgets/video-player';
 
 const EditPage = () => {
 	const [format, setFormat] = useState<SheetFormat>('srt');
@@ -43,7 +44,7 @@ const EditPage = () => {
 				<div className="space-y-1">
 					<h1 className="text-2xl font-bold tracking-tight">Edit</h1>
 					<p className="text-muted-foreground text-sm">
-						시트 UI — subtitleSheets 탭 연동 + page 스냅
+						시트 + react-player · 재생 싱크 · Ctrl+Q/Alt+Q/Ctrl+Space/←→/↑↓ · Prev·Next
 					</p>
 				</div>
 				<div className="flex gap-2" role="group" aria-label="시트 포맷">
@@ -67,22 +68,27 @@ const EditPage = () => {
 					</Button>
 				</div>
 			</header>
-			<div className="min-h-0 flex-1">
-				<SheetPanel
-					format={format}
-					rows={rows}
-					estimateRowHeight={DEFAULT_ESTIMATE_ROW_HEIGHT}
-					tabs={tabs}
-					activeTabIndex={activeTabIndex}
-					scrollTop={activeScrollTop}
-					onScrollTopChange={handleScrollTopChange}
-					onSelectTab={handleSelectTab}
-					onAddTab={handleAddTab}
-					onDeleteTab={handleDeleteTab}
-					onRenameTab={handleRenameTab}
-					onCopyTab={handleCopyTab}
-					onUpdateCell={handleUpdateCell}
-				/>
+			<div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+				<div className="min-h-0 w-full shrink-0 lg:max-w-md lg:flex-1">
+					<VideoPlayer className="h-full" />
+				</div>
+				<div className="min-h-0 min-w-0 flex-1">
+					<SheetPanel
+						format={format}
+						rows={rows}
+						estimateRowHeight={DEFAULT_ESTIMATE_ROW_HEIGHT}
+						tabs={tabs}
+						activeTabIndex={activeTabIndex}
+						scrollTop={activeScrollTop}
+						onScrollTopChange={handleScrollTopChange}
+						onSelectTab={handleSelectTab}
+						onAddTab={handleAddTab}
+						onDeleteTab={handleDeleteTab}
+						onRenameTab={handleRenameTab}
+						onCopyTab={handleCopyTab}
+						onUpdateCell={handleUpdateCell}
+					/>
+				</div>
 			</div>
 		</main>
 	);

@@ -260,6 +260,82 @@ const registerSheetNavigationKeys = (
 				actions.redo();
 			},
 		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VIDEO_JUMP,
+			mask: masks[SHORTKEY_IDS.VIDEO_JUMP],
+			type: SHORTKEY_TYPES.DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.videoJump();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.SHEET_JUMP,
+			mask: masks[SHORTKEY_IDS.SHEET_JUMP],
+			type: SHORTKEY_TYPES.DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.sheetJump();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VIDEO_PLAY,
+			mask: masks[SHORTKEY_IDS.VIDEO_PLAY],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.videoPlayToggle();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VIDEO_SEEK_PREV,
+			mask: masks[SHORTKEY_IDS.VIDEO_SEEK_PREV],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().videoSeekPrev();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VIDEO_SEEK_NEXT,
+			mask: masks[SHORTKEY_IDS.VIDEO_SEEK_NEXT],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().videoSeekNext();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VOLUME_UP,
+			mask: masks[SHORTKEY_IDS.VOLUME_UP],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().volumeUp();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.VOLUME_DOWN,
+			mask: masks[SHORTKEY_IDS.VOLUME_DOWN],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().volumeDown();
+			},
+		},
 	];
 
 	keys.forEach((entry) => {

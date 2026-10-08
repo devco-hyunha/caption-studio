@@ -1,6 +1,10 @@
 import { useLayoutEffect, useRef } from 'react';
 import { getActiveScroll, isEditableColumn, useSheetStore } from '@/entities/subtitle-sheet';
 import { cloneTimelineSnapshot, useSheetSessionStore } from '@/features/sheet-session';
+import {
+	rebuildVideoTimeSlotsFromActiveSheet,
+	syncVideoTimeSlotsAfterRowTimeEdit,
+} from '@/features/video-sync';
 import { getEditableColIndex } from './sheet-move';
 import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../types';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
@@ -25,6 +29,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 
 	useLayoutEffect(() => {
 		useSheetSessionStore.getState().resetForSheets(sheets.length, active);
+		rebuildVideoTimeSlotsFromActiveSheet();
 		// 최초 마운트만 — 탭 CRUD는 핸들러에서 스택 동기화
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- mount sync only
 	}, []);
@@ -49,6 +54,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		useSheetSessionStore.getState().setActiveSheetIndex(index);
 		// restoreView — searchHits 초기화
 		clearSearchHits();
+		rebuildVideoTimeSlotsFromActiveSheet();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
@@ -59,6 +65,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		const nextActive = useSheetStore.getState().active;
 		useSheetSessionStore.getState().setActiveSheetIndex(nextActive);
 		clearSearchHits();
+		rebuildVideoTimeSlotsFromActiveSheet();
 		bodyScrollTopRef.current = 0;
 	};
 
@@ -71,6 +78,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 			useSheetSessionStore.getState().removeHistoryStackAt(index);
 		}
 		clearSearchHits();
+		rebuildVideoTimeSlotsFromActiveSheet();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
@@ -83,6 +91,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		const nextActive = useSheetStore.getState().active;
 		useSheetSessionStore.getState().setActiveSheetIndex(nextActive);
 		clearSearchHits();
+		rebuildVideoTimeSlotsFromActiveSheet();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
@@ -112,6 +121,9 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 			after: cloneTimelineSnapshot(after),
 			current: { row: rowIndex, col: col >= 0 ? col : 0 },
 		});
+		if (column === 'starttime' || column === 'endtime') {
+			syncVideoTimeSlotsAfterRowTimeEdit(rowIndex);
+		}
 		return true;
 	};
 

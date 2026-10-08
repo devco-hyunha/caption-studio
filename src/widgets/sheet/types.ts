@@ -32,6 +32,8 @@ export interface SheetRowView {
 	height: number;
 	isError?: boolean;
 	isSelected?: boolean;
+	/** 재생 시각에 활성인 행 (video-sync activeIndices) */
+	isPlaybackActive?: boolean;
 }
 
 export interface SheetColumnDef {
