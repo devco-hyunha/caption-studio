@@ -16,6 +16,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
 			onSeekBy,
 			onVolumeChange,
 			onToggleMute,
+			onCarveTime,
 		},
 		ref,
 	) => {
@@ -77,6 +78,18 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
 					>
 						+10s
 					</Button>
+					{onCarveTime ? (
+						<Button
+							type="button"
+							size="sm"
+							variant="outline"
+							disabled={disabled}
+							aria-label="자막 시간 입력"
+							onClick={onCarveTime}
+						>
+							시간 입력
+						</Button>
+					) : null}
 					<span className="text-muted-foreground tabular-nums text-xs">
 						{formatPlayerTime(currentTime)} / {formatPlayerTime(safeDuration)}
 					</span>

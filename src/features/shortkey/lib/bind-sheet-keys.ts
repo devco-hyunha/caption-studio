@@ -240,11 +240,12 @@ const registerSheetNavigationKeys = (
 			placeholder: SHORTKEY_PLACEHOLDERS.UNDO,
 			mask: masks[SHORTKEY_IDS.UNDO],
 			type: SHORTKEY_TYPES.HOLD,
-			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
 				const actions = getActions();
+				// 편집 중 — preventDefault 생략 → 네이티브 undo만
 				if (actions.isEditing()) return;
+				event.preventDefault();
 				actions.undo();
 			},
 		},
@@ -252,12 +253,102 @@ const registerSheetNavigationKeys = (
 			placeholder: SHORTKEY_PLACEHOLDERS.REDO,
 			mask: masks[SHORTKEY_IDS.REDO],
 			type: SHORTKEY_TYPES.HOLD,
-			preventDefault: true,
 			handler: (event) => {
 				if (isImeKeyEvent(event)) return;
 				const actions = getActions();
 				if (actions.isEditing()) return;
+				event.preventDefault();
 				actions.redo();
+			},
+		},
+		{
+			mask: masks[SHORTKEY_IDS.CELL_CLEAR_BACKSPACE],
+			type: SHORTKEY_TYPES.HOLD,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				event.preventDefault();
+				actions.clearCell();
+			},
+		},
+		{
+			mask: masks[SHORTKEY_IDS.CELL_CLEAR_DELETE],
+			type: SHORTKEY_TYPES.HOLD,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				event.preventDefault();
+				actions.clearCell();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.CUT,
+			mask: masks[SHORTKEY_IDS.CUT],
+			type: SHORTKEY_TYPES.DOWN,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				event.preventDefault();
+				actions.clipCut();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.COPY,
+			mask: masks[SHORTKEY_IDS.COPY],
+			type: SHORTKEY_TYPES.DOWN,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				event.preventDefault();
+				actions.clipCopy();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.PASTE,
+			mask: masks[SHORTKEY_IDS.PASTE],
+			type: SHORTKEY_TYPES.DOWN,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isEditing()) return;
+				event.preventDefault();
+				actions.clipPaste();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.TIME_PLUS,
+			mask: masks[SHORTKEY_IDS.TIME_PLUS],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().timePlus();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.TIME_MINUS,
+			mask: masks[SHORTKEY_IDS.TIME_MINUS],
+			type: SHORTKEY_TYPES.HOLD,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				getActions().timeMinus();
+			},
+		},
+		{
+			placeholder: SHORTKEY_PLACEHOLDERS.TIME_CARVE,
+			mask: masks[SHORTKEY_IDS.TIME_CARVE],
+			type: SHORTKEY_TYPES.DOWN,
+			preventDefault: true,
+			handler: (event) => {
+				if (isImeKeyEvent(event)) return;
+				const actions = getActions();
+				if (actions.isMultiple()) return;
+				actions.timeCarve();
 			},
 		},
 		{

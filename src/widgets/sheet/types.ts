@@ -298,6 +298,8 @@ export interface UseSheetCellEditResult {
 	isEditing: () => boolean;
 	/** shortkey용 — text/memo 타깃 */
 	isTextTarget: () => boolean;
+	/** shortkey용 — starttime/endtime 타깃 */
+	isTimeTarget: () => boolean;
 	/** shortkey용 — 셀 포커스(hidden 아님) */
 	hasFocus: () => boolean;
 	/** 편집 중이면 커밋 후 focus 유지 가능 */

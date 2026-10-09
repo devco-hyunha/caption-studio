@@ -50,6 +50,8 @@ export interface SheetShortkeyMoveActions {
 export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	isEditing: () => boolean;
 	isTextTarget: () => boolean;
+	/** starttime / endtime 포커스 */
+	isTimeTarget: () => boolean;
 	hasFocus: () => boolean;
 	isMultiple: () => boolean;
 	/** Tab 직전 등 — 커밋 후 focus 유지 */
@@ -72,10 +74,24 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	removeRow: () => void;
 	/** bold / italic / underline — multiple·에딧·단건 clip */
 	applyTextFormat: (command: 'bold' | 'italic' | 'underline') => void;
-	/** Ctrl+Z — 에딧 중이 아닐 때만 */
+	/** Ctrl+Z — 에딧 중이 아닐 때만 (에딧 중은 네이티브) */
 	undo: () => void;
 	/** Ctrl+Y */
 	redo: () => void;
+	/** Backspace/Delete — text/memo 셀 비우기 (비에딧) */
+	clearCell: () => void;
+	/** Ctrl+X — 비에딧 text/memo cut */
+	clipCut: () => void;
+	/** Ctrl+C — 비에딧 text/memo copy */
+	clipCopy: () => void;
+	/** Ctrl+V — 비에딧 text/memo paste */
+	clipPaste: () => void;
+	/** Ctrl++ — 시간 ±jump (time 타깃·multiple) */
+	timePlus: () => void;
+	/** Ctrl+- */
+	timeMinus: () => void;
+	/** Ctrl+` — 플레이어 현재 시각 → 포커스 time 셀 */
+	timeCarve: () => void;
 	/** Ctrl+Q — 현재 행 start로 플레이어 seek */
 	videoJump: () => void;
 	/** Alt+Q — 재생 중 출력 행으로 시트 포커스·스크롤 (영상 seek 없음) */

@@ -5,13 +5,14 @@ import {
 	DEFAULT_ESTIMATE_ROW_HEIGHT,
 	SheetPanel,
 	applySheetFormatChange,
+	readStoredSheetFormat,
 	useSheets,
 	type SheetFormat,
 } from '@/widgets/sheet';
 import { VideoPlayer } from '@/widgets/video-player';
 
 const EditPage = () => {
-	const [format, setFormat] = useState<SheetFormat>('srt');
+	const [format, setFormat] = useState<SheetFormat>(() => readStoredSheetFormat());
 	const {
 		tabs,
 		activeTabIndex,

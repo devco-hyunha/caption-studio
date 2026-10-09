@@ -9,6 +9,7 @@ import {
 import ReactPlayer from 'react-player';
 import {
 	registerVideoPlayerControlApi,
+	requestSheetTimeCarve,
 	syncPlaybackFromPlayerTime,
 	useVideoSyncStore,
 	type VideoPlayerControlApi,
@@ -339,6 +340,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
 					}}
 					onVolumeChange={applyVolume}
 					onToggleMute={toggleMute}
+					onCarveTime={requestSheetTimeCarve}
 				/>
 			</section>
 		);

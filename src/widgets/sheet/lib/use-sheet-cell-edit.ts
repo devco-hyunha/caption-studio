@@ -27,6 +27,19 @@ const isMultipleActive = () => {
 	return sheets[active]?.multipleActive === true;
 };
 
+/** IME/microtask flush — 기대 id와 다를 때 무시 */
+const syncEditModeAfterComposition = (
+	expectedFlushId: number,
+	currentFlushId: number,
+	clearEditingSurfaceStyles: () => void,
+	mode: SheetCellEditorMode,
+	setMode: (next: SheetCellEditorMode) => void,
+) => {
+	if (expectedFlushId !== currentFlushId) return;
+	clearEditingSurfaceStyles();
+	if (mode === 'edit') setMode('edit');
+};
+
 const insertEditorLineBreak = () => {
 	if (isFirefox) {
 		document.execCommand('insertHTML', false, '<br />');
@@ -337,21 +350,32 @@ const useSheetCellEdit = ({
 		if (isIme) {
 			const input = inputRef.current;
 			const flushId = ++compositionFlushIdRef.current;
-			const flushMode = () => {
-				if (flushId !== compositionFlushIdRef.current) return;
-				clearEditingSurfaceStyles();
-				if (modeRef.current === 'edit') setMode('edit');
-			};
 			// compositionend 전에 setMode 하면 ㅇ+ㅏ 조합이 끊김 — end에서만 동기화
-			input?.addEventListener('compositionend', flushMode, { once: true });
+			input?.addEventListener(
+				'compositionend',
+				() => {
+					syncEditModeAfterComposition(
+						flushId,
+						compositionFlushIdRef.current,
+						clearEditingSurfaceStyles,
+						modeRef.current,
+						setMode,
+					);
+				},
+				{ once: true },
+			);
 			return;
 		}
 
 		const flushId = ++compositionFlushIdRef.current;
 		queueMicrotask(() => {
-			if (flushId !== compositionFlushIdRef.current) return;
-			clearEditingSurfaceStyles();
-			if (modeRef.current === 'edit') setMode('edit');
+			syncEditModeAfterComposition(
+				flushId,
+				compositionFlushIdRef.current,
+				clearEditingSurfaceStyles,
+				modeRef.current,
+				setMode,
+			);
 		});
 	};
 
@@ -555,6 +579,11 @@ const useSheetCellEdit = ({
 		return current != null && isTextColumn(current.column);
 	};
 
+	const isTimeTarget = () => {
+		const current = targetRef.current;
+		return current != null && (current.column === 'starttime' || current.column === 'endtime');
+	};
+
 	const hasFocus = () => modeRef.current !== 'hidden' && targetRef.current != null;
 
 	const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -627,6 +656,7 @@ const useSheetCellEdit = ({
 		currentColumn: target?.column ?? null,
 		isEditing,
 		isTextTarget,
+		isTimeTarget,
 		hasFocus,
 		endEdit,
 		beginEdit: beginEditOnCurrent,

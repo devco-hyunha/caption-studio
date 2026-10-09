@@ -29,6 +29,20 @@ describe('parseSrtString', () => {
 		expect(timelines[0]?.text).toBe('안녕 <b>세계</b> &amp; 테스트');
 		expect(timelines[1]?.text).toBe('둘째 줄');
 	});
+
+	it('마지막 cue가 빈 줄로 끝나지 않아도 flush한다', () => {
+		const raw = [
+			'1',
+			'00:00:01,000 --> 00:00:02,000',
+			'마지막 자막',
+		].join('\r\n');
+
+		const timelines = parseSrtString(raw);
+
+		expect(timelines).toHaveLength(1);
+		expect(timelines[0]?.text).toBe('마지막 자막');
+		expect(timelines[0]?.start).toBe(1000);
+	});
 });
 
 describe('parseSmiString', () => {

@@ -43,3 +43,8 @@ export {
 	seekVideoBySeconds,
 	toggleVideoPlayback,
 } from './lib/video-playback-controls';
+
+export {
+	registerSheetTimeCarveHandler,
+	requestSheetTimeCarve,
+} from './lib/sheet-time-carve-bridge';

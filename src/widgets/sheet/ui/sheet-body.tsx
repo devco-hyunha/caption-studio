@@ -1,5 +1,5 @@
 import type { CSSProperties, UIEvent } from 'react';
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
 	timeSearch,
@@ -19,18 +19,29 @@ import {
 	adjustVideoVolume,
 	getVideoPlayerSeekApi,
 	rebuildVideoTimeSlotsFromActiveSheet,
+	registerSheetTimeCarveHandler,
 	seekPlayerToRowIndex,
 	seekVideoBySeconds,
 	syncVideoTimeSlotsAfterInsert,
 	syncVideoTimeSlotsAfterRemove,
+	syncVideoTimeSlotsAfterRowTimeEdit,
 	toggleVideoPlayback,
 	useVideoSyncStore,
 } from '@/features/video-sync';
+import { formatTimecode } from '@/shared/lib/timecode';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { applyTextFormatCommand, type TextFormatCommand } from '../lib/apply-text-format';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
 import { getEditableColIndex, getEditableColumn } from '../lib/sheet-move';
+import {
+	commitTimelineTextColumn,
+	isTextMemoColumn,
+	readClipboardText,
+	readTimelineTextColumn,
+	writeClipboardText,
+} from '../lib/sheet-cell-text';
+import { nudgeTimelineByStep, readTimeJumpMs } from '../lib/time-jump';
 import { useSheetCellEdit } from '../lib/use-sheet-cell-edit';
 import { useSheetMove } from '../lib/use-sheet-move';
 import { useSheetWindow } from '../lib/use-sheet-window';
@@ -100,6 +111,7 @@ const SheetBody = ({
 		currentColumn,
 		isEditing,
 		isTextTarget,
+		isTimeTarget,
 		hasFocus,
 		endEdit,
 		beginEdit,
@@ -150,7 +162,7 @@ const SheetBody = ({
 		useSheetSessionStore.getState().closeSearchPanel();
 	};
 
-	const pushInsertHistory = (insertIndex: number, focusRow: number, focusCol: number) => {
+	const pushInsertHistory = (insertIndex: number, focusCol: number) => {
 		const after =
 			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[insertIndex];
 		if (!after) return;
@@ -159,7 +171,8 @@ const SheetBody = ({
 			id: insertIndex,
 			before: null,
 			after: cloneTimelineSnapshot(after),
-			current: { row: focusRow, col: focusCol },
+			// redo 주석·포커스와 동일 — 삽입된 행
+			current: { row: insertIndex, col: focusCol },
 		});
 	};
 
@@ -168,7 +181,7 @@ const SheetBody = ({
 		const insertIndex = insertTimelineAfterAction(cursor.row, format);
 		if (insertIndex == null) return;
 		syncVideoTimeSlotsAfterInsert(insertIndex);
-		pushInsertHistory(insertIndex, cursor.row, cursor.col);
+		pushInsertHistory(insertIndex, cursor.col);
 		const column = getEditableColumn(format, cursor.col);
 		if (!column) return;
 		pendingFocusRef.current = { row: insertIndex, column };
@@ -192,7 +205,7 @@ const SheetBody = ({
 		const insertIndex = insertTimelineAfterAction(row, format);
 		if (insertIndex == null) return;
 		syncVideoTimeSlotsAfterInsert(insertIndex);
-		pushInsertHistory(insertIndex, row, col);
+		pushInsertHistory(insertIndex, col);
 		const column = getEditableColumn(format, col);
 		if (!column) return;
 		pendingFocusRef.current = { row: insertIndex, column };
@@ -342,6 +355,161 @@ const SheetBody = ({
 		pendingFocusRef.current = { row: focus.row, column };
 	};
 
+	const isSheetMultiple = () =>
+		useSheetStore.getState().sheets[useSheetStore.getState().active]?.multipleActive === true;
+
+	const commitFocusedTextValue = (nextValue: string) => {
+		if (!isTextTarget() || !isTextMemoColumn(currentColumn)) return false;
+		const row = resolveFocusRow();
+		const col = resolveFocusCol();
+		const store = useSheetStore.getState();
+		const before = store.sheets[store.active]?.timelines[row];
+		if (!before) return false;
+		return commitTimelineTextColumn({
+			row,
+			col,
+			column: currentColumn,
+			value: nextValue,
+			before,
+			updateActiveCell: updateActiveCellAction,
+			getAfter: () =>
+				useSheetStore.getState().sheets[store.active]?.timelines[row],
+			closeSearchPanel,
+		});
+	};
+
+	const handleClearCell = () => {
+		if (isEditing() || isSheetMultiple() || !isTextTarget()) return;
+		commitFocusedTextValue('');
+	};
+
+	const handleClipCopy = () => {
+		if (isEditing() || isSheetMultiple() || !isTextMemoColumn(currentColumn)) return;
+		const row = resolveFocusRow();
+		const timeline =
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[row];
+		const value = readTimelineTextColumn(timeline, currentColumn);
+		if (value == null) return;
+		void writeClipboardText(value).catch(() => undefined);
+	};
+
+	const handleClipCut = () => {
+		if (isEditing() || isSheetMultiple() || !isTextMemoColumn(currentColumn)) return;
+		const row = resolveFocusRow();
+		const timeline =
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.timelines[row];
+		const value = readTimelineTextColumn(timeline, currentColumn);
+		if (value == null) return;
+		void writeClipboardText(value).then(
+			() => {
+				commitFocusedTextValue('');
+			},
+			() => undefined,
+		);
+	};
+
+	const handleClipPaste = () => {
+		if (isEditing() || isSheetMultiple() || !isTextTarget()) return;
+		void readClipboardText().then(
+			(text) => {
+				commitFocusedTextValue(text);
+			},
+			() => undefined,
+		);
+	};
+
+	const handleTimeNudge = (direction: 1 | -1) => {
+		if (isEditing()) return;
+		const step = readTimeJumpMs();
+		if (step <= 0) return;
+		closeSearchPanel();
+
+		const store = useSheetStore.getState();
+		const sheet = store.sheets[store.active];
+		if (!sheet) return;
+		const focusRow = resolveFocusRow();
+		const focusCol = resolveFocusCol();
+		const replaceTimelineAt = useSheetStore.getState().replaceTimelineAt;
+		const replaceTimelinePatches = useSheetStore.getState().replaceTimelinePatches;
+
+		if (sheet.multipleActive) {
+			const selected = [...sheet.selectedRows].sort((a, b) => a - b);
+			if (selected.length === 0) return;
+			const backups = selected.map((index) => ({
+				index,
+				data: cloneTimelineSnapshot(sheet.timelines[index] ?? emptyTimelineSnapshot()),
+			}));
+			const currents = selected.map((index) => ({
+				index,
+				data: nudgeTimelineByStep(
+					sheet.timelines[index] ?? emptyTimelineSnapshot(),
+					direction,
+					step,
+					'both',
+				),
+			}));
+			if (!replaceTimelinePatches(currents)) return;
+			useSheetSessionStore.getState().pushHistory({
+				command: direction > 0 ? 'multi.plus' : 'multi.minus',
+				id: null,
+				before: backups,
+				after: currents,
+				current: { row: focusRow, col: focusCol },
+			});
+			rebuildVideoTimeSlotsFromActiveSheet();
+			return;
+		}
+
+		if (!isTimeTarget() || currentColumn == null) return;
+		const mode = currentColumn === 'endtime' ? 'end' : 'start';
+		const before = sheet.timelines[focusRow];
+		if (!before) return;
+		const beforeSnap = cloneTimelineSnapshot(before);
+		const after = nudgeTimelineByStep(before, direction, step, mode);
+		if (!replaceTimelineAt(focusRow, after)) return;
+		useSheetSessionStore.getState().pushHistory({
+			command: 'update',
+			id: focusRow,
+			before: beforeSnap,
+			after: cloneTimelineSnapshot(after),
+			current: { row: focusRow, col: focusCol },
+		});
+		syncVideoTimeSlotsAfterRowTimeEdit(focusRow);
+	};
+
+	const handleTimeCarve = () => {
+		if (isEditing()) return;
+		if (
+			useSheetStore.getState().sheets[useSheetStore.getState().active]?.multipleActive ===
+			true
+		) {
+			return;
+		}
+		if (!isTimeTarget() || currentColumn == null) return;
+		if (currentColumn !== 'starttime' && currentColumn !== 'endtime') return;
+
+		const api = getVideoPlayerSeekApi();
+		const seconds = api?.getCurrentTime();
+		if (seconds == null || !Number.isFinite(seconds)) return;
+		const ms = Math.max(0, Math.trunc(seconds * 1000));
+		const row = resolveFocusRow();
+		closeSearchPanel();
+		const ok = onUpdateCell?.(row, currentColumn, formatTimecode(ms)) ?? false;
+		if (ok) syncVideoTimeSlotsAfterRowTimeEdit(row);
+	};
+
+	const timeCarveRef = useRef(handleTimeCarve);
+	timeCarveRef.current = handleTimeCarve;
+
+	useEffect(() => {
+		registerSheetTimeCarveHandler(() => {
+			timeCarveRef.current();
+		});
+		return () => {
+			registerSheetTimeCarveHandler(null);
+		};
+	}, []);
+
 	const move = useSheetMove({
 		format,
 		rows,
@@ -358,6 +526,7 @@ const SheetBody = ({
 	const getShortkeyActions = (): SheetShortkeyActions => ({
 		isEditing,
 		isTextTarget,
+		isTimeTarget,
 		hasFocus,
 		isMultiple: () =>
 			useSheetStore.getState().sheets[useSheetStore.getState().active]?.multipleActive === true,
@@ -378,6 +547,17 @@ const SheetBody = ({
 		applyTextFormat: handleApplyTextFormat,
 		undo: handleUndo,
 		redo: handleRedo,
+		clearCell: handleClearCell,
+		clipCut: handleClipCut,
+		clipCopy: handleClipCopy,
+		clipPaste: handleClipPaste,
+		timePlus: () => {
+			handleTimeNudge(1);
+		},
+		timeMinus: () => {
+			handleTimeNudge(-1);
+		},
+		timeCarve: handleTimeCarve,
 		videoJump: () => {
 			if (
 				useSheetStore.getState().sheets[useSheetStore.getState().active]
@@ -600,6 +780,11 @@ const SheetBody = ({
 					className="relative w-full min-w-[var(--sheet-contain-min)]"
 				>
 					<SheetCellEditor
+						key={
+							target != null
+								? `${target.rowIndex}:${target.column}`
+								: 'sheet-cell-editor-hidden'
+						}
 						mode={mode}
 						left={target?.left}
 						top={target?.top}

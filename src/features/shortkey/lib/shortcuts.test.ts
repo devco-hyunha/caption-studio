@@ -37,7 +37,7 @@ describe('getMaskObject / getKey', () => {
 });
 
 describe('checkIsInput', () => {
-	it('accepts text-like input and textarea only', () => {
+	it('accepts text-like input, textarea, and select', () => {
 		const text = document.createElement('input');
 		text.type = 'text';
 		const search = document.createElement('input');
@@ -45,12 +45,16 @@ describe('checkIsInput', () => {
 		const checkbox = document.createElement('input');
 		checkbox.type = 'checkbox';
 		const area = document.createElement('textarea');
+		const select = document.createElement('select');
+		const option = document.createElement('option');
 		const div = document.createElement('div');
 		div.contentEditable = 'true';
 
 		expect(checkIsInput(text)).toBe(true);
 		expect(checkIsInput(search)).toBe(true);
 		expect(checkIsInput(area)).toBe(true);
+		expect(checkIsInput(select)).toBe(true);
+		expect(checkIsInput(option)).toBe(true);
 		expect(checkIsInput(checkbox)).toBe(false);
 		expect(checkIsInput(div)).toBe(false);
 		expect(checkIsInput(null)).toBe(false);
