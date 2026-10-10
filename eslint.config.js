@@ -7,18 +7,11 @@ import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
 	{
-		ignores: [
-			'dist',
-			'.output',
-			'node_modules',
-			'public/js',
-			'legacy',
-			'src/routeTree.gen.ts',
-		],
+		ignores: ['dist', '.output', 'node_modules', 'public/js', 'src/routeTree.gen.ts'],
 	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
-	reactHooks.configs.flat.recommended,
+	reactHooks.configs.flat['recommended-latest'],
 	reactRefresh.configs.vite,
 	{
 		files: ['**/*.{ts,tsx}'],
