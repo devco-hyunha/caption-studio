@@ -9,10 +9,7 @@ const APP_TITLE = import.meta.env.VITE_APP_TITLE;
 /** 앱 기준 URL (OG/canonical 등에 사용) */
 const APP_URL = import.meta.env.VITE_APP_URL;
 
-/**
- * 운영(외부 수집·광고 허용) 호스트.
- * 레거시 `public/js/modules/env.js`의 PRODUCTION_HOST와 동일한 역할.
- */
+/** 운영(외부 수집·광고 허용) 호스트 */
 const PRODUCTION_HOST = import.meta.env.VITE_PRODUCTION_HOST;
 
 /** 개발 서버 / 개발 빌드 여부 (`vite dev`) */
