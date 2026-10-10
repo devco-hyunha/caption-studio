@@ -10,7 +10,7 @@
 | 단계 | 내용 | 상태 |
 |------|------|------|
 | 1차 | jQuery → 바닐라 JS 모듈 분리 | 완료 (`2.1`–`2.8`) |
-| 2차 | 바닐라 JS → React (Vite + TanStack Start) | 진행 중 — **완전 변환 시 `2.9.0`**. 지금: `2.9.0-dev.1` (`feat/tss-setup`) |
+| 2차 | 바닐라 JS → React (Vite + TanStack Start) | 진행 중 — **완전 변환 시 `2.9.0`**. 지금: `2.9.0-dev.2` (`feat/edit-sheet`) |
 | 이후 | UI 개선 | 미정 |
 
 상세 이력은 [CHANGELOG.md](./CHANGELOG.md) · [changelog/](./changelog/)를 봅니다. README는 **지금 워크트리 기준**만 유지합니다.
@@ -32,7 +32,7 @@
 | 1 | 단일 파일 스크립트를 기능별로 분리 | 완료 — `i18n` · `utils` · `subtitle` · `video` · `sheet` · `ui` · `shortkey` · `settings` · `bootstrap` |
 | 2 | 읽기 어려운 변수·스크립트 구조 개선 | 완료 — `configure`/`mount` · camelCase · 공개 API 축소 |
 | 3 | jQuery 및 jQuery 플러그인 제거 | 완료 — 앱 바닐라 · `lib/jquery` 제거 (`2.8.x`) |
-| 4 | React 스택으로 전환 | 진행 중 — **`2.9.0` = 완전 변환 완료 시**. 현재 `2.9.0-dev.1` 세팅. `/` 레거시, **`/edit`에서** 이전 |
+| 4 | React 스택으로 전환 | 진행 중 — **`2.9.0` = 완전 변환 완료 시**. 현재 `2.9.0-dev.2` — `/edit` Sheet UI·영속·포커스·다중선택·행 CRUD. `/` 는 기존 편집기 |
 | 5 | UI 개선 | 미정 |
 
 - **현재 릴리스 버전:** [VERSION](./VERSION) (`2.8.5` — 1차 바닐라 마일스톤)
@@ -73,16 +73,17 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 ├── package.json / pnpm-lock.yaml / vite.config.ts / tsconfig.json
 ├── src/                        # TanStack Start 앱
 │   ├── app/styles/
-│   ├── routes/                 # `/` 레거시 홈 · `/edit` React 이전 · `/dev/fonts`
+│   ├── routes/                 # `/` 홈 · `/edit` React 시트 · `/dev/fonts`
 │   ├── pages/
-│   ├── widgets/                # caption-shell — `/` 레거시 마크업
+│   ├── entities/               # subtitle-sheet — 시트 도메인·영속 스토어
+│   ├── widgets/                # caption-shell(`/`) · sheet(`/edit`)
 │   ├── shared/
 │   ├── router.tsx              # 라우터 생성 (routeTree.gen과 동일 폴더 유지)
 │   └── routeTree.gen.ts        # TanStack Router 자동 생성 — 수동 수정 금지
 ├── public/
 │   ├── favicon/
 │   ├── css/
-│   └── js/                     # 1차 바닐라 — 아직 편집 본문
+│   └── js/                     # 1차 바닐라 — `/` 편집 본문
 │       ├── caption.js
 │       ├── modules/            # sheet · video · subtitle · …
 │       └── lib/                # video-js · WebFont · iconv-lite
@@ -93,8 +94,8 @@ Git **2.0.0** 기준선 — 운영 레거시와 같은 정적 앱 출발점입�
 
 | 구분 | 설명 |
 |------|------|
-| `/` | `pnpm dev` 첫 화면 — 레거시 셸(`widgets/caption-shell`) + `public/js` 모듈 |
-| `/edit` | React로 레거시 편집기를 옮기는 자리 (껍데기 → 이후 도메인 이전) |
+| `/` | `pnpm dev` 첫 화면 — 셸(`widgets/caption-shell`) + `public/js` 모듈 |
+| `/edit` | React 시트 — page 스냅 UI · `subtitleSheets` 영속 · 셀 포커스/편집 · 다중 선택 · 행 CRUD (`2.9.0-dev.2`) |
 | `/dev/fonts` | 폰트 시편 (개발용) |
 | 바닐라 도메인 | `public/js/modules/*` — 아직 `/`에서 동작 |
 | 플레이어 | Video.js (+ YouTube / Vimeo 플러그인) — `public/js/lib` |
@@ -109,8 +110,8 @@ pnpm build
 pnpm lint
 ```
 
-- **`/`** — 지금 쓰는 편집기(레거시). Vite가 `public/` 스크립트를 그대로 로드합니다.
-- **`/edit`** — 2차 작업: 레거시를 React로 변환·이전하는 화면.
+- **`/`** — 지금 쓰는 전체 편집기. Vite가 `public/` 스크립트를 그대로 로드합니다.
+- **`/edit`** — 2차 작업 중인 React 시트 화면 (`2.9.0-dev.2`).
 - 예전 루트 `index.html` 정적 셸은 Git 히스토리(`main` 등)에만 두고, 앱 진입은 `pnpm dev`만 씁니다.
 
 > 운영 동작·전체 기능 확인은 https://caption.devco.kr 를 기준으로 합니다.
@@ -151,7 +152,7 @@ pnpm lint
 | **`VERSION` / About UI / Git tag** | **마일스톤 완료·검증 후** `X.Y.Z`로 한 번만 반영 |
 | **기록 위치 (일반)** | [changelog/](./changelog/) 해당 MINOR 파일에 `## X.Y.Z — 진행 중` 아래 `### X.Y.Z-dev.N` 섹션 |
 | **기록 위치 (2.9만)** | [changelog/2.9/](./changelog/2.9/) 폴더. 목록은 `README.md`, 단계는 `2.9.0-dev.N.md` **파일 분리**. 완료 후에도 **합치지 않음** |
-| **브랜치** | 목표 버전과 맞는 작업 브랜치 (예: `feat/tss-setup` → `2.9.0-dev.1`) |
+| **브랜치** | 목표 버전과 맞는 작업 브랜치 (예: `feat/tss-setup` → `2.9.0-dev.1`, `feat/edit-sheet` → `2.9.0-dev.2`) |
 
 **흐름 예 (일반 MINOR)**
 
@@ -162,7 +163,7 @@ pnpm lint
 **흐름 예 (2.9 React 변환)**
 
 1. `changelog/2.9/2.9.0-dev.N.md` 추가 · 폴더 `README.md` 목록에 한 줄
-2. `VERSION`은 `2.8.4` 유지
+2. `VERSION`은 `2.8.5` 유지
 3. React **완전 변환** 후 → `VERSION` / tag `v2.9.0`. `dev.N` 파일은 그대로 둠
 
 `2.2.2.1`처럼 네 번째 숫자는 SemVer에 없으므로 쓰지 않습니다. pre-release는 `-dev.N`을 사용합니다.
