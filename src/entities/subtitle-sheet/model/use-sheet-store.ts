@@ -24,6 +24,7 @@ import {
 	setActiveMultipleStart,
 	toggleActiveSelectedRow,
 	toggleMultiple,
+	updateActiveSelectedTexts,
 } from '../lib/active-sheet';
 
 const getInitialState = (): SheetsState =>
@@ -102,6 +103,14 @@ const useSheetStore = create<SheetStore>()(
 				if (!result) return null;
 				set(result.state);
 				return result.focusRow;
+			},
+
+			/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
+			updateSelectedTexts: (transform) => {
+				const next = updateActiveSelectedTexts(get(), transform);
+				if (!next) return false;
+				set(next);
+				return true;
 			},
 		}),
 		{

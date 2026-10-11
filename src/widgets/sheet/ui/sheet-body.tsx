@@ -4,6 +4,7 @@ import { useSheetShortkey } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
 import { isMultipleActive } from '../lib/is-multiple-active';
+import { useSheetClipActions } from '../lib/clip/use-sheet-clip-actions';
 import { useSheetCellEdit } from '../lib/edit/use-sheet-cell-edit';
 import { useSheetMove } from '../lib/move/use-sheet-move';
 import { useSheetWindow } from '../lib/move/use-sheet-window';
@@ -90,6 +91,15 @@ const SheetBody = ({
 		applyFocus,
 	});
 
+	const clip = useSheetClipActions({
+		currentRowIndex,
+		currentColumn,
+		isEditing,
+		isTextTarget,
+		inputRef,
+		onUpdateCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
+	});
+
 	const move = useSheetMove({
 		format,
 		rows,
@@ -121,6 +131,11 @@ const SheetBody = ({
 			},
 			insertRow: handleInsertAtFocus,
 			removeRow: handleRemoveAtFocus,
+			applyTextFormat: clip.applyTextFormat,
+			clearCell: clip.clearCell,
+			clipCut: clip.clipCut,
+			clipCopy: clip.clipCopy,
+			clipPaste: clip.clipPaste,
 		});
 
 	useSheetShortkey({ getActions: getShortkeyActions });

@@ -16,6 +16,11 @@ const buildSheetShortkeyActions = ({
 	toggleRowSelect,
 	insertRow,
 	removeRow,
+	applyTextFormat,
+	clearCell,
+	clipCut,
+	clipCopy,
+	clipPaste,
 }: BuildSheetShortkeyActionsParams): SheetShortkeyActions => ({
 	...move,
 	isEditing,
@@ -30,6 +35,11 @@ const buildSheetShortkeyActions = ({
 	toggleRowSelect,
 	insertRow,
 	removeRow,
+	applyTextFormat,
+	clearCell,
+	clipCut,
+	clipCopy,
+	clipPaste,
 });
 
 export { buildSheetShortkeyActions };

@@ -100,6 +100,33 @@ const insertActiveTimelineAfter = (
 };
 
 /**
+ * multiple 선택 행의 text에 transform 적용.
+ * multiple이 아니거나 선택 없으면 null.
+ */
+const updateActiveSelectedTexts = (
+	state: SheetsState,
+	transform: (text: string, rowIndex: number) => string,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.multipleActive) return null;
+	if (sheet.selectedRows.length === 0) return null;
+
+	let changed = false;
+	const timelines = sheet.timelines.map((timeline, index) => {
+		if (!sheet.selectedRows.includes(index)) return timeline;
+		const prev = typeof timeline.text === 'string' ? timeline.text : '';
+		const nextText = transform(prev, index);
+		if (nextText === prev) return timeline;
+		changed = true;
+		return { ...timeline, text: nextText };
+	});
+
+	if (!changed) return null;
+
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
+/**
  * 행 삭제. multiple 중이면 null.
  * 성공 시 `{ state, focusRow }`.
  */
@@ -130,4 +157,5 @@ export {
 	setActiveMultipleStart,
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
+	updateActiveSelectedTexts,
 };

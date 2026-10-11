@@ -1,5 +1,6 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../types';
+import { registerSheetClipKeys } from './sheet/clip-keys';
 import { registerSheetEditKeys } from './sheet/edit-keys';
 import { registerSheetMoveKeys } from './sheet/move-keys';
 import { registerSheetMutateKeys } from './sheet/mutate-keys';
@@ -17,6 +18,7 @@ const registerSheetNavigationKeys = (
 	registerSheetEditKeys(shortcuts, getActions);
 	registerSheetSelectionKeys(shortcuts, getActions);
 	registerSheetMutateKeys(shortcuts, getActions);
+	registerSheetClipKeys(shortcuts, getActions);
 };
 
 export { registerSheetNavigationKeys };

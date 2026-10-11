@@ -81,4 +81,6 @@ export interface SheetStore extends SheetsState {
 	insertTimelineAfter: (row: number, format: SheetTimelineFormat) => number | null;
 	/** 행 삭제 — 이동할 포커스 행 인덱스 (다중 선택 모드에서는 null) */
 	removeTimelineAt: (row: number) => number | null;
+	/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
+	updateSelectedTexts: (transform: (text: string, rowIndex: number) => string) => boolean;
 }

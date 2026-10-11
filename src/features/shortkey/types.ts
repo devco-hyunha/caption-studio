@@ -3,6 +3,9 @@
 import type { ShortcutKeyHandler } from '@/shared/types/shortkey';
 import type { SheetShortkeyId } from './model/default-sheet-shortkey-masks';
 
+/** 서식 명령 — bold/italic/underline */
+export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline';
+
 /** mask 저장 맵 — 부분집합 (persist merge·legacy 승격용) */
 export type ShortkeyMasks = Partial<Record<SheetShortkeyId, string>>;
 
@@ -51,6 +54,16 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	insertRow: () => void;
 	/** 현재 행 삭제 */
 	removeRow: () => void;
+	/** bold / italic / underline — multiple·에딧·단건 clip */
+	applyTextFormat: (command: SheetTextFormatCommand) => void;
+	/** Backspace/Delete — text/memo 셀 비우기 (비에딧) */
+	clearCell: () => void;
+	/** Ctrl+X — 비에딧 text/memo cut */
+	clipCut: () => void;
+	/** Ctrl+C — 비에딧 text/memo copy */
+	clipCopy: () => void;
+	/** Ctrl+V — 비에딧 text/memo paste */
+	clipPaste: () => void;
 }
 
 export interface UseSheetShortkeyParams {

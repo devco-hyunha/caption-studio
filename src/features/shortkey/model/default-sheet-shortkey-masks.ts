@@ -17,6 +17,14 @@ export const SHORTKEY_IDS = {
 	ROW_SELECT_TOGGLE: 'rowSelectToggle',
 	SHEET_INSERT: 'sheetInsert',
 	SHEET_REMOVE: 'sheetRemove',
+	FONT_BOLD: 'fontBold',
+	FONT_ITALIC: 'fontItalic',
+	FONT_UNDERLINE: 'fontUnderline',
+	CELL_CLEAR_BACKSPACE: 'cellClearBackspace',
+	CELL_CLEAR_DELETE: 'cellClearDelete',
+	CUT: 'cut',
+	COPY: 'copy',
+	PASTE: 'paste',
 } as const;
 
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
@@ -39,6 +47,14 @@ export const SHORTKEY_MASKS = {
 	SPACE: 'space',
 	CTRL_SHIFT_A: 'ctrl+shift+a',
 	CTRL_SHIFT_D: 'ctrl+shift+d',
+	CTRL_B: 'ctrl+b',
+	CTRL_I: 'ctrl+i',
+	CTRL_U: 'ctrl+u',
+	BACKSPACE: 'backspace',
+	DELETE: 'delete',
+	CTRL_X: 'ctrl+x',
+	CTRL_C: 'ctrl+c',
+	CTRL_V: 'ctrl+v',
 } as const;
 
 /** S2 defaultKeys mask */
@@ -59,6 +75,14 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.ROW_SELECT_TOGGLE]: SHORTKEY_MASKS.SPACE,
 	[SHORTKEY_IDS.SHEET_INSERT]: SHORTKEY_MASKS.CTRL_SHIFT_A,
 	[SHORTKEY_IDS.SHEET_REMOVE]: SHORTKEY_MASKS.CTRL_SHIFT_D,
+	[SHORTKEY_IDS.FONT_BOLD]: SHORTKEY_MASKS.CTRL_B,
+	[SHORTKEY_IDS.FONT_ITALIC]: SHORTKEY_MASKS.CTRL_I,
+	[SHORTKEY_IDS.FONT_UNDERLINE]: SHORTKEY_MASKS.CTRL_U,
+	[SHORTKEY_IDS.CELL_CLEAR_BACKSPACE]: SHORTKEY_MASKS.BACKSPACE,
+	[SHORTKEY_IDS.CELL_CLEAR_DELETE]: SHORTKEY_MASKS.DELETE,
+	[SHORTKEY_IDS.CUT]: SHORTKEY_MASKS.CTRL_X,
+	[SHORTKEY_IDS.COPY]: SHORTKEY_MASKS.CTRL_C,
+	[SHORTKEY_IDS.PASTE]: SHORTKEY_MASKS.CTRL_V,
 };
 
 /** placeholder (i18n) — 있는 키만 */
@@ -69,6 +93,12 @@ export const SHORTKEY_PLACEHOLDERS = {
 	SHEET_EDIT_OFF: 'sheet-edit-off',
 	SHEET_INSERT: 'sheet-insert',
 	SHEET_REMOVE: 'sheet-remove',
+	FONT_BOLD: 'font-bold',
+	FONT_ITALIC: 'font-italic',
+	FONT_UNDERLINE: 'font-underline',
+	CUT: 'cut',
+	COPY: 'copy',
+	PASTE: 'paste',
 } as const;
 
 export const SHORTKEY_TYPES = {

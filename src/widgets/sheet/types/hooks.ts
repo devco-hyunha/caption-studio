@@ -8,6 +8,7 @@ import type {
 import type {
 	SheetShortkeyActions,
 	SheetShortkeyMoveActions,
+	SheetTextFormatCommand,
 	ShortcutKeyHandler,
 } from '@/features/shortkey';
 import type {
@@ -339,4 +340,28 @@ export interface BuildSheetShortkeyActionsParams {
 	toggleRowSelect: () => void;
 	insertRow: () => void;
 	removeRow: () => void;
+	applyTextFormat: (command: SheetTextFormatCommand) => void;
+	clearCell: () => void;
+	clipCut: () => void;
+	clipCopy: () => void;
+	clipPaste: () => void;
+}
+
+/** clip 훅 params — 포커스 셀·편집 판별·에디터 ref·커밋 */
+export interface UseSheetClipActionsParams {
+	currentRowIndex: number | null;
+	currentColumn: SheetColumnId | null;
+	isEditing: () => boolean;
+	isTextTarget: () => boolean;
+	inputRef: RefObject<HTMLDivElement | null>;
+	onUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+}
+
+/** clip 훅 결과 — shortkey actions에 주입할 clip API */
+export interface UseSheetClipActionsResult {
+	applyTextFormat: (command: SheetTextFormatCommand) => void;
+	clearCell: () => void;
+	clipCut: () => void;
+	clipCopy: () => void;
+	clipPaste: () => void;
 }

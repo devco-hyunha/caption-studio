@@ -33,6 +33,8 @@ export type {
 	ApplyFocusOptions,
 	BuildSheetShortkeyActionsParams,
 	EditModeDeps,
+	UseSheetClipActionsParams,
+	UseSheetClipActionsResult,
 	FocusBodyMetrics,
 	FocusScrollResult,
 	MoveCalc,
