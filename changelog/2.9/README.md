@@ -22,3 +22,4 @@
 | dev.1 | [2.9.0-dev.1.md](./2.9.0-dev.1.md) | TanStack Start 세팅 (`feat/tss-setup`) — `/` 레거시, `/edit` 껍데기 |
 | dev.2 | [2.9.0-dev.2.md](./2.9.0-dev.2.md) | Sheet UI · subtitleSheets 영속 · 셀 포커스 이동 · 다중 선택(Space·Shift) + 행 CRUD |
 | dev.3 | [2.9.0-dev.3.md](./2.9.0-dev.3.md) | Shortkey 엔진(shared) · shortkeyMasks 영속 · 시트 이동·에딧·선택·CRUD 키 이관 |
+| dev.4 | [2.9.0-dev.4.md](./2.9.0-dev.4.md) | 시트 clip(BIU·clear·X/C/V) · time ±jump · SMI dur/error parity |
