@@ -83,4 +83,8 @@ export interface SheetStore extends SheetsState {
 	removeTimelineAt: (row: number) => number | null;
 	/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
 	updateSelectedTexts: (transform: (text: string, rowIndex: number) => string) => boolean;
+	/** 활성 시트 `row` 타임라인 ms patch. 행 없으면 false */
+	patchActiveTimeline: (row: number, timeline: SheetTimelineItem) => boolean;
+	/** 다중 선택 중 선택 행 타임라인 ms 일괄 patch. 반영 없으면 false */
+	patchSelectedTimelines: (patches: Map<number, SheetTimelineItem>) => boolean;
 }

@@ -25,6 +25,8 @@ export const SHORTKEY_IDS = {
 	CUT: 'cut',
 	COPY: 'copy',
 	PASTE: 'paste',
+	TIME_PLUS: 'timePlus',
+	TIME_MINUS: 'timeMinus',
 } as const;
 
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
@@ -55,6 +57,8 @@ export const SHORTKEY_MASKS = {
 	CTRL_X: 'ctrl+x',
 	CTRL_C: 'ctrl+c',
 	CTRL_V: 'ctrl+v',
+	CTRL_PLUS: 'ctrl+plus',
+	CTRL_MINUS: 'ctrl+minus',
 } as const;
 
 /** S2 defaultKeys mask */
@@ -83,6 +87,8 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.CUT]: SHORTKEY_MASKS.CTRL_X,
 	[SHORTKEY_IDS.COPY]: SHORTKEY_MASKS.CTRL_C,
 	[SHORTKEY_IDS.PASTE]: SHORTKEY_MASKS.CTRL_V,
+	[SHORTKEY_IDS.TIME_PLUS]: SHORTKEY_MASKS.CTRL_PLUS,
+	[SHORTKEY_IDS.TIME_MINUS]: SHORTKEY_MASKS.CTRL_MINUS,
 };
 
 /** placeholder (i18n) — 있는 키만 */
@@ -99,6 +105,8 @@ export const SHORTKEY_PLACEHOLDERS = {
 	CUT: 'cut',
 	COPY: 'copy',
 	PASTE: 'paste',
+	TIME_PLUS: 'time-plus',
+	TIME_MINUS: 'time-minus',
 } as const;
 
 export const SHORTKEY_TYPES = {

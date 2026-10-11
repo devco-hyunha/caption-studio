@@ -41,6 +41,12 @@ describe('useShortkeyStore', () => {
 		expect(useShortkeyStore.getState().masks[SHORTKEY_IDS.SHEET_INSERT]).toBe('ctrl+shift+k');
 	});
 
+	it('promotes legacy customkey-plus/minus on merge', () => {
+		localStorage.setItem('customkey-plus', JSON.stringify('ctrl+shift+u'));
+		useShortkeyStore.persist.rehydrate();
+		expect(useShortkeyStore.getState().masks[SHORTKEY_IDS.TIME_PLUS]).toBe('ctrl+shift+u');
+	});
+
 	it('resetMasks restores defaults and clears persisted changes', () => {
 		useShortkeyStore.getState().setMask(SHORTKEY_IDS.SHEET_REMOVE, 'ctrl+shift+x');
 		useShortkeyStore.getState().resetMasks();

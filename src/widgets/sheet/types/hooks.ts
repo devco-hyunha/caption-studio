@@ -185,6 +185,8 @@ export interface UseSheetCellEditResult {
 	isEditing: () => boolean;
 	/** shortkey용 — text/memo 타깃 */
 	isTextTarget: () => boolean;
+	/** shortkey용 — starttime/endtime 타깃 */
+	isTimeTarget: () => boolean;
 	/** shortkey용 — 셀 포커스(hidden 아님) */
 	hasFocus: () => boolean;
 	/** 편집 중이면 커밋 후 focus 유지 가능 */
@@ -315,6 +317,7 @@ export interface UseSheetCellEditorResult {
 	beginEditFromTyping: ShortcutKeyHandler;
 	isEditing: () => boolean;
 	isTextTarget: () => boolean;
+	isTimeTarget: () => boolean;
 	hasFocus: () => boolean;
 	commitEdit: (keepFocus?: boolean) => void;
 	cancelEdit: () => void;
@@ -345,6 +348,9 @@ export interface BuildSheetShortkeyActionsParams {
 	clipCut: () => void;
 	clipCopy: () => void;
 	clipPaste: () => void;
+	isTimeTarget: () => boolean;
+	timePlus: () => void;
+	timeMinus: () => void;
 }
 
 /** clip 훅 params — 포커스 셀·편집 판별·에디터 ref·커밋 */
@@ -364,4 +370,17 @@ export interface UseSheetClipActionsResult {
 	clipCut: () => void;
 	clipCopy: () => void;
 	clipPaste: () => void;
+}
+
+/** time 훅 params — 포커스 time 셀·다중 선택·time 타깃 판별 */
+export interface UseSheetTimeActionsParams {
+	currentRowIndex: number | null;
+	currentColumn: SheetColumnId | null;
+	isTimeTarget: () => boolean;
+}
+
+/** time 훅 결과 — shortkey actions에 주입할 time ±jump API */
+export interface UseSheetTimeActionsResult {
+	timePlus: () => void;
+	timeMinus: () => void;
 }

@@ -11,7 +11,7 @@ import { canEditColumnId, isTextColumn } from '../columns';
 import { isMultipleActive } from '../is-multiple-active';
 import { encodeCellHtml, resolveCommitValue } from './encode-cell-html';
 import { isImeStartKey } from './edit-keys';
-import { isEditingMode, isTextTargetMode, hasFocusMode, resolveEditKeyIntent } from './edit-mode';
+import { isEditingMode, isTextTargetMode, isTimeTargetMode, hasFocusMode, resolveEditKeyIntent } from './edit-mode';
 import { insertEditorLineBreak } from './edit-commands';
 import {
 	clearEditingSurfaceStyles,
@@ -157,6 +157,8 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 
 	const isTextTarget = () => isTextTargetMode(targetRef);
 
+	const isTimeTarget = () => isTimeTargetMode(targetRef);
+
 	const hasFocus = () => hasFocusMode(modeRef, targetRef);
 
 	const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -215,6 +217,7 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 		beginEditFromTyping,
 		isEditing,
 		isTextTarget,
+		isTimeTarget,
 		hasFocus,
 		commitEdit,
 		cancelEdit,

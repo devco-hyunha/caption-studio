@@ -21,6 +21,7 @@ export {
 } from './lib/tab-names';
 
 export {
+	cloneTimeline,
 	createSheet,
 	createState,
 	normalizeState,
@@ -53,6 +54,8 @@ export {
 
 export {
 	patchActiveSheet,
+	replaceTimelineAt,
+	replaceTimelinePatches,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	setActiveMultipleStart,

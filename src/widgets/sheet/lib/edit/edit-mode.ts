@@ -1,5 +1,5 @@
 import type { SheetEditKeyProbe, EditModeDeps } from '../../types';
-import { isTextColumn } from '../columns';
+import { isTextColumn, isTimeColumn } from '../columns';
 import { shouldBeginEditFromKey } from './edit-keys';
 
 /** 편집 모드 판별 — mode/target ref만 읽는 순수 predicate (DOM·스토어 무관) */
@@ -8,6 +8,9 @@ const isEditingMode = (modeRef: EditModeDeps['modeRef']) => modeRef.current === 
 
 const isTextTargetMode = (targetRef: EditModeDeps['targetRef']) =>
 	targetRef.current != null && isTextColumn(targetRef.current.column);
+
+const isTimeTargetMode = (targetRef: EditModeDeps['targetRef']) =>
+	targetRef.current != null && isTimeColumn(targetRef.current.column);
 
 const hasFocusMode = (modeRef: EditModeDeps['modeRef'], targetRef: EditModeDeps['targetRef']) =>
 	modeRef.current !== 'hidden' && targetRef.current != null;
@@ -27,4 +30,4 @@ const resolveEditKeyIntent = (
 	return 'typing';
 };
 
-export { isEditingMode, isTextTargetMode, hasFocusMode, resolveEditKeyIntent };
+export { isEditingMode, isTextTargetMode, isTimeTargetMode, hasFocusMode, resolveEditKeyIntent };

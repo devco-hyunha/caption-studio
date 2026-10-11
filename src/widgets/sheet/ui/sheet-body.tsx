@@ -9,6 +9,7 @@ import { useSheetCellEdit } from '../lib/edit/use-sheet-cell-edit';
 import { useSheetMove } from '../lib/move/use-sheet-move';
 import { useSheetWindow } from '../lib/move/use-sheet-window';
 import { useSheetSelectionActions } from '../lib/selection/use-sheet-selection-actions';
+import { useSheetTimeActions } from '../lib/time/use-sheet-time-actions';
 import { buildSheetShortkeyActions } from '../lib/shortkey/build-sheet-shortkey-actions';
 import type { SheetBodyProps } from '../types';
 import { SheetBodyToolbar } from './sheet-body-toolbar';
@@ -50,6 +51,7 @@ const SheetBody = ({
 		currentColumn,
 		isEditing,
 		isTextTarget,
+		isTimeTarget,
 		hasFocus,
 		endEdit,
 		beginEdit,
@@ -100,6 +102,12 @@ const SheetBody = ({
 		onUpdateCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
 	});
 
+	const time = useSheetTimeActions({
+		currentRowIndex,
+		currentColumn,
+		isTimeTarget,
+	});
+
 	const move = useSheetMove({
 		format,
 		rows,
@@ -136,6 +144,9 @@ const SheetBody = ({
 			clipCut: clip.clipCut,
 			clipCopy: clip.clipCopy,
 			clipPaste: clip.clipPaste,
+			isTimeTarget,
+			timePlus: time.timePlus,
+			timeMinus: time.timeMinus,
 		});
 
 	useSheetShortkey({ getActions: getShortkeyActions });

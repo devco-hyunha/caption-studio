@@ -1,5 +1,6 @@
 /** 활성 시트 다중 선택 / 행 CRUD 래퍼 — SheetsState 변경은 entities 책임 */
-import type { Sheet, SheetTimelineFormat, SheetsState } from '../types';
+import type { Sheet, SheetTimelineFormat, SheetTimelineItem, SheetsState } from '../types';
+import { cloneTimeline } from './sheet-core';
 import {
 	enterMultipleSelection,
 	exitMultipleSelection,
@@ -150,8 +151,54 @@ const removeActiveTimelineAt = (
 	return { state: next, focusRow: result.focusRow };
 };
 
+/**
+ * 활성 시트 `row`의 타임라인을 `timeline`으로 교체. ms 값 직접 patch.
+ * 행이 없으면 null.
+ */
+const replaceTimelineAt = (
+	state: SheetsState,
+	row: number,
+	timeline: SheetTimelineItem,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.timelines[row]) return null;
+
+	const timelines = [
+		...sheet.timelines.slice(0, row),
+		cloneTimeline(timeline),
+		...sheet.timelines.slice(row + 1),
+	];
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
+/**
+ * multiple 선택 행의 타임라인을 patch 맵(`rowIndex → timeline`)으로 일괄 교체.
+ * multiple이 아니거나 선택·patch 없으면 null.
+ */
+const replaceTimelinePatches = (
+	state: SheetsState,
+	patches: Map<number, SheetTimelineItem>,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet?.multipleActive) return null;
+	if (sheet.selectedRows.length === 0 || patches.size === 0) return null;
+
+	let changed = false;
+	const timelines = sheet.timelines.map((timeline, index) => {
+		const patch = patches.get(index);
+		if (patch == null) return timeline;
+		changed = true;
+		return cloneTimeline(patch);
+	});
+
+	if (!changed) return null;
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
 export {
 	patchActiveSheet,
+	replaceTimelineAt,
+	replaceTimelinePatches,
 	toggleMultiple,
 	toggleActiveSelectedRow,
 	setActiveMultipleStart,

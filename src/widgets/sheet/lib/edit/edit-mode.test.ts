@@ -6,7 +6,7 @@ import type {
 	EditModeDeps,
 } from '../../types';
 
-import { hasFocusMode, isEditingMode, isTextTargetMode, resolveEditKeyIntent } from './edit-mode';
+import { hasFocusMode, isEditingMode, isTextTargetMode, isTimeTargetMode, resolveEditKeyIntent } from './edit-mode';
 
 const base: SheetEditKeyProbe = {
 	ctrlKey: false,
@@ -44,6 +44,14 @@ describe('edit-mode', () => {
 		expect(
 			isTextTargetMode(modeDeps('focus', { ...textTarget, column: 'starttime' }).targetRef),
 		).toBe(false);
+	});
+
+	it('isTimeTargetMode: starttime/endtime만 true, text·null은 false', () => {
+		const focus = modeDeps('focus', textTarget);
+		expect(isTimeTargetMode(modeDeps('focus', { ...textTarget, column: 'starttime' }).targetRef)).toBe(true);
+		expect(isTimeTargetMode(modeDeps('focus', { ...textTarget, column: 'endtime' }).targetRef)).toBe(true);
+		expect(isTimeTargetMode(focus.targetRef)).toBe(false);
+		expect(isTimeTargetMode(modeDeps('focus', null).targetRef)).toBe(false);
 	});
 
 	it('resolveEditKeyIntent: Enter → enter, printable/IME → typing, others null', () => {

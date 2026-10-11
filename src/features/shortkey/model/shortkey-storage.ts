@@ -9,6 +9,8 @@ const STORAGE_KEY_SHORTKEY = 'shortkeyMasks';
 const LEGACY_SHORTKEY_STORAGE_IDS: Record<string, SheetShortkeyId> = {
 	'sheet-insert': SHORTKEY_IDS.SHEET_INSERT,
 	'sheet-remove': SHORTKEY_IDS.SHEET_REMOVE,
+	plus: SHORTKEY_IDS.TIME_PLUS,
+	minus: SHORTKEY_IDS.TIME_MINUS,
 };
 
 /** `/` legacy `customkey-*` → mask 맵 승격 */

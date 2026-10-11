@@ -4,13 +4,14 @@ import {
 	isEditableColumn,
 	useSheetStore,
 } from '@/entities/subtitle-sheet';
-import type { SheetColumnId, UseSheetsResult } from '../../types';
+import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../../types';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
 
 /**
- * 탭 전환·CRUD 직전에 현재 body scrollTop을 활성 시트에 기록.
+ * 탭 전환·CRUD 직전에 현재 body scrollTop을 활성 시트를 기록.
+ * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
  */
-const useSheets = (): UseSheetsResult => {
+const useSheets = (format: SheetFormat): UseSheetsResult => {
 	const active = useSheetStore((state) => state.active);
 	const sheets = useSheetStore((state) => state.sheets);
 	const selectSheetAction = useSheetStore((state) => state.selectSheet);
@@ -71,7 +72,7 @@ const useSheets = (): UseSheetsResult => {
 	return {
 		tabs: toSheetTabs(sheets),
 		activeTabIndex: active,
-		rows: getActiveSheetRows(state),
+		rows: getActiveSheetRows(state, format),
 		activeScrollTop: getActiveScroll(state),
 		handleScrollTopChange,
 		handleSelectTab,

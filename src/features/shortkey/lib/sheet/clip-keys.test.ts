@@ -29,6 +29,9 @@ const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortk
 	clipCut: vi.fn(),
 	clipCopy: vi.fn(),
 	clipPaste: vi.fn(),
+	isTimeTarget: () => true,
+	timePlus: vi.fn(),
+	timeMinus: vi.fn(),
 	...overrides,
 });
 

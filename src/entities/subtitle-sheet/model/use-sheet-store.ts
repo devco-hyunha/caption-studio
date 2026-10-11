@@ -21,6 +21,8 @@ import {
 import {
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
+	replaceTimelineAt,
+	replaceTimelinePatches,
 	setActiveMultipleStart,
 	toggleActiveSelectedRow,
 	toggleMultiple,
@@ -108,6 +110,22 @@ const useSheetStore = create<SheetStore>()(
 			/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
 			updateSelectedTexts: (transform) => {
 				const next = updateActiveSelectedTexts(get(), transform);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			/** 활성 시트 `row` 타임라인 ms patch. 행 없으면 false */
+			patchActiveTimeline: (row, timeline) => {
+				const next = replaceTimelineAt(get(), row, timeline);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			/** 다중 선택 중 선택 행 타임라인 ms 일괄 patch. 반영 없으면 false */
+			patchSelectedTimelines: (patches) => {
+				const next = replaceTimelinePatches(get(), patches);
 				if (!next) return false;
 				set(next);
 				return true;

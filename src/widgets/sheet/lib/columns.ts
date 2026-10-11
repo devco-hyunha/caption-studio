@@ -55,7 +55,12 @@ const EDITABLE_COLUMNS = {
 /** input(IME) 편집 대상 열 — 그 외 편집 열은 wrap 포커스 */
 const TEXT_COLUMNS: SheetColumnId[] = ['text', 'memo'];
 
+/** time 열 — time ±jump 키 대상 */
+const TIME_COLUMNS: SheetColumnId[] = ['starttime', 'endtime'];
+
 const isTextColumn = (column: SheetColumnId) => TEXT_COLUMNS.includes(column);
+
+const isTimeColumn = (column: SheetColumnId) => TIME_COLUMNS.includes(column);
 
 const COLUMN_LABELS: Record<SheetColumnId, string> = {
 	index: '#',
@@ -165,5 +170,6 @@ export {
 	createColumnVars,
 	canEditColumnId,
 	isTextColumn,
+	isTimeColumn,
 	rowContentHeight,
 };

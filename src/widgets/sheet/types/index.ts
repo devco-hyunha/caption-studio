@@ -55,6 +55,8 @@ export type {
 	UseSheetSelectionActionsResult,
 	UseSheetTabRenameParams,
 	UseSheetTabRenameResult,
+	UseSheetTimeActionsParams,
+	UseSheetTimeActionsResult,
 	UseSheetWindowParams,
 	UseSheetsResult,
 } from './hooks';

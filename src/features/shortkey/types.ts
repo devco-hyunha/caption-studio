@@ -64,6 +64,12 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	clipCopy: () => void;
 	/** Ctrl+V — 비에딧 text/memo paste */
 	clipPaste: () => void;
+	/** shortkey용 — starttime/endtime 타깃 */
+	isTimeTarget: () => boolean;
+	/** Ctrl+Plus — 다중: 선택 행 start/end 일괄 +jump · single: time 셀 +jump */
+	timePlus: () => void;
+	/** Ctrl+Minus — 다중: 선택 행 start/end 일괄 −jump · single: time 셀 −jump */
+	timeMinus: () => void;
 }
 
 export interface UseSheetShortkeyParams {

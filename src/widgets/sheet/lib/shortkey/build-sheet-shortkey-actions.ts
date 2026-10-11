@@ -21,6 +21,9 @@ const buildSheetShortkeyActions = ({
 	clipCut,
 	clipCopy,
 	clipPaste,
+	isTimeTarget,
+	timePlus,
+	timeMinus,
 }: BuildSheetShortkeyActionsParams): SheetShortkeyActions => ({
 	...move,
 	isEditing,
@@ -40,6 +43,9 @@ const buildSheetShortkeyActions = ({
 	clipCut,
 	clipCopy,
 	clipPaste,
+	isTimeTarget,
+	timePlus,
+	timeMinus,
 });
 
 export { buildSheetShortkeyActions };
