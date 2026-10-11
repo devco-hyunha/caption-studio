@@ -1,9 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { COLUMN_WIDTHS, canEditColumnId, isTextColumn } from '../columns';
-import { scrollColIntoView, scrollRowIntoView } from '../move/sheet-move';
+import { useEffect, useRef, useState } from 'react';
+import { canEditColumnId, isTextColumn } from '../columns';
+import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import { resolveTarget, resolveTargetByIndex } from './edit-target';
+import { computeFocusScroll } from './apply-focus';
 import type {
 	ApplyFocusOptions,
+	FocusBodyMetrics,
 	SheetCellEditTarget,
 	SheetCellEditorMode,
 	SheetColumnId,
@@ -15,7 +17,7 @@ import type {
 /**
  * 시트 셀 포커스/스크롤 소유 hook.
  * mode/target 상태, 셀 좌표 계산, applyFocus(스크롤+포커스)를 담당한다.
- * 편집 수명 주기는 useSheetCellEditor가 이 결과를 소비한다.
+ * 스크롤 계산은 apply-focus.computeFocusScroll(순수), 편집 수명 주기는 useSheetCellEditor가 소비한다.
  */
 const useSheetCellFocus = ({
 	format,
@@ -29,10 +31,11 @@ const useSheetCellFocus = ({
 
 	const inputRef = useRef<HTMLDivElement>(null);
 	const wrapRef = useRef<HTMLDivElement>(null);
-	const modeRef = useRef<SheetCellEditorMode>('hidden');
-	const targetRef = useRef<SheetCellEditTarget | null>(null);
-	const rowsRef = useRef<SheetRowView[]>(rows);
-	const setScrollTopRef = useRef(setScrollTop);
+	// mode/target은 핸들러에서 명령적 mutate — render sync는 IME composition 중 re-render로 되돌려짐
+	const modeRef = useRef<SheetCellEditorMode>(mode);
+	const targetRef = useRef<SheetCellEditTarget | null>(target);
+	const rowsRef = useLatestRef<SheetRowView[]>(rows);
+	const setScrollTopRef = useLatestRef(setScrollTop);
 	const focusSeqRef = useRef(0);
 	const refineRafRef = useRef(0);
 
@@ -43,14 +46,6 @@ const useSheetCellFocus = ({
 	useEffect(() => {
 		targetRef.current = target;
 	}, [target]);
-
-	useLayoutEffect(() => {
-		rowsRef.current = rows;
-	}, [rows]);
-
-	useLayoutEffect(() => {
-		setScrollTopRef.current = setScrollTop;
-	}, [setScrollTop]);
 
 	// unmount 시 refine raf 정리
 	useEffect(() => {
@@ -130,40 +125,34 @@ const useSheetCellFocus = ({
 		}
 
 		const body = scrollRef.current;
-		const viewHeight = body?.clientHeight ?? 0;
-		let nextScroll =
+		const nextScroll =
 			options?.scrollTop != null ? Math.max(0, options.scrollTop) : (body?.scrollTop ?? 0);
 
 		if (options?.scrollTop != null) {
 			setScrollTopRef.current(nextScroll);
 		}
 
-		const intoView = scrollRowIntoView(rowsRef.current, rowIndex, nextScroll, viewHeight);
-		if (intoView.scrollTop != null) {
-			nextScroll = intoView.scrollTop;
-			setScrollTopRef.current(nextScroll);
+		const metrics: FocusBodyMetrics = {
+			scrollTop: nextScroll,
+			scrollLeft: body?.scrollLeft ?? 0,
+			clientHeight: body?.clientHeight ?? 0,
+			clientWidth: body?.clientWidth ?? 0,
+		};
+
+		const result = computeFocusScroll(rowsRef.current, format, rowIndex, column, metrics);
+		if (!result) return;
+
+		if (result.rowScroll != null) {
+			setScrollTopRef.current(result.rowScroll);
 		}
 
-		const estimated = resolveEstimatedTarget(rowIndex, column);
-		if (!estimated) return;
-
-		const viewWidth = body?.clientWidth ?? 0;
-		const viewLeft = body?.scrollLeft ?? 0;
-		const stickyLeft = column === 'index' ? 0 : COLUMN_WIDTHS.index;
-		const colIntoView = scrollColIntoView(
-			estimated.left,
-			estimated.minWidth,
-			viewLeft,
-			viewWidth,
-			stickyLeft,
-		);
-		if (colIntoView.scrollLeft != null && body) {
-			body.scrollLeft = colIntoView.scrollLeft;
+		if (result.scrollLeft != null && body) {
+			body.scrollLeft = result.scrollLeft;
 		}
 
 		const focusSeq = ++focusSeqRef.current;
 		modeRef.current = 'focus';
-		setTarget(estimated);
+		setTarget(result.target);
 		setMode('focus');
 
 		requestAnimationFrame(() => {

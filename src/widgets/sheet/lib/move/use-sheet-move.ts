@@ -1,41 +1,36 @@
 import { useEffect, useRef } from 'react';
+import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type {
+	MoveCalc,
+	MoveTarget,
 	SheetMoveCursor,
 	UseSheetMoveParams,
+	UseSheetMoveResult,
 } from '../../types';
-import { isEditableDomTarget } from '../is-editable-dom-target';
+import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import {
 	getEditableColIndex,
 	getEditableColumn,
 	getLastIndex,
-	moveColNext,
-	moveColPrev,
-	movePageNext,
-	movePagePrev,
-	moveRowNext,
-	moveRowPrev,
+	moveColNext as calcColNext,
+	moveColPrev as calcColPrev,
+	movePageNext as calcPageNext,
+	movePagePrev as calcPagePrev,
+	moveRowNext as calcRowNext,
+	moveRowPrev as calcRowPrev,
 } from './sheet-move';
 
 /** 키 홀드(`event.repeat`) 최소 간격 — 중복 이벤트 걸러냄 */
 const MOVE_REPEAT_INTERVAL_MS = 30;
 
-/** 시트 이동 키 (Space는 다중 선택 토글이 별도 처리) */
-const isSheetMoveKey = (key: string) =>
-	key === 'Tab' ||
-	key === 'ArrowUp' ||
-	key === 'ArrowDown' ||
-	key === 'ArrowLeft' ||
-	key === 'ArrowRight' ||
-	key === 'PageUp' ||
-	key === 'PageDown';
-
 /**
- * Tab / Arrow / Page 셀·행 이동 + Space 다중 선택 토글.
+ * Tab / Arrow / Page 셀·행 이동 API.
+ * 전역 keydown은 shortkey가 소유한다.
  */
 const useSheetMove = ({
 	format,
 	rows,
-	mode,
+	isEditing,
 	currentRowIndex,
 	currentColumn,
 	scrollRef,
@@ -43,50 +38,16 @@ const useSheetMove = ({
 	applyFocus,
 	onAppendRow,
 	onRowMoved,
-	onSpaceToggle,
-}: UseSheetMoveParams) => {
-	const modeRef = useRef(mode);
+}: UseSheetMoveParams): UseSheetMoveResult => {
 	const cursorRef = useRef<SheetMoveCursor | null>(null);
-	const rowsRef = useRef(rows);
-	const formatRef = useRef(format);
-	const endEditRef = useRef(endEdit);
-	const applyFocusRef = useRef(applyFocus);
-	const onAppendRowRef = useRef(onAppendRow);
-	const onRowMovedRef = useRef(onRowMoved);
-	const onSpaceToggleRef = useRef(onSpaceToggle);
+	const rowsRef = useLatestRef(rows);
+	const formatRef = useLatestRef(format);
+	const isEditingRef = useLatestRef(isEditing);
+	const endEditRef = useLatestRef(endEdit);
+	const applyFocusRef = useLatestRef(applyFocus);
+	const onAppendRowRef = useLatestRef(onAppendRow);
+	const onRowMovedRef = useLatestRef(onRowMoved);
 	const lastMoveAtRef = useRef(0);
-
-	useEffect(() => {
-		modeRef.current = mode;
-	}, [mode]);
-
-	useEffect(() => {
-		rowsRef.current = rows;
-	}, [rows]);
-
-	useEffect(() => {
-		formatRef.current = format;
-	}, [format]);
-
-	useEffect(() => {
-		endEditRef.current = endEdit;
-	}, [endEdit]);
-
-	useEffect(() => {
-		applyFocusRef.current = applyFocus;
-	}, [applyFocus]);
-
-	useEffect(() => {
-		onAppendRowRef.current = onAppendRow;
-	}, [onAppendRow]);
-
-	useEffect(() => {
-		onRowMovedRef.current = onRowMoved;
-	}, [onRowMoved]);
-
-	useEffect(() => {
-		onSpaceToggleRef.current = onSpaceToggle;
-	}, [onSpaceToggle]);
 
 	useEffect(() => {
 		if (currentRowIndex == null || currentColumn == null) {
@@ -101,142 +62,101 @@ const useSheetMove = ({
 		cursorRef.current = { row: currentRowIndex, col };
 	}, [currentRowIndex, currentColumn, format]);
 
-	useEffect(() => {
-		if (mode === 'hidden') return;
+	const shouldThrottle = (event: KeyboardEvent) => {
+		if (!event.repeat) return false;
+		return performance.now() - lastMoveAtRef.current < MOVE_REPEAT_INTERVAL_MS;
+	};
 
-		const resolveColumn = (cursor: SheetMoveCursor) =>
-			getEditableColumn(formatRef.current, cursor.col);
+	const resolveColumn = (cursor: SheetMoveCursor) =>
+		getEditableColumn(formatRef.current, cursor.col);
 
-		/** 커서 적용 — 포커스/스크롤 이동 후 커서·홀드 시각 갱신 */
-		const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
-			const column = resolveColumn(cursor);
-			if (!column) return;
-			cursorRef.current = cursor;
-			lastMoveAtRef.current = performance.now();
-			applyFocusRef.current(cursor.row, column, { scrollTop });
-		};
+	const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
+		const column = resolveColumn(cursor);
+		if (!column) return;
+		cursorRef.current = cursor;
+		lastMoveAtRef.current = performance.now();
+		applyFocusRef.current(cursor.row, column, { scrollTop });
+	};
 
-		/** 행 이동 통보 — 다중 선택 확장/앵커 이동 (Shift 여부 전달) */
-		const notifyRowMoved = (row: number, event: KeyboardEvent) => {
-			onRowMovedRef.current?.(row, event.shiftKey);
-		};
+	const endEditIfNeeded = () => {
+		if (isEditingRef.current()) endEditRef.current(true);
+	};
 
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (isEditableDomTarget(event.target, { ignoreSheetCellEditor: true })) return;
+	const notifyRowMoved = (row: number, event: KeyboardEvent) => {
+		onRowMovedRef.current?.(row, event.shiftKey);
+	};
 
-			// Space: 다중 선택 중 현재 행 토글. 커스텀 키(ctrl+space 등)·편집 중 양보
-			if (event.key === ' ') {
-				if (event.ctrlKey || event.altKey || event.metaKey) return;
-				if (modeRef.current === 'edit') return;
-				const spaceCursor = cursorRef.current;
-				if (!spaceCursor) return;
-				event.preventDefault();
-				onSpaceToggleRef.current?.(spaceCursor.row);
-				return;
-			}
+	/** 공통 가드(throttle·cursor) 후 이동 계산 실행 */
+	const makeMove = (
+		calc: MoveCalc,
+		options: { endEdit?: boolean; notify?: boolean } = {},
+	): ShortcutKeyHandler => (event) => {
+		if (shouldThrottle(event)) return;
+		const cursor = cursorRef.current;
+		if (!cursor) return;
 
-			if (!isSheetMoveKey(event.key)) return;
+		if (options.endEdit) endEditIfNeeded();
 
-			// 홀드 반복만 throttle — 첫 입력은 즉시
-			if (event.repeat) {
-				const elapsed = performance.now() - lastMoveAtRef.current;
-				if (elapsed < MOVE_REPEAT_INTERVAL_MS) {
-					event.preventDefault();
-					return;
-				}
-			}
+		const next = calc(cursor);
+		if (!next) return;
+		if (next === 'append') {
+			onAppendRowRef.current?.(cursor);
+			return;
+		}
 
-			const cursor = cursorRef.current;
-			if (!cursor) return;
+		applyCursor(next.cursor, next.scrollTop);
+		if (options.notify) notifyRowMoved(next.cursor.row, event);
+	};
 
-			const isEditing = modeRef.current === 'edit';
-			const lastIndex = getLastIndex(rowsRef.current);
-			const body = scrollRef.current;
-			const viewTop = body?.scrollTop ?? 0;
-			const viewHeight = body?.clientHeight ?? 0;
+	const rowNextCalc = (append: boolean): MoveCalc => (cursor) => {
+		const next = calcRowNext(cursor, getLastIndex(rowsRef.current), append);
+		if (next === 'append') return 'append';
+		return next ? { cursor: next } : null;
+	};
 
-			if (event.key === 'Tab') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
+	const rowPrevCalc: MoveCalc = (cursor) => {
+		const next = calcRowPrev(cursor);
+		return next ? { cursor: next } : null;
+	};
 
-				const next = event.shiftKey ? moveRowPrev(cursor) : moveRowNext(cursor, lastIndex, true);
+	const pageCalc = (prev: boolean): MoveCalc => (cursor) => {
+		const body = scrollRef.current;
+		const view = { viewTop: body?.scrollTop ?? 0, viewHeight: body?.clientHeight ?? 0 };
+		const result = prev
+			? calcPagePrev(rowsRef.current, cursor.row, view)
+			: calcPageNext(rowsRef.current, cursor.row, view);
+		return result ? { cursor: { row: result.row, col: cursor.col }, scrollTop: result.scrollTop } : null;
+	};
 
-				if (next == null) return;
-				if (next === 'append') {
-					onAppendRowRef.current?.(cursor);
-					return;
-				}
-				applyCursor(next);
-				return;
-			}
+	const colPrevCalc: MoveCalc = (cursor) => {
+		const next = calcColPrev(formatRef.current, cursor);
+		return next ? { cursor: next } : null;
+	};
 
-			if (event.key === 'PageUp') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
-				const result = movePagePrev(rowsRef.current, cursor.row, {
-					viewTop,
-					viewHeight,
-				});
-				if (!result) return;
-				applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
-				return;
-			}
+	const colNextCalc: MoveCalc = (cursor) => {
+		const next = calcColNext(formatRef.current, cursor, getLastIndex(rowsRef.current));
+		return next ? { cursor: next } : null;
+	};
 
-			if (event.key === 'PageDown') {
-				event.preventDefault();
-				if (isEditing) endEditRef.current(true);
-				const result = movePageNext(rowsRef.current, cursor.row, {
-					viewTop,
-					viewHeight,
-				});
-				if (!result) return;
-				applyCursor({ row: result.row, col: cursor.col }, result.scrollTop);
-				return;
-			}
+	const moveTabNext = makeMove(rowNextCalc(true), { endEdit: true });
+	const moveTabPrev = makeMove(rowPrevCalc, { endEdit: true });
+	const movePagePrev = makeMove(pageCalc(true), { endEdit: true });
+	const movePageNext = makeMove(pageCalc(false), { endEdit: true });
+	const moveRowPrev = makeMove(rowPrevCalc, { notify: true });
+	const moveRowNext = makeMove(rowNextCalc(false), { notify: true });
+	const moveColPrev = makeMove(colPrevCalc);
+	const moveColNext = makeMove(colNextCalc);
 
-			// 편집 중 Arrow 이동 없음
-			if (isEditing) return;
-
-			if (event.key === 'ArrowUp') {
-				event.preventDefault();
-				const next = moveRowPrev(cursor);
-				if (!next) return;
-				applyCursor(next);
-				notifyRowMoved(next.row, event);
-				return;
-			}
-
-			if (event.key === 'ArrowDown') {
-				event.preventDefault();
-				const next = moveRowNext(cursor, lastIndex, false);
-				if (!next || next === 'append') return;
-				applyCursor(next);
-				notifyRowMoved(next.row, event);
-				return;
-			}
-
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				const next = moveColPrev(formatRef.current, cursor);
-				if (!next) return;
-				applyCursor(next);
-				return;
-			}
-
-			if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				const next = moveColNext(formatRef.current, cursor, lastIndex);
-				if (!next) return;
-				applyCursor(next);
-			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [mode, scrollRef]);
+	return {
+		moveTabNext,
+		moveTabPrev,
+		moveRowPrev,
+		moveRowNext,
+		moveColPrev,
+		moveColNext,
+		movePagePrev,
+		movePageNext,
+	};
 };
 
 export { useSheetMove };
-export { MOVE_REPEAT_INTERVAL_MS };

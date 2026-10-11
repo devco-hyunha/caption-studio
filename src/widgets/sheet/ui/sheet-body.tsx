@@ -1,11 +1,14 @@
 import type { CSSProperties, UIEvent } from 'react';
 import { useRef } from 'react';
+import { useSheetShortkey } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
+import { isMultipleActive } from '../lib/is-multiple-active';
 import { useSheetCellEdit } from '../lib/edit/use-sheet-cell-edit';
 import { useSheetMove } from '../lib/move/use-sheet-move';
 import { useSheetWindow } from '../lib/move/use-sheet-window';
 import { useSheetSelectionActions } from '../lib/selection/use-sheet-selection-actions';
+import { buildSheetShortkeyActions } from '../lib/shortkey/build-sheet-shortkey-actions';
 import type { SheetBodyProps } from '../types';
 import { SheetBodyToolbar } from './sheet-body-toolbar';
 import { SheetCellEditor } from './sheet-cell-editor';
@@ -16,7 +19,7 @@ import { SheetRow } from './sheet-row';
  * - page(viewport×3) 스냅 · paddingTop 흐름 레이아웃
  * - 탭별 scrollTop 복원
  * - 셀 더블클릭/우클릭/문자 입력 편집 · blur 저장
- * - Arrow / Tab / Page 포커스 이동
+ * - 전역 키는 shortkey (이동·에딧·선택·CRUD)
  */
 const SheetBody = ({
 	format,
@@ -44,7 +47,14 @@ const SheetBody = ({
 		wrapRef,
 		currentRowIndex,
 		currentColumn,
+		isEditing,
+		isTextTarget,
+		hasFocus,
 		endEdit,
+		beginEdit,
+		cancelEdit,
+		beginEditFromTyping,
+		insertEditorLineBreak,
 		applyFocus,
 		handleCellClick,
 		handleCellDoubleClick,
@@ -80,10 +90,10 @@ const SheetBody = ({
 		applyFocus,
 	});
 
-	useSheetMove({
+	const move = useSheetMove({
 		format,
 		rows,
-		mode,
+		isEditing,
 		currentRowIndex,
 		currentColumn,
 		scrollRef,
@@ -91,8 +101,29 @@ const SheetBody = ({
 		applyFocus,
 		onAppendRow: handleAppendRow,
 		onRowMoved: handleRowMoved,
-		onSpaceToggle: handleSpaceToggle,
 	});
+
+	const getShortkeyActions = () =>
+		buildSheetShortkeyActions({
+			move,
+			isEditing,
+			isTextTarget,
+			hasFocus,
+			isMultiple: isMultipleActive,
+			beginEdit,
+			cancelEdit,
+			beginEditFromTyping,
+			insertEditorLineBreak,
+			toggleMultiple: handleToggleMultipleClick,
+			toggleRowSelect: () => {
+				if (currentRowIndex == null) return;
+				handleSpaceToggle(currentRowIndex);
+			},
+			insertRow: handleInsertAtFocus,
+			removeRow: handleRemoveAtFocus,
+		});
+
+	useSheetShortkey({ getActions: getShortkeyActions });
 
 	const handleBodyScroll = (event: UIEvent<HTMLDivElement>) => {
 		handleScroll();
@@ -121,9 +152,7 @@ const SheetBody = ({
 				>
 					<SheetCellEditor
 						key={
-							target != null
-								? `${target.rowIndex}:${target.column}`
-								: 'sheet-cell-editor-hidden'
+							target != null ? `${target.rowIndex}:${target.column}` : 'sheet-cell-editor-hidden'
 						}
 						mode={mode}
 						left={target?.left}
@@ -152,8 +181,7 @@ const SheetBody = ({
 							const row = rows[rowIndex];
 							if (!row) return null;
 
-							const rowHeight =
-								row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
+							const rowHeight = row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
 
 							return (
 								<SheetRow
@@ -161,9 +189,7 @@ const SheetBody = ({
 									format={format}
 									row={row}
 									data-index={rowIndex}
-									currentColumn={
-										currentRowIndex === row.index ? currentColumn : null
-									}
+									currentColumn={currentRowIndex === row.index ? currentColumn : null}
 									onCellClick={handleCellClick}
 									onCellDoubleClick={handleCellDoubleClick}
 									onCellContextMenu={handleCellContextMenu}

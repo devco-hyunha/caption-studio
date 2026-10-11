@@ -15,6 +15,23 @@ const clearEditingSurfaceStyles = (wrap: HTMLElement | null) => {
 	wrap.style.pointerEvents = '';
 };
 
+/** IME 조합 종료 후 flush — compositionend 1회 리스너 (setMode 지연 동기화) */
+const flushModeOnCompositionEnd = (input: HTMLElement | null, flush: () => void) => {
+	if (!input) return;
+	input.addEventListener('compositionend', flush, { once: true });
+};
+
+/** blur 시 포커스가 에디터(wrap/input) 밖으로 나갔는지 */
+const isBlurOutsideEditor = (
+	input: HTMLElement | null,
+	wrap: HTMLElement | null,
+	active: Element | null,
+): boolean => {
+	if (active === input || active === wrap) return false;
+	if (wrap?.contains(active)) return false;
+	return true;
+};
+
 /** 에디터 input 포커스 — Enter는 전체 선택, 타입 투 리플레이스는 커서 우측 */
 const focusEditorInput = (input: HTMLElement | null, selectAll: boolean) => {
 	if (!input) return;
@@ -28,4 +45,10 @@ const focusEditorInput = (input: HTMLElement | null, selectAll: boolean) => {
 	selection.addRange(range);
 };
 
-export { showEditingSurface, clearEditingSurfaceStyles, focusEditorInput };
+export {
+	showEditingSurface,
+	clearEditingSurfaceStyles,
+	flushModeOnCompositionEnd,
+	isBlurOutsideEditor,
+	focusEditorInput,
+};

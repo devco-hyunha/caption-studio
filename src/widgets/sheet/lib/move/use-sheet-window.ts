@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { SheetWindowResult, UseSheetWindowParams } from '../../types';
+import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import {
 	getRenderRange,
 	isSameRenderRange,
@@ -22,8 +23,8 @@ const useSheetWindow = ({
 	const scrollTopRef = useRef(restoreScrollTop);
 	const viewportHeightRef = useRef(0);
 	const rafRef = useRef<number | null>(null);
-	const rowsRef = useRef(rows);
-	const onScrollTopChangeRef = useRef(onScrollTopChange);
+	const rowsRef = useLatestRef(rows);
+	const onScrollTopChangeRef = useLatestRef(onScrollTopChange);
 	const prevRestoreKeyRef = useRef(restoreKey);
 	/** 탭 복원 목표 scrollTop — totalHeight 반영 후 layout에서 적용 */
 	const pendingRestoreRef = useRef<number | null>(null);
@@ -34,9 +35,6 @@ const useSheetWindow = ({
 		getRenderRange(rows, restoreScrollTop, 0),
 	);
 
-	useEffect(() => {
-		onScrollTopChangeRef.current = onScrollTopChange;
-	});
 
 	const commitWindow = (scrollTop: number, viewportHeight: number) => {
 		const next = getRenderRange(rowsRef.current, scrollTop, viewportHeight);
@@ -102,7 +100,6 @@ const useSheetWindow = ({
 	 * 탭 복원은 pending만 걸고, scrollTop 적용은 totalHeight 갱신 후 layout에서 한다.
 	 */
 	useLayoutEffect(() => {
-		rowsRef.current = rows;
 		const element = scrollRef.current;
 		if (element) viewportHeightRef.current = element.clientHeight;
 

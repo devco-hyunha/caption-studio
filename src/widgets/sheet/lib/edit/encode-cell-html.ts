@@ -1,3 +1,6 @@
+import type { SheetColumnId } from '../../types';
+import { isTextColumn } from '../columns';
+
 /** 편집 HTML 정규화 */
 const validCellHtml = (text: string) =>
 	text
@@ -42,4 +45,8 @@ const encodeCellHtml = (input: HTMLElement | null | undefined): string => {
 	return contents;
 };
 
-export { encodeCellHtml, validCellHtml };
+/** 커밋 값 파생 — text/memo는 HTML 유지, time 열은 innerText trim */
+const resolveCommitValue = (column: SheetColumnId, encoded: string, innerText?: string): string =>
+	isTextColumn(column) ? encoded : (innerText ?? encoded).trim();
+
+export { encodeCellHtml, resolveCommitValue };

@@ -6,6 +6,11 @@ import type {
 	RefObject,
 } from 'react';
 import type {
+	SheetShortkeyActions,
+	SheetShortkeyMoveActions,
+	ShortcutKeyHandler,
+} from '@/features/shortkey';
+import type {
 	RowHeightInfo,
 	SheetColumnId,
 	SheetFormat,
@@ -28,10 +33,19 @@ export interface UseSheetsResult {
 	handleUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
 }
 
+/** 이동 계산 결과 — applyFocus 대상 커서 + 선택적 스크롤 */
+export interface MoveTarget {
+	cursor: SheetMoveCursor;
+	scrollTop?: number | null;
+}
+
+export type MoveCalc = (cursor: SheetMoveCursor) => MoveTarget | 'append' | null;
+
 export interface UseSheetMoveParams {
 	format: SheetFormat;
 	rows: SheetRowView[];
-	mode: SheetCellEditorMode;
+	/** shortkey용 — `mode === 'edit'` 동기 판별 */
+	isEditing: () => boolean;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	scrollRef: RefObject<HTMLDivElement | null>;
@@ -45,8 +59,18 @@ export interface UseSheetMoveParams {
 	onAppendRow?: (cursor: SheetMoveCursor) => void;
 	/** 행 이동 시 다중 선택 확장 (Shift+Arrow) */
 	onRowMoved?: (row: number, withShift: boolean) => void;
-	/** Space: 다중 선택 중 현재 행 토글 */
-	onSpaceToggle?: (row: number) => void;
+}
+
+/** shortkey가 호출하는 이동 API */
+export interface UseSheetMoveResult {
+	moveTabNext: ShortcutKeyHandler;
+	moveTabPrev: ShortcutKeyHandler;
+	moveRowPrev: ShortcutKeyHandler;
+	moveRowNext: ShortcutKeyHandler;
+	moveColPrev: ShortcutKeyHandler;
+	moveColNext: ShortcutKeyHandler;
+	movePagePrev: ShortcutKeyHandler;
+	movePageNext: ShortcutKeyHandler;
 }
 
 export interface UseSheetSelectionActionsParams {
@@ -125,6 +149,21 @@ export interface SheetCellEditTarget extends SheetCellRect {
 	value: string;
 }
 
+/** applyFocus 스크롤 계산 입력 — body 실측값 */
+export interface FocusBodyMetrics {
+	scrollTop: number;
+	scrollLeft: number;
+	clientHeight: number;
+	clientWidth: number;
+}
+
+/** applyFocus 스크롤 계산 결과 */
+export interface FocusScrollResult {
+	target: SheetCellEditTarget;
+	rowScroll: number | null;
+	scrollLeft: number | null;
+}
+
 export interface UseSheetCellEditParams {
 	format: SheetFormat;
 	rows: SheetRowView[];
@@ -141,8 +180,22 @@ export interface UseSheetCellEditResult {
 	wrapRef: RefObject<HTMLDivElement | null>;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
+	/** shortkey용 — `mode === 'edit'` 동기 판별 */
+	isEditing: () => boolean;
+	/** shortkey용 — text/memo 타깃 */
+	isTextTarget: () => boolean;
+	/** shortkey용 — 셀 포커스(hidden 아님) */
+	hasFocus: () => boolean;
 	/** 편집 중이면 커밋 후 focus 유지 가능 */
 	endEdit: (commit?: boolean) => void;
+	/** F2 / Enter(비에딧) */
+	beginEdit: () => void;
+	/** Esc */
+	cancelEdit: () => void;
+	/** printable / IME → edit (지연 setMode) */
+	beginEditFromTyping: ShortcutKeyHandler;
+	/** Enter(에딧 중) 줄바꿈 */
+	insertEditorLineBreak: () => void;
 	/** 포커스 이동 (스크롤 포함) */
 	applyFocus: (
 		rowIndex: number,
@@ -228,6 +281,20 @@ export interface UseSheetCellFocusResult {
 	) => void;
 }
 
+/** 편집 모드 ref 쌍 — 순수 판별(edit-mode) 입력 */
+export interface EditModeDeps {
+	modeRef: RefObject<SheetCellEditorMode>;
+	targetRef: RefObject<SheetCellEditTarget | null>;
+}
+
+/** mode/target → contenteditable innerHTML 동기화 hook params */
+export interface UseEditInputSyncParams {
+	mode: SheetCellEditorMode;
+	target: SheetCellEditTarget | null;
+	inputRef: RefObject<HTMLDivElement | null>;
+	modeRef: RefObject<SheetCellEditorMode>;
+}
+
 /** 편집 라이프사이클 hook — 편집 진입/커밋/취소 및 키 입력 진입 담당 */
 export interface UseSheetCellEditorParams {
 	format: SheetFormat;
@@ -240,15 +307,36 @@ export interface UseSheetCellEditorResult {
 	target: SheetCellEditTarget | null;
 	inputRef: RefObject<HTMLDivElement | null>;
 	wrapRef: RefObject<HTMLDivElement | null>;
-	/** 문자 키 입력으로 빈 에디터 진입 (IME-safe) */
-	activateEditFromTyping: (isIme: boolean) => void;
 	beginEdit: (rowIndex: number, column: SheetColumnId, cell?: HTMLElement | null) => void;
+	/** F2 / Enter(비에딧) — 현재 포커스 셀 */
+	beginEditOnCurrent: () => void;
+	/** printable / IME → edit (shortkey) */
+	beginEditFromTyping: ShortcutKeyHandler;
+	isEditing: () => boolean;
+	isTextTarget: () => boolean;
+	hasFocus: () => boolean;
 	commitEdit: (keepFocus?: boolean) => void;
 	cancelEdit: () => void;
 	endEdit: (commit?: boolean) => void;
-	/** 키 입력으로 편집 시작 시도 — 소비 여부 반환 */
-	tryBeginEditFromKey: (event: SheetEditKeyProbe) => boolean;
+	insertEditorLineBreak: () => void;
 	handleInputKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
 	handleInputClick: (event: MouseEvent<HTMLDivElement>) => void;
 	handleEditorBlur: () => void;
+}
+
+/** shortkey에 주입할 시트 동작 API 조립 params */
+export interface BuildSheetShortkeyActionsParams {
+	move: SheetShortkeyMoveActions;
+	isEditing: () => boolean;
+	isTextTarget: () => boolean;
+	hasFocus: () => boolean;
+	isMultiple: () => boolean;
+	beginEdit: () => void;
+	cancelEdit: () => void;
+	beginEditFromTyping: SheetShortkeyActions['beginEditFromTyping'];
+	insertEditorLineBreak: () => void;
+	toggleMultiple: () => void;
+	toggleRowSelect: () => void;
+	insertRow: () => void;
+	removeRow: () => void;
 }

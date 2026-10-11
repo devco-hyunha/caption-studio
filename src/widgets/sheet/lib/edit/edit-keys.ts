@@ -1,16 +1,5 @@
 import type { SheetEditKeyProbe } from '../../types';
 
-const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
-
-/** Firefox는 insertLineBreak 미지원 — insertHTML로 줄바꿈 */
-const insertEditorLineBreak = () => {
-	if (isFirefox) {
-		document.execCommand('insertHTML', false, '<br />');
-		return;
-	}
-	document.execCommand('insertLineBreak');
-};
-
 /** 문자 키 (Space 포함). 커스텀 키·IME 조합 중이면 false */
 const isPrintableKey = (event: SheetEditKeyProbe): boolean => {
 	if (event.ctrlKey || event.altKey || event.metaKey) return false;
@@ -34,10 +23,4 @@ const shouldBeginEditFromKey = (event: SheetEditKeyProbe): boolean => {
 	return isPrintableKey(event);
 };
 
-export {
-	isFirefox,
-	insertEditorLineBreak,
-	isPrintableKey,
-	isImeStartKey,
-	shouldBeginEditFromKey,
-};
+export { isPrintableKey, isImeStartKey, shouldBeginEditFromKey };
