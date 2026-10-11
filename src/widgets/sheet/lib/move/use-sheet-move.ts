@@ -1,8 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type {
 	MoveCalc,
-	MoveTarget,
 	SheetMoveCursor,
 	UseSheetMoveParams,
 	UseSheetMoveResult,
@@ -23,9 +22,23 @@ import {
 /** 키 홀드(`event.repeat`) 최소 간격 — 중복 이벤트 걸러냄 */
 const MOVE_REPEAT_INTERVAL_MS = 30;
 
+const noopHandler: ShortcutKeyHandler = () => {};
+
+const createEmptyHandlers = (): UseSheetMoveResult => ({
+	moveTabNext: noopHandler,
+	moveTabPrev: noopHandler,
+	moveRowPrev: noopHandler,
+	moveRowNext: noopHandler,
+	moveColPrev: noopHandler,
+	moveColNext: noopHandler,
+	movePagePrev: noopHandler,
+	movePageNext: noopHandler,
+});
+
 /**
  * Tab / Arrow / Page 셀·행 이동 API.
  * 전역 keydown은 shortkey가 소유한다.
+ * 핸들러는 layout effect에서 조립 — 렌더 본문에서 ref·`performance.now`를 읽지 않는다.
  */
 const useSheetMove = ({
 	format,
@@ -62,101 +75,99 @@ const useSheetMove = ({
 		cursorRef.current = { row: currentRowIndex, col };
 	}, [currentRowIndex, currentColumn, format]);
 
-	const shouldThrottle = (event: KeyboardEvent) => {
-		if (!event.repeat) return false;
-		return performance.now() - lastMoveAtRef.current < MOVE_REPEAT_INTERVAL_MS;
-	};
+	const [handlers, setHandlers] = useState<UseSheetMoveResult>(createEmptyHandlers);
 
-	const resolveColumn = (cursor: SheetMoveCursor) =>
-		getEditableColumn(formatRef.current, cursor.col);
+	useLayoutEffect(() => {
+		const shouldThrottle = (event: KeyboardEvent) => {
+			if (!event.repeat) return false;
+			return performance.now() - lastMoveAtRef.current < MOVE_REPEAT_INTERVAL_MS;
+		};
 
-	const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
-		const column = resolveColumn(cursor);
-		if (!column) return;
-		cursorRef.current = cursor;
-		lastMoveAtRef.current = performance.now();
-		applyFocusRef.current(cursor.row, column, { scrollTop });
-	};
+		const resolveColumn = (cursor: SheetMoveCursor) =>
+			getEditableColumn(formatRef.current, cursor.col);
 
-	const endEditIfNeeded = () => {
-		if (isEditingRef.current()) endEditRef.current(true);
-	};
+		const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
+			const column = resolveColumn(cursor);
+			if (!column) return;
+			cursorRef.current = cursor;
+			lastMoveAtRef.current = performance.now();
+			applyFocusRef.current(cursor.row, column, { scrollTop });
+		};
 
-	const notifyRowMoved = (row: number, event: KeyboardEvent) => {
-		onRowMovedRef.current?.(row, event.shiftKey);
-	};
+		const endEditIfNeeded = () => {
+			if (isEditingRef.current()) endEditRef.current(true);
+		};
 
-	/** 공통 가드(throttle·cursor) 후 이동 계산 실행 */
-	const makeMove = (
-		calc: MoveCalc,
-		options: { endEdit?: boolean; notify?: boolean } = {},
-	): ShortcutKeyHandler => (event) => {
-		if (shouldThrottle(event)) return;
-		const cursor = cursorRef.current;
-		if (!cursor) return;
+		const notifyRowMoved = (row: number, event: KeyboardEvent) => {
+			onRowMovedRef.current?.(row, event.shiftKey);
+		};
 
-		if (options.endEdit) endEditIfNeeded();
+		/** 공통 가드(throttle·cursor) 후 이동 계산 실행 */
+		const makeMove = (
+			calc: MoveCalc,
+			options: { endEdit?: boolean; notify?: boolean } = {},
+		): ShortcutKeyHandler => (event) => {
+			if (shouldThrottle(event)) return;
+			const cursor = cursorRef.current;
+			if (!cursor) return;
 
-		const next = calc(cursor);
-		if (!next) return;
-		if (next === 'append') {
-			onAppendRowRef.current?.(cursor);
-			return;
-		}
+			if (options.endEdit) endEditIfNeeded();
 
-		applyCursor(next.cursor, next.scrollTop);
-		if (options.notify) notifyRowMoved(next.cursor.row, event);
-	};
+			const next = calc(cursor);
+			if (!next) return;
+			if (next === 'append') {
+				onAppendRowRef.current?.(cursor);
+				return;
+			}
 
-	const rowNextCalc = (append: boolean): MoveCalc => (cursor) => {
-		const next = calcRowNext(cursor, getLastIndex(rowsRef.current), append);
-		if (next === 'append') return 'append';
-		return next ? { cursor: next } : null;
-	};
+			applyCursor(next.cursor, next.scrollTop);
+			if (options.notify) notifyRowMoved(next.cursor.row, event);
+		};
 
-	const rowPrevCalc: MoveCalc = (cursor) => {
-		const next = calcRowPrev(cursor);
-		return next ? { cursor: next } : null;
-	};
+		const rowNextCalc = (append: boolean): MoveCalc => (cursor) => {
+			const next = calcRowNext(cursor, getLastIndex(rowsRef.current), append);
+			if (next === 'append') return 'append';
+			return next ? { cursor: next } : null;
+		};
 
-	const pageCalc = (prev: boolean): MoveCalc => (cursor) => {
-		const body = scrollRef.current;
-		const view = { viewTop: body?.scrollTop ?? 0, viewHeight: body?.clientHeight ?? 0 };
-		const result = prev
-			? calcPagePrev(rowsRef.current, cursor.row, view)
-			: calcPageNext(rowsRef.current, cursor.row, view);
-		return result ? { cursor: { row: result.row, col: cursor.col }, scrollTop: result.scrollTop } : null;
-	};
+		const rowPrevCalc: MoveCalc = (cursor) => {
+			const next = calcRowPrev(cursor);
+			return next ? { cursor: next } : null;
+		};
 
-	const colPrevCalc: MoveCalc = (cursor) => {
-		const next = calcColPrev(formatRef.current, cursor);
-		return next ? { cursor: next } : null;
-	};
+		const pageCalc = (prev: boolean): MoveCalc => (cursor) => {
+			const body = scrollRef.current;
+			const view = { viewTop: body?.scrollTop ?? 0, viewHeight: body?.clientHeight ?? 0 };
+			const result = prev
+				? calcPagePrev(rowsRef.current, cursor.row, view)
+				: calcPageNext(rowsRef.current, cursor.row, view);
+			return result ? { cursor: { row: result.row, col: cursor.col }, scrollTop: result.scrollTop } : null;
+		};
 
-	const colNextCalc: MoveCalc = (cursor) => {
-		const next = calcColNext(formatRef.current, cursor, getLastIndex(rowsRef.current));
-		return next ? { cursor: next } : null;
-	};
+		const colPrevCalc: MoveCalc = (cursor) => {
+			const next = calcColPrev(formatRef.current, cursor);
+			return next ? { cursor: next } : null;
+		};
 
-	const moveTabNext = makeMove(rowNextCalc(true), { endEdit: true });
-	const moveTabPrev = makeMove(rowPrevCalc, { endEdit: true });
-	const movePagePrev = makeMove(pageCalc(true), { endEdit: true });
-	const movePageNext = makeMove(pageCalc(false), { endEdit: true });
-	const moveRowPrev = makeMove(rowPrevCalc, { notify: true });
-	const moveRowNext = makeMove(rowNextCalc(false), { notify: true });
-	const moveColPrev = makeMove(colPrevCalc);
-	const moveColNext = makeMove(colNextCalc);
+		const colNextCalc: MoveCalc = (cursor) => {
+			const next = calcColNext(formatRef.current, cursor, getLastIndex(rowsRef.current));
+			return next ? { cursor: next } : null;
+		};
 
-	return {
-		moveTabNext,
-		moveTabPrev,
-		moveRowPrev,
-		moveRowNext,
-		moveColPrev,
-		moveColNext,
-		movePagePrev,
-		movePageNext,
-	};
+		setHandlers({
+			moveTabNext: makeMove(rowNextCalc(true), { endEdit: true }),
+			moveTabPrev: makeMove(rowPrevCalc, { endEdit: true }),
+			movePagePrev: makeMove(pageCalc(true), { endEdit: true }),
+			movePageNext: makeMove(pageCalc(false), { endEdit: true }),
+			moveRowPrev: makeMove(rowPrevCalc, { notify: true }),
+			moveRowNext: makeMove(rowNextCalc(false), { notify: true }),
+			moveColPrev: makeMove(colPrevCalc),
+			moveColNext: makeMove(colNextCalc),
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- 핸들러는 ref로 최신값을 읽는 mount-only 조립
+	}, []);
+
+	return handlers;
 };
 
 export { useSheetMove };

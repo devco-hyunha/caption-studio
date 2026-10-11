@@ -45,6 +45,7 @@ const useSheetWindow = ({
 		setSheetWindow(next);
 		return true;
 	};
+	const commitWindowRef = useLatestRef(commitWindow);
 
 	const applyRestoredScrollRef = useRef(
 		(_element: HTMLElement, _nextScroll: number) => {},
@@ -107,13 +108,13 @@ const useSheetWindow = ({
 		prevRestoreKeyRef.current = restoreKey;
 
 		if (!isTabRestore) {
-			commitWindow(scrollTopRef.current, viewportHeightRef.current);
+			commitWindowRef.current(scrollTopRef.current, viewportHeightRef.current);
 			return;
 		}
 
 		const nextScroll = Math.max(0, restoreScrollTop);
 		scrollTopRef.current = nextScroll;
-		const didUpdate = commitWindow(nextScroll, viewportHeightRef.current);
+		const didUpdate = commitWindowRef.current(nextScroll, viewportHeightRef.current);
 
 		if (!element) {
 			onScrollTopChangeRef.current?.(nextScroll);
@@ -128,7 +129,7 @@ const useSheetWindow = ({
 
 		// 윈도 범위가 같아 setState가 없으면 바로 적용 (이미 높이 확보된 경우)
 		applyRestoredScrollRef.current(element, nextScroll);
-	}, [rows, restoreKey, restoreScrollTop]);
+	}, [rows, restoreKey, restoreScrollTop, commitWindowRef, onScrollTopChangeRef]);
 
 	/** pending 복원 — sheetWindow(totalHeight)가 반영된 다음 layout에서 scrollTop 설정 */
 	useLayoutEffect(() => {
