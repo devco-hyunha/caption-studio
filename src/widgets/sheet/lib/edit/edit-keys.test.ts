@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import type { SheetEditKeyProbe } from '../../types';
 import { isImeStartKey, isPrintableKey, shouldBeginEditFromKey } from './edit-keys';
 
-const base = { ctrlKey: false, altKey: false, metaKey: false };
+const base: SheetEditKeyProbe = {
+	ctrlKey: false,
+	altKey: false,
+	metaKey: false,
+	key: '',
+	code: '',
+};
 
 describe('edit-keys', () => {
 	it('isPrintableKey accepts single chars and Space, rejects modifiers/composing', () => {
@@ -13,10 +20,10 @@ describe('edit-keys', () => {
 	});
 
 	it('isImeStartKey detects composing, Process and keyCode 229', () => {
-		expect(isImeStartKey({ key: 'a', isComposing: true })).toBe(true);
-		expect(isImeStartKey({ key: 'Process' })).toBe(true);
-		expect(isImeStartKey({ key: 'a', nativeEvent: { keyCode: 229 } })).toBe(true);
-		expect(isImeStartKey({ key: 'a' })).toBe(false);
+		expect(isImeStartKey({ ...base, key: 'a', isComposing: true })).toBe(true);
+		expect(isImeStartKey({ ...base, key: 'Process' })).toBe(true);
+		expect(isImeStartKey({ ...base, key: 'a', nativeEvent: { keyCode: 229 } })).toBe(true);
+		expect(isImeStartKey({ ...base, key: 'a' })).toBe(false);
 	});
 
 	it('shouldBeginEditFromKey: Enter always, modifiers block, IME/printable start', () => {

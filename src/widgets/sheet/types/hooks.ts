@@ -111,13 +111,17 @@ export interface ApplyFocusOptions {
 	scrollTop?: number | null;
 }
 
-export interface SheetCellEditTarget {
-	rowIndex: number;
-	column: SheetColumnId;
+/** DOM/추정 공통 셀 좌표 — SheetCellEditTarget의 위치 부분 */
+export interface SheetCellRect {
 	left: number;
 	top: number;
 	minWidth: number;
 	minHeight: number;
+}
+
+export interface SheetCellEditTarget extends SheetCellRect {
+	rowIndex: number;
+	column: SheetColumnId;
 	value: string;
 }
 

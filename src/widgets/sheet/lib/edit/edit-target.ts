@@ -1,4 +1,10 @@
-import type { SheetCellEditTarget, SheetColumnId, SheetFormat, SheetRowView } from '../../types';
+import type {
+	SheetCellEditTarget,
+	SheetCellRect,
+	SheetColumnId,
+	SheetFormat,
+	SheetRowView,
+} from '../../types';
 import { COLUMN_WIDTHS, getColumnLeft } from '../columns';
 import { getCellValue } from '../get-cell-value';
 import { getRowTop } from '../move/sheet-move';
@@ -6,7 +12,7 @@ import { getRowTop } from '../move/sheet-move';
 const measureCellPosition = (
 	cell: HTMLElement,
 	scrollContent: HTMLElement,
-): { left: number; top: number; minWidth: number; minHeight: number } => {
+): SheetCellRect => {
 	const cellRect = cell.getBoundingClientRect();
 	const contentRect = scrollContent.getBoundingClientRect();
 

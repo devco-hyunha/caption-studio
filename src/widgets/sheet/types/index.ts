@@ -32,6 +32,7 @@ export type {
 export type {
 	ApplyFocusOptions,
 	SheetCellEditTarget,
+	SheetCellRect,
 	SheetEditKeyProbe,
 	UseSheetCellEditParams,
 	UseSheetCellEditResult,
