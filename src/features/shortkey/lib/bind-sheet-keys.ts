@@ -7,6 +7,7 @@ import { registerSheetMutateKeys } from './sheet/mutate-keys';
 import { registerSheetSelectionKeys } from './sheet/selection-keys';
 import { registerSheetSearchKeys } from './sheet/search-keys';
 import { registerSheetTimeKeys } from './sheet/time-keys';
+import { registerSheetUndoKeys } from './sheet/undo-keys';
 
 /**
  * 시트 네비게이션 키 일괄 등록 — 기능별 registrar의 조합.
@@ -23,6 +24,7 @@ const registerSheetNavigationKeys = (
 	registerSheetClipKeys(shortcuts, getActions);
 	registerSheetTimeKeys(shortcuts, getActions);
 	registerSheetSearchKeys(shortcuts, getActions);
+	registerSheetUndoKeys(shortcuts, getActions);
 };
 
 export { registerSheetNavigationKeys };

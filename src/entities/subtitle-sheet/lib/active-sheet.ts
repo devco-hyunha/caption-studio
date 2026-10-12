@@ -6,7 +6,12 @@ import {
 	exitMultipleSelection,
 	toggleSelectedRow,
 } from './selection/sheet-selection';
-import { insertTimelineAfter, removeTimelineAt } from './mutate/rows-mutate';
+import {
+	insertTimelineAfter,
+	removeTimelineAt,
+	replaceTimelineRow,
+	spliceTimelineAt,
+} from './mutate/rows-mutate';
 
 /** 활성 시트만 patch. patch가 같은 시트를 돌려주면 변경 없음(null) */
 const patchActiveSheet = (
@@ -195,14 +200,76 @@ const replaceTimelinePatches = (
 	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
 };
 
+/**
+ * undo/redo용 — `index`에 타임라인 삽입 (기본 시각 채움 없음).
+ * `/` `history.js` parity: undo는 선택 상태를 건드리지 않는다 (M2).
+ */
+const spliceActiveTimelineAt = (
+	state: SheetsState,
+	index: number,
+	data: SheetTimelineItem,
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+	const timelines = spliceTimelineAt(sheet.timelines, index, data);
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
+/**
+ * undo/redo 전용 행 제거 — multipleActive 게이트 없음 (M5).
+ * 다중 선택 중에도 스택과 데이터가 함께 이동해야 하므로 selection은 유지한다.
+ */
+const removeActiveTimelineAtForHistory = (
+	state: SheetsState,
+	row: number,
+): { state: SheetsState; focusRow: number } | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet) return null;
+
+	const result = removeTimelineAt(sheet.timelines, row);
+	if (!result) return null;
+
+	const next = patchActiveSheet(state, (active) => ({
+		...active,
+		timelines: result.timelines,
+	}));
+	if (!next) return null;
+	return { state: next, focusRow: result.focusRow };
+};
+
+/**
+ * undo/redo용 multi 패치 — multiple 여부와 무관하게 `{ index, data }[]` 일괄 교체.
+ */
+const replaceActiveTimelinePatches = (
+	state: SheetsState,
+	patches: readonly { index: number; data: SheetTimelineItem }[],
+): SheetsState | null => {
+	const sheet = state.sheets[state.active];
+	if (!sheet || patches.length === 0) return null;
+
+	let timelines = sheet.timelines;
+	let changed = false;
+	for (const patch of patches) {
+		const next = replaceTimelineRow(timelines, patch.index, patch.data);
+		if (!next) continue;
+		timelines = next;
+		changed = true;
+	}
+	if (!changed) return null;
+	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
+};
+
 export {
 	patchActiveSheet,
 	replaceTimelineAt,
 	replaceTimelinePatches,
+	replaceActiveTimelinePatches,
+	spliceActiveTimelineAt,
 	toggleMultiple,
 	toggleActiveSelectedRow,
 	setActiveMultipleStart,
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
+	removeActiveTimelineAtForHistory,
 	updateActiveSelectedTexts,
 };

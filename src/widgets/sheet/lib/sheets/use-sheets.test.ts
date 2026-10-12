@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
 import { useSheets } from './use-sheets';
 
@@ -67,5 +68,19 @@ describe('useSheets clearSearchHits', () => {
 
 		act(() => result.current.handleSelectTab(0));
 		expect(useSheetSearchStore.getState().searchHits).toEqual([{ row: 0, col: 1 }]);
+	});
+
+	it('handleUpdateCell push shape — command update·before/after 스냅샷·current col', () => {
+		useSheetHistoryStore.getState().resetForSheets(2, 0);
+		const { result } = renderHook(() => useSheets('smi'));
+
+		act(() => result.current.handleUpdateCell(0, 'text', 'X'));
+		const stack = useSheetHistoryStore.getState().stacks[0];
+		const last = stack.entries[stack.index];
+		expect(last?.command).toBe('update');
+		expect(last?.id).toBe(0);
+		expect(last?.before).toEqual({ start: 0, end: 1000, text: 'A', memo: '' });
+		expect(last?.after).toEqual({ start: 0, end: 1000, text: 'X', memo: '' });
+		expect(last?.current).toEqual({ row: 0, col: 1 });
 	});
 });

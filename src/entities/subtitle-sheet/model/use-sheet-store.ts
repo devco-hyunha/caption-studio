@@ -21,18 +21,19 @@ import {
 import {
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
-	replaceTimelineAt,
-	replaceTimelinePatches,
+	removeActiveTimelineAtForHistory,
+	replaceActiveTimelinePatches,
+	replaceTimelineAt as replaceActiveTimelineAt,
+	replaceTimelinePatches as replaceActiveSelectedTimelinePatches,
 	setActiveMultipleStart,
+	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	updateActiveSelectedTexts,
 } from '../lib/active-sheet';
 
 const getInitialState = (): SheetsState =>
-	typeof window !== 'undefined'
-		? loadState()
-		: createState();
+	typeof window !== 'undefined' ? loadState() : createState();
 
 /** 시트 스토어 — localStorage 영속, 다중 선택/행 CRUD는 런타임 전용(영속 제외) */
 const useSheetStore = create<SheetStore>()(
@@ -107,6 +108,14 @@ const useSheetStore = create<SheetStore>()(
 				return result.focusRow;
 			},
 
+			/** undo/redo 전용 행 삭제 — multipleActive 게이트 없음(M5). 포커스 행 반환 */
+			removeTimelineAtForHistory: (row) => {
+				const result = removeActiveTimelineAtForHistory(get(), row);
+				if (!result) return null;
+				set(result.state);
+				return result.focusRow;
+			},
+
 			/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
 			updateSelectedTexts: (transform) => {
 				const next = updateActiveSelectedTexts(get(), transform);
@@ -117,7 +126,7 @@ const useSheetStore = create<SheetStore>()(
 
 			/** 활성 시트 `row` 타임라인 ms patch. 행 없으면 false */
 			patchActiveTimeline: (row, timeline) => {
-				const next = replaceTimelineAt(get(), row, timeline);
+				const next = replaceActiveTimelineAt(get(), row, timeline);
 				if (!next) return false;
 				set(next);
 				return true;
@@ -125,7 +134,23 @@ const useSheetStore = create<SheetStore>()(
 
 			/** 다중 선택 중 선택 행 타임라인 ms 일괄 patch. 반영 없으면 false */
 			patchSelectedTimelines: (patches) => {
-				const next = replaceTimelinePatches(get(), patches);
+				const next = replaceActiveSelectedTimelinePatches(get(), patches);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			/** undo/redo — 인덱스 삽입(자동 시각 채움 없음) */
+			spliceTimelineAt: (index, data) => {
+				const next = spliceActiveTimelineAt(get(), index, data);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			/** undo/redo — multi 패치 */
+			replaceTimelinePatches: (patches) => {
+				const next = replaceActiveTimelinePatches(get(), patches);
 				if (!next) return false;
 				set(next);
 				return true;

@@ -65,11 +65,7 @@ export interface SheetStore extends SheetsState {
 	deleteSheet: (index: number) => void;
 	renameSheet: (index: number, name: string) => boolean;
 	copySheet: (index: number) => void;
-	updateActiveCell: (
-		rowIndex: number,
-		column: EditableColumn,
-		value: string,
-	) => boolean;
+	updateActiveCell: (rowIndex: number, column: EditableColumn, value: string) => boolean;
 	updateSheetScroll: (index: number, scrollTop: number) => void;
 	/** 다중 선택 모드 토글 (현재 행 선택 포함) */
 	toggleMultiple: (currentRow: number) => void;
@@ -81,10 +77,18 @@ export interface SheetStore extends SheetsState {
 	insertTimelineAfter: (row: number, format: SheetTimelineFormat) => number | null;
 	/** 행 삭제 — 이동할 포커스 행 인덱스 (다중 선택 모드에서는 null) */
 	removeTimelineAt: (row: number) => number | null;
+	/** undo/redo 전용 행 삭제 — 다중 선택 모드에서도 동작. 이동할 포커스 행 인덱스 */
+	removeTimelineAtForHistory: (row: number) => number | null;
 	/** 다중 선택 중 선택 행 text에 transform 적용. 반영 없으면 false */
 	updateSelectedTexts: (transform: (text: string, rowIndex: number) => string) => boolean;
 	/** 활성 시트 `row` 타임라인 ms patch. 행 없으면 false */
 	patchActiveTimeline: (row: number, timeline: SheetTimelineItem) => boolean;
 	/** 다중 선택 중 선택 행 타임라인 ms 일괄 patch. 반영 없으면 false */
 	patchSelectedTimelines: (patches: Map<number, SheetTimelineItem>) => boolean;
+	/** undo/redo — 인덱스 삽입(자동 시각 채움 없음) */
+	spliceTimelineAt: (index: number, data: SheetTimelineItem) => boolean;
+	/** undo/redo — multi 패치 (`{ index, data }[]`, multiple 무관) */
+	replaceTimelinePatches: (
+		patches: readonly { index: number; data: SheetTimelineItem }[],
+	) => boolean;
 }

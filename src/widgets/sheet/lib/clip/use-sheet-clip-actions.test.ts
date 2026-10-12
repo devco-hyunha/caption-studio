@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import { useSheetClipActions } from './use-sheet-clip-actions';
 
 const resetStore = () => {
@@ -46,6 +47,7 @@ const renderClip = (overrides: Partial<Parameters<typeof useSheetClipActions>[0]
 		(props: Parameters<typeof useSheetClipActions>[0]) => useSheetClipActions(props),
 		{
 			initialProps: {
+				format: 'smi' as const,
 				currentRowIndex: 1,
 				currentColumn: 'text' as const,
 				isEditing,
@@ -118,5 +120,31 @@ describe('useSheetClipActions closeSearchPanel', () => {
 		act(() => hook.result.current.clipCopy());
 		expect(closeSearchPanel).not.toHaveBeenCalled();
 		expect(writeText).not.toHaveBeenCalled();
+	});
+
+	it('다중 선택 applyTextFormat — multi.<cmd> push shape (backups/currents)', () => {
+		useSheetHistoryStore.getState().resetForSheets(1, 0);
+		const { hook } = renderClip();
+		// renderClip이 store를 리셋하므로 다중 선택은 그 뒤 설정
+		useSheetStore.setState((state) => ({
+			sheets: [
+				{
+					...state.sheets[0],
+					multipleActive: true,
+					selectedRows: [0, 1],
+					multipleStart: 0,
+				},
+			],
+		}));
+
+		act(() => hook.result.current.applyTextFormat('bold'));
+
+		const stack = useSheetHistoryStore.getState().stacks[0];
+		const last = stack.entries[stack.index];
+		expect(last?.command).toBe('multi.bold');
+		expect(last?.id).toBeNull();
+		expect((last?.before as { index: number }[]).map((p) => p.index)).toEqual([0, 1]);
+		expect((last?.after as { index: number }[]).map((p) => p.index)).toEqual([0, 1]);
+		expect(last?.current).toEqual({ row: 1, col: 1 });
 	});
 });

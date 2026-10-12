@@ -47,6 +47,10 @@ export interface SheetBodyToolbarProps {
 	onToggleMultiple: () => void;
 	onInsertRow: () => void;
 	onRemoveRow: () => void;
+	canUndo: boolean;
+	canRedo: boolean;
+	onUndo: () => void;
+	onRedo: () => void;
 	search: SheetSearchPanelProps;
 	className?: string;
 }

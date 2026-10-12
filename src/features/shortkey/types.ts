@@ -6,7 +6,7 @@ import type { SheetShortkeyId } from './model/default-sheet-shortkey-masks';
 /** 서식 명령 — bold/italic/underline */
 export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline';
 
-/** mask 저장 맵 — 부분집합 (persist merge·legacy 승격용) */
+/** mask 저장 맵 — 부분집합 (persist merge·승격용) */
 export type ShortkeyMasks = Partial<Record<SheetShortkeyId, string>>;
 
 /** localStorage `shortkeyMasks` persist partialize 결과 */
@@ -72,6 +72,10 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	timeMinus: () => void;
 	/** `/` — 검색 패널 토글 */
 	toggleSearch: () => void;
+	/** Ctrl+Z — 에딧 중이 아닐 때만 */
+	undo: () => void;
+	/** Ctrl+Y */
+	redo: () => void;
 }
 
 export interface UseSheetShortkeyParams {

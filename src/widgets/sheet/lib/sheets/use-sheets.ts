@@ -1,11 +1,17 @@
-import { useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { getActiveScroll, isEditableColumn, useSheetStore } from '@/entities/subtitle-sheet';
+import {
+	cloneTimelineSnapshot,
+	useSheetHistoryStore,
+} from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
 import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../../types';
+import { getEditableColIndex } from '../move/sheet-move';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
 
 /**
- * 탭 전환·CRUD 직전에 현재 body scrollTop을 활성 시트를 기록.
+ * 탭 전환·CRUD 직전에 현재 body scrollTop을 활성 시트에 기록.
+ * 셀 커밋 시 history push · 탭 CRUD 시 history 스택 동기화.
  * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
  */
 const useSheets = (format: SheetFormat): UseSheetsResult => {
@@ -21,6 +27,12 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 
 	const state = { active, sheets };
 	const bodyScrollTopRef = useRef(getActiveScroll(state));
+
+	useLayoutEffect(() => {
+		useSheetHistoryStore.getState().resetForSheets(sheets.length, active);
+		// 최초 마운트만 — 탭 CRUD는 핸들러에서 스택 동기화
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- mount sync only
+	}, []);
 
 	const persistActiveScroll = () => {
 		updateSheetScrollAction(active, bodyScrollTopRef.current);
@@ -41,6 +53,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 
 		persistActiveScroll();
 		selectSheetAction(index);
+		useSheetHistoryStore.getState().setActiveSheetIndex(index);
 		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
@@ -49,13 +62,21 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 	const handleAddTab = () => {
 		persistActiveScroll();
 		addSheetAction();
+		useSheetHistoryStore.getState().addHistoryStack();
+		const nextActive = useSheetStore.getState().active;
+		useSheetHistoryStore.getState().setActiveSheetIndex(nextActive);
 		clearSearchHits();
 		bodyScrollTopRef.current = 0;
 	};
 
 	const handleDeleteTab = (index: number) => {
 		persistActiveScroll();
+		const beforeCount = useSheetStore.getState().sheets.length;
 		deleteSheetAction(index);
+		const afterCount = useSheetStore.getState().sheets.length;
+		if (afterCount < beforeCount) {
+			useSheetHistoryStore.getState().removeHistoryStackAt(index);
+		}
 		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
@@ -65,14 +86,41 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 	const handleCopyTab = (index: number) => {
 		persistActiveScroll();
 		copySheetAction(index);
+		useSheetHistoryStore.getState().insertHistoryStackAt(index + 1);
+		const nextActive = useSheetStore.getState().active;
+		useSheetHistoryStore.getState().setActiveSheetIndex(nextActive);
 		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
-	/** 셀 커밋 — editable 열만 store에 반영 (성공 여부 반환) */
+	/** 셀 커밋 — editable 열만 store에 반영 + history update push */
 	const handleUpdateCell = (rowIndex: number, column: SheetColumnId, value: string) => {
 		if (!isEditableColumn(column)) return false;
-		return updateActiveCellAction(rowIndex, column, value);
+
+		const store = useSheetStore.getState();
+		const sheet = store.sheets[store.active];
+		const before = sheet?.timelines[rowIndex];
+		if (!before) return false;
+
+		// update 커밋 — mutate 전 검색 패널 닫기
+		useSheetSearchStore.getState().closeSearchPanel();
+
+		const beforeSnap = cloneTimelineSnapshot(before);
+		const ok = updateActiveCellAction(rowIndex, column, value);
+		if (!ok) return false;
+
+		const after = useSheetStore.getState().sheets[store.active]?.timelines[rowIndex];
+		if (!after) return true;
+
+		const col = getEditableColIndex(format, column);
+		useSheetHistoryStore.getState().pushHistory({
+			command: 'update',
+			id: rowIndex,
+			before: beforeSnap,
+			after: cloneTimelineSnapshot(after),
+			current: { row: rowIndex, col: col >= 0 ? col : 0 },
+		});
+		return true;
 	};
 
 	return {

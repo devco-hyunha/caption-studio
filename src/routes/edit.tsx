@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import { Button } from '@/shared/ui/button';
 import {
 	DEFAULT_ESTIMATE_ROW_HEIGHT,
@@ -25,11 +26,16 @@ const EditPage = () => {
 	} = useSheets(format);
 
 	const handleFormatSmi = () => {
+		if (format === 'smi') return;
 		setFormat('smi');
+		// 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (`/` settings/format.js · 리뷰 H1)
+		useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
 	};
 
 	const handleFormatSrt = () => {
+		if (format === 'srt') return;
 		setFormat('srt');
+		useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
 	};
 
 	return (

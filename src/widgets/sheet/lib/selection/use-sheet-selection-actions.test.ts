@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import type { SheetRowView } from '../../types';
 import { useSheetSelectionActions } from './use-sheet-selection-actions';
 
@@ -55,7 +56,7 @@ const renderActions = (
 		format: 'smi' as const,
 		rows: makeRows(rowCount),
 		totalHeight: rowCount * ROW_HEIGHT,
-		isEditing: false,
+		isEditing: vi.fn(() => false),
 		currentRowIndex: 1,
 		currentColumn: 'text' as const,
 		endEdit,
@@ -84,9 +85,15 @@ const renderActions = (
 
 const activeSheet = () => useSheetStore.getState().sheets[useSheetStore.getState().active];
 
+const activeHistoryStack = () => {
+	const state = useSheetHistoryStore.getState();
+	return state.stacks[state.activeSheetIndex];
+};
+
 describe('useSheetSelectionActions', () => {
 	beforeEach(() => {
 		resetStore(3);
+		useSheetHistoryStore.getState().resetForSheets(1, 0);
 	});
 
 	it('토글 클릭: 다중 선택 진입 시 현재 행 선택, 재토글 시 해제', () => {
@@ -193,7 +200,7 @@ describe('useSheetSelectionActions', () => {
 	});
 
 	it('편집 중이면 액션 전에 endEdit(true) 호출', () => {
-		const { hook, endEdit } = renderActions(3, { isEditing: true });
+		const { hook, endEdit } = renderActions(3, { isEditing: () => true });
 
 		act(() => hook.result.current.handleInsertAtFocus());
 		expect(endEdit).toHaveBeenCalledWith(true);
@@ -213,5 +220,42 @@ describe('useSheetSelectionActions', () => {
 
 		act(() => hook.result.current.handleRemoveAtFocus());
 		expect(closeSearchPanel).toHaveBeenCalledTimes(3);
+	});
+
+	it('insert push shape — command insert·id=insertIndex·before null·after 스냅샷·current col', () => {
+		const { hook } = renderActions(3);
+
+		act(() => hook.result.current.handleInsertAtFocus());
+		const stack = activeHistoryStack();
+		const last = stack.entries[stack.index];
+		expect(last?.command).toBe('insert');
+		expect(last?.id).toBe(2);
+		expect(last?.before).toBeNull();
+		expect(last?.after).toEqual({ start: 0, end: 0, text: '', memo: '' });
+		expect(last?.current).toEqual({ row: 1, col: 1 });
+	});
+
+	it('remove push shape — 다중 행이면 command remove·before 스냅샷·after null', () => {
+		const { hook } = renderActions(3, { currentRowIndex: 2 });
+
+		act(() => hook.result.current.handleRemoveAtFocus());
+		const stack = activeHistoryStack();
+		const last = stack.entries[stack.index];
+		expect(last?.command).toBe('remove');
+		expect(last?.id).toBe(2);
+		expect(last?.after).toBeNull();
+		expect(last?.current).toEqual({ row: 2, col: 1 });
+	});
+
+	it('U5: 단일 행 삭제는 update(EMPTY) entry로 행 유지', () => {
+		const { hook } = renderActions(1, { currentRowIndex: 0 });
+
+		act(() => hook.result.current.handleRemoveAtFocus());
+		const stack = activeHistoryStack();
+		const last = stack.entries[stack.index];
+		expect(last?.command).toBe('update');
+		expect(last?.id).toBe(0);
+		expect(last?.after).toEqual({ start: 0, end: 0, text: '', memo: '' });
+		expect(activeSheet().timelines).toHaveLength(1);
 	});
 });

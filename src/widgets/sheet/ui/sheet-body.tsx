@@ -14,6 +14,7 @@ import { useSheetWindow } from '../lib/move/use-sheet-window';
 import { useSheetSearchActions } from '../lib/search/use-sheet-search-actions';
 import { useSheetSelectionActions } from '../lib/selection/use-sheet-selection-actions';
 import { useSheetTimeActions } from '../lib/time/use-sheet-time-actions';
+import { useSheetUndoActions } from '../lib/undo/use-sheet-undo-actions';
 import { buildSheetShortkeyActions } from '../lib/shortkey/build-sheet-shortkey-actions';
 import type { SheetBodyProps } from '../types';
 import { SheetBodyToolbar } from './sheet-body-toolbar';
@@ -27,7 +28,7 @@ const EMPTY_TIMELINES: readonly SheetTimelineItem[] = [];
  * - page(viewport×3) 스냅 · paddingTop 흐름 레이아웃
  * - 탭별 scrollTop 복원
  * - 셀 더블클릭/우클릭/문자 입력 편집 · blur 저장
- * - 전역 키는 shortkey (이동·에딧·선택·CRUD)
+ * - 전역 키는 shortkey (이동·에딧·선택·CRUD·undo/redo)
  */
 const SheetBody = ({
 	format,
@@ -50,10 +51,7 @@ const SheetBody = ({
 	});
 
 	// 스토어 게이트 — stable wrapper (cell-edit·search-actions가 공유, 순환 배선 방지)
-	const closeSearchPanel = useCallback(
-		() => useSheetSearchStore.getState().closeSearchPanel(),
-		[],
-	);
+	const closeSearchPanel = useCallback(() => useSheetSearchStore.getState().closeSearchPanel(), []);
 	const isSearchInputFocused = useCallback(
 		() => useSheetSearchStore.getState().searchInputFocused,
 		[],
@@ -113,7 +111,7 @@ const SheetBody = ({
 		format,
 		rows,
 		totalHeight: sheetWindow.totalHeight,
-		isEditing: mode === 'edit',
+		isEditing,
 		currentRowIndex,
 		currentColumn,
 		endEdit,
@@ -122,6 +120,7 @@ const SheetBody = ({
 	});
 
 	const clip = useSheetClipActions({
+		format,
 		currentRowIndex,
 		currentColumn,
 		isEditing,
@@ -132,10 +131,19 @@ const SheetBody = ({
 	});
 
 	const time = useSheetTimeActions({
+		format,
 		currentRowIndex,
 		currentColumn,
 		isTimeTarget,
 		closeSearchPanel,
+	});
+
+	const { canUndo, canRedo, handleUndo, handleRedo } = useSheetUndoActions({
+		format,
+		rows,
+		totalHeight: sheetWindow.totalHeight,
+		isEditing,
+		applyFocus,
 	});
 
 	const move = useSheetMove({
@@ -178,6 +186,8 @@ const SheetBody = ({
 			timePlus: time.timePlus,
 			timeMinus: time.timeMinus,
 			toggleSearch,
+			undo: handleUndo,
+			redo: handleRedo,
 		});
 
 	useSheetShortkey({ getActions: getShortkeyActions });
@@ -197,6 +207,10 @@ const SheetBody = ({
 			onToggleMultiple={handleToggleMultipleClick}
 			onInsertRow={handleInsertAtFocus}
 			onRemoveRow={handleRemoveAtFocus}
+			canUndo={canUndo}
+			canRedo={canRedo}
+			onUndo={handleUndo}
+			onRedo={handleRedo}
 			search={{
 				format,
 				timelines,

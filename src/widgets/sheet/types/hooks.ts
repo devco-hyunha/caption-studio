@@ -80,8 +80,8 @@ export interface UseSheetSelectionActionsParams {
 	rows: SheetRowView[];
 	/** 시트 총 높이 — pending focus 대기 조건 */
 	totalHeight: number;
-	/** 편집 중 여부 */
-	isEditing: boolean;
+	/** 편집 중 여부 — undo 훅과 동일 방식(ref 기반 판별) */
+	isEditing: () => boolean;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	endEdit: (commit?: boolean) => void;
@@ -363,10 +363,13 @@ export interface BuildSheetShortkeyActionsParams {
 	timePlus: () => void;
 	timeMinus: () => void;
 	toggleSearch: () => void;
+	undo: () => void;
+	redo: () => void;
 }
 
 /** clip 훅 params — 포커스 셀·편집 판별·에디터 ref·커밋 */
 export interface UseSheetClipActionsParams {
+	format: SheetFormat;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	isEditing: () => boolean;
@@ -388,11 +391,45 @@ export interface UseSheetClipActionsResult {
 
 /** time 훅 params — 포커스 time 셀·다중 선택·time 타깃 판별 */
 export interface UseSheetTimeActionsParams {
+	format: SheetFormat;
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	isTimeTarget: () => boolean;
 	/** ±jump 직전 검색 패널 닫기 */
 	closeSearchPanel: () => void;
+}
+
+/** pending focus 훅 params — 렌더 반영 후 포커스 적용 (selection·undo 공유) */
+export interface UsePendingFocusParams {
+	format: SheetFormat;
+	rows: SheetRowView[];
+	/** 시트 총 높이 — pending focus 대기 조건 */
+	totalHeight: number;
+	applyFocus: (
+		rowIndex: number,
+		column: SheetColumnId,
+		options?: { scrollTop?: number | null },
+	) => void;
+}
+
+/** undo/redo 훅 params — 포커스·에딧 판별 */
+export interface UseSheetUndoActionsParams {
+	format: SheetFormat;
+	rows: SheetRowView[];
+	totalHeight: number;
+	isEditing: () => boolean;
+	applyFocus: (
+		rowIndex: number,
+		column: SheetColumnId,
+		options?: { scrollTop?: number | null },
+	) => void;
+}
+
+export interface UseSheetUndoActionsResult {
+	canUndo: boolean;
+	canRedo: boolean;
+	handleUndo: () => void;
+	handleRedo: () => void;
 }
 
 /** time 훅 결과 — shortkey actions에 주입할 time ±jump API */

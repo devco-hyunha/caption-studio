@@ -1,6 +1,11 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
+import {
+	cloneTimelineSnapshot,
+	useSheetHistoryStore,
+	type HistoryTimelinePatch,
+} from '@/features/sheet-history';
 import type {
 	SheetColumnId,
 	UseSheetClipActionsParams,
@@ -8,6 +13,7 @@ import type {
 } from '../../types';
 import { applyTextFormatCommand } from '../apply-text-format';
 import { isMultipleActive } from '../is-multiple-active';
+import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 
 /** clip 대상 열 — text/memo만 (time 열은 클립·서식 대상 아님) */
 const isTextMemoColumn = (column: SheetColumnId | null | undefined): column is 'text' | 'memo' =>
@@ -27,6 +33,7 @@ const readTimelineText = (
  * 에딧 중 서식은 에디터 execCommand, 다중 선택은 선택 행 text 일괄, 단건은 스토어 갱신.
  */
 const useSheetClipActions = ({
+	format,
 	currentRowIndex,
 	currentColumn,
 	isEditing,
@@ -63,13 +70,43 @@ const useSheetClipActions = ({
 		const sheet = store.sheets[store.active];
 		if (!sheet) return;
 
-		// 다중 선택 — 선택 행 text 일괄 (multiClip parity)
+		// 다중 선택 — 선택 행 text 일괄 (multiClip parity) + multi.<cmd> history
 		if (sheet.multipleActive) {
-			useSheetStore.getState().updateSelectedTexts((text) => applyTextFormatCommand(text, command));
+			const selected = sheet.selectedRows;
+			if (selected.length === 0) return;
+
+			const backups: HistoryTimelinePatch[] = selected.flatMap((index) => {
+				const timeline = sheet.timelines[index];
+				if (!timeline) return [];
+				return [{ index, data: cloneTimelineSnapshot(timeline) }];
+			});
+			if (backups.length === 0) return;
+
+			const ok = useSheetStore
+				.getState()
+				.updateSelectedTexts((text) => applyTextFormatCommand(text, command));
+			if (!ok) return;
+
+			const afterSheet = useSheetStore.getState().sheets[store.active];
+			const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
+				const timeline = afterSheet?.timelines[index];
+				if (!timeline) return [];
+				return [{ index, data: cloneTimelineSnapshot(timeline) }];
+			});
+			if (currents.length === 0) return;
+
+			const focus = resolveFocusCursor(format, currentRowIndex, currentColumn);
+			useSheetHistoryStore.getState().pushHistory({
+				command: `multi.${command}`,
+				id: null,
+				before: backups,
+				after: currents,
+				current: focus,
+			});
 			return;
 		}
 
-		// 단건 clip — text/memo 타깃만
+		// 단건 clip — text/memo 타깃만 (update는 onUpdateCell → useSheets push)
 		if (!isTextTarget() || currentRowIndex == null || !isTextMemoColumn(currentColumn)) return;
 		const prev = readTimelineText(sheet.timelines[currentRowIndex], currentColumn);
 		if (prev == null) return;

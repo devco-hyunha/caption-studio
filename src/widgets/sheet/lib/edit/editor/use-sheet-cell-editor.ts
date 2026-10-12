@@ -23,6 +23,7 @@ import {
 	clearEditingSurfaceStyles,
 	flushModeOnCompositionEnd,
 	isBlurOutsideEditor,
+	focusEditorInput,
 	showEditingSurface,
 } from './edit-surface';
 import { useEditInputSync } from './use-edit-input-sync';
@@ -80,6 +81,15 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 			flushModeOnCompositionEnd(inputRef.current, flushMode);
 			return;
 		}
+
+		// 비IME 타입 투 리플레이스: 기존 값 로드 + 전체 선택 → 타이핑 문자가 선택을 치환한다.
+		const input = inputRef.current;
+		const current = targetRef.current;
+		if (input && current && isTextColumn(current.column)) {
+			input.innerHTML = `${current.value}<br>`;
+			focusEditorInput(input, true);
+		}
+
 		queueMicrotask(flushMode);
 	};
 

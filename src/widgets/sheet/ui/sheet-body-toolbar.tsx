@@ -1,14 +1,19 @@
+import { SheetHistoryButtons } from '@/features/sheet-history';
 import { SheetSearchPanel } from '@/features/sheet-search';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import type { SheetBodyToolbarProps } from '../types';
 
-/** 시트 상단 툴바 — 다중 선택 토글, 포커스 행 추가/삭제, 검색 패널 */
+/** 시트 상단 툴바 — 다중 선택·행 CRUD·undo/redo·검색 패널 */
 const SheetBodyToolbar = ({
 	multipleActive,
 	onToggleMultiple,
 	onInsertRow,
 	onRemoveRow,
+	canUndo,
+	canRedo,
+	onUndo,
+	onRedo,
 	search,
 	className,
 }: SheetBodyToolbarProps) => {
@@ -50,6 +55,12 @@ const SheetBodyToolbar = ({
 			>
 				행 삭제
 			</Button>
+			<SheetHistoryButtons
+				canUndo={canUndo}
+				canRedo={canRedo}
+				onUndo={onUndo}
+				onRedo={onRedo}
+			/>
 			<SheetSearchPanel
 				format={search.format}
 				timelines={search.timelines}

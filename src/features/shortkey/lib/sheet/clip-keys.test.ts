@@ -33,6 +33,8 @@ const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortk
 	timePlus: vi.fn(),
 	timeMinus: vi.fn(),
 	toggleSearch: vi.fn(),
+	undo: vi.fn(),
+	redo: vi.fn(),
 	...overrides,
 });
 

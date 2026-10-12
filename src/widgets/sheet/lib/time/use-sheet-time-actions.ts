@@ -1,11 +1,17 @@
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
+import {
+	cloneTimelineSnapshot,
+	useSheetHistoryStore,
+	type HistoryTimelinePatch,
+} from '@/features/sheet-history';
 import type {
 	SheetColumnId,
 	UseSheetTimeActionsParams,
 	UseSheetTimeActionsResult,
 } from '../../types';
 import { isMultipleActive } from '../is-multiple-active';
+import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from '../time-jump';
 
 /** time 열 타깃 — starttime/endtime만 */
@@ -18,6 +24,7 @@ const isTimeColumnPair = (
  * 다중 선택은 선택 행 start/end 일괄, 단건은 포커스 time 열만. jump는 `jump_val`(기본 30ms).
  */
 const useSheetTimeActions = ({
+	format,
 	currentRowIndex,
 	currentColumn,
 	isTimeTarget,
@@ -29,14 +36,34 @@ const useSheetTimeActions = ({
 		if (!sheet?.multipleActive || sheet.selectedRows.length === 0) return;
 
 		const step = readTimeJumpMs();
+		const backups: HistoryTimelinePatch[] = [];
 		const patches = new Map<number, SheetTimelineItem>();
 		sheet.selectedRows.forEach((rowIndex) => {
 			const timeline = sheet.timelines[rowIndex];
 			if (!timeline) return;
+			backups.push({ index: rowIndex, data: cloneTimelineSnapshot(timeline) });
 			patches.set(rowIndex, nudgeTimelineByStep(timeline, step, direction));
 		});
+		if (patches.size === 0) return;
 
-		useSheetStore.getState().patchSelectedTimelines(patches);
+		const ok = useSheetStore.getState().patchSelectedTimelines(patches);
+		if (!ok) return;
+
+		const afterSheet = useSheetStore.getState().sheets[store.active];
+		const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
+			const timeline = afterSheet?.timelines[index];
+			if (!timeline) return [];
+			return [{ index, data: cloneTimelineSnapshot(timeline) }];
+		});
+		if (currents.length === 0) return;
+
+		useSheetHistoryStore.getState().pushHistory({
+			command: `multi.${direction}`,
+			id: null,
+			before: backups,
+			after: currents,
+			current: resolveFocusCursor(format, currentRowIndex, currentColumn),
+		});
 	};
 
 	const nudgeFocusedCell = (direction: 'plus' | 'minus') => {
@@ -49,10 +76,23 @@ const useSheetTimeActions = ({
 		if (!timeline) return;
 
 		const step = readTimeJumpMs();
+		const beforeSnap = cloneTimelineSnapshot(timeline);
 		const next = nudgeTimelineColumn(timeline, currentColumn, step, direction);
 		if (next.start === timeline.start && next.end === timeline.end) return;
 
-		useSheetStore.getState().patchActiveTimeline(currentRowIndex, next);
+		const ok = useSheetStore.getState().patchActiveTimeline(currentRowIndex, next);
+		if (!ok) return;
+
+		const after =
+			useSheetStore.getState().sheets[store.active]?.timelines[currentRowIndex] ?? next;
+		const focus = resolveFocusCursor(format, currentRowIndex, currentColumn);
+		useSheetHistoryStore.getState().pushHistory({
+			command: 'update',
+			id: currentRowIndex,
+			before: beforeSnap,
+			after: cloneTimelineSnapshot(after),
+			current: focus,
+		});
 	};
 
 	const timePlus = () => {

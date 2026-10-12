@@ -28,6 +28,8 @@ export const SHORTKEY_IDS = {
 	TIME_PLUS: 'timePlus',
 	TIME_MINUS: 'timeMinus',
 	SEARCH: 'search',
+	UNDO: 'undo',
+	REDO: 'redo',
 } as const;
 
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
@@ -61,6 +63,9 @@ export const SHORTKEY_MASKS = {
 	CTRL_PLUS: 'ctrl+plus',
 	CTRL_MINUS: 'ctrl+minus',
 	SLASH: '?',
+	CTRL_Z: 'ctrl+z',
+	CTRL_Y: 'ctrl+y',
+	CTRL_SHIFT_Z: 'ctrl+shift+z',
 } as const;
 
 /** S2 defaultKeys mask */
@@ -92,6 +97,9 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
 	[SHORTKEY_IDS.TIME_PLUS]: SHORTKEY_MASKS.CTRL_PLUS,
 	[SHORTKEY_IDS.TIME_MINUS]: SHORTKEY_MASKS.CTRL_MINUS,
 	[SHORTKEY_IDS.SEARCH]: SHORTKEY_MASKS.SLASH,
+	[SHORTKEY_IDS.UNDO]: SHORTKEY_MASKS.CTRL_Z,
+	// M3: ctrl+y + ctrl+Shift+Z 병행 (mask comma → 엔진이 두 mask 등록)
+	[SHORTKEY_IDS.REDO]: `${SHORTKEY_MASKS.CTRL_Y},${SHORTKEY_MASKS.CTRL_SHIFT_Z}`,
 };
 
 /** placeholder (i18n) — 있는 키만 */
@@ -111,6 +119,8 @@ export const SHORTKEY_PLACEHOLDERS = {
 	TIME_PLUS: 'time-plus',
 	TIME_MINUS: 'time-minus',
 	SEARCH: 'search',
+	UNDO: 'undo',
+	REDO: 'redo',
 } as const;
 
 export const SHORTKEY_TYPES = {

@@ -20,12 +20,7 @@ export {
 	normalizeTabName,
 } from './lib/tab-names';
 
-export {
-	cloneTimeline,
-	createSheet,
-	createState,
-	normalizeState,
-} from './lib/sheet-core';
+export { cloneTimeline, createSheet, createState, normalizeState } from './lib/sheet-core';
 
 export {
 	addSheet,
@@ -44,6 +39,8 @@ export {
 	insertTimelineAfter,
 	insertTimelineAt,
 	removeTimelineAt,
+	replaceTimelineRow,
+	spliceTimelineAt,
 } from './lib/mutate/rows-mutate';
 
 export {
@@ -56,11 +53,15 @@ export {
 	patchActiveSheet,
 	replaceTimelineAt,
 	replaceTimelinePatches,
+	replaceActiveTimelinePatches,
+	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
 	setActiveMultipleStart,
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
+	removeActiveTimelineAtForHistory,
+	updateActiveSelectedTexts,
 } from './lib/active-sheet';
 
 export { loadState } from './lib/storage';

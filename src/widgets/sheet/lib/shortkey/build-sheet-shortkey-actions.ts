@@ -25,6 +25,8 @@ const buildSheetShortkeyActions = ({
 	timePlus,
 	timeMinus,
 	toggleSearch,
+	undo,
+	redo,
 }: BuildSheetShortkeyActionsParams): SheetShortkeyActions => ({
 	...move,
 	isEditing,
@@ -48,6 +50,8 @@ const buildSheetShortkeyActions = ({
 	timePlus,
 	timeMinus,
 	toggleSearch,
+	undo,
+	redo,
 });
 
 export { buildSheetShortkeyActions };
