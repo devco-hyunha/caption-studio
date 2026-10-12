@@ -29,7 +29,6 @@ export interface SheetSearchPanelProps {
 /** 시트 검색 스토어 — 패널·쿼리·hits·error-search 상태와 동작 */
 export interface SheetSearchStore {
 	searchPanelOpen: boolean;
-	searchQuery: string;
 	searchHits: SearchHit[];
 	searchCurrent: number;
 	/** 검색 input 포커스 중 에딧 차단 */

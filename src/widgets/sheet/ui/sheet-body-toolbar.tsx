@@ -1,13 +1,15 @@
+import { SheetSearchPanel } from '@/features/sheet-search';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import type { SheetBodyToolbarProps } from '../types';
 
-/** 시트 상단 툴바 — 다중 선택 토글과 포커스 행 추가/삭제 */
+/** 시트 상단 툴바 — 다중 선택 토글, 포커스 행 추가/삭제, 검색 패널 */
 const SheetBodyToolbar = ({
 	multipleActive,
 	onToggleMultiple,
 	onInsertRow,
 	onRemoveRow,
+	search,
 	className,
 }: SheetBodyToolbarProps) => {
 	return (
@@ -48,6 +50,12 @@ const SheetBodyToolbar = ({
 			>
 				행 삭제
 			</Button>
+			<SheetSearchPanel
+				format={search.format}
+				timelines={search.timelines}
+				rows={search.rows}
+				onJump={search.onJump}
+			/>
 		</div>
 	);
 };

@@ -1,5 +1,4 @@
 import { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
-import { useSheetSearchStore } from '@/features/sheet-search';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type {
 	SheetCellEditTarget,
@@ -34,7 +33,7 @@ import { useEditInputSync } from './use-edit-input-sync';
  * @returns mode, target, refs, beginEdit/commitEdit/cancelEdit/endEdit, React 핸들러
  */
 const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEditorResult => {
-	const { format, focus, onCommitCell } = params;
+	const { format, focus, onCommitCell, closeSearchPanel, isSearchInputFocused } = params;
 	const {
 		mode,
 		target,
@@ -65,8 +64,8 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 		if (isMultipleActive()) return;
 
 		// 검색 input 포커스 중이면 typing 에딧 진입도 차단
-		if (useSheetSearchStore.getState().searchInputFocused) return;
-		useSheetSearchStore.getState().closeSearchPanel();
+		if (isSearchInputFocused()) return;
+		closeSearchPanel();
 
 		markBootstrap(true);
 		modeRef.current = 'edit';
@@ -92,9 +91,9 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 		if (!isTextColumn(column)) return;
 
 		// 검색 input 포커스 중이면 에딧 진입 차단
-		if (useSheetSearchStore.getState().searchInputFocused) return;
+		if (isSearchInputFocused()) return;
 		// 에딧 진입 직전 검색 패널 닫기
-		useSheetSearchStore.getState().closeSearchPanel();
+		closeSearchPanel();
 
 		const next: SheetCellEditTarget | null =
 			cell != null

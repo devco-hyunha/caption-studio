@@ -5,7 +5,6 @@ import type { SheetSearchStore } from '../types';
 
 const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
 	searchPanelOpen: false,
-	searchQuery: '',
 	searchHits: [],
 	searchCurrent: -1,
 	searchInputFocused: false,
@@ -17,7 +16,6 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
 			if (!open) {
 				return {
 					searchPanelOpen: false,
-					searchQuery: '',
 					searchHits: [],
 					searchCurrent: -1,
 					searchInputFocused: false,
@@ -32,7 +30,6 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
 		if (!get().searchPanelOpen) return;
 		set({
 			searchPanelOpen: false,
-			searchQuery: '',
 			searchHits: [],
 			searchCurrent: -1,
 			searchInputFocused: false,
@@ -52,7 +49,7 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
 		const normalized = query.toLowerCase();
 		const hits = findSearchHits(timelines, normalized, format);
 		const searchCurrent = hits.length > 0 ? 0 : -1;
-		set({ searchQuery: query, searchHits: hits, searchCurrent, errorSearchActive: false });
+		set({ searchHits: hits, searchCurrent, errorSearchActive: false });
 		if (searchCurrent < 0) return null;
 		return hits[searchCurrent] ?? null;
 	},
@@ -62,15 +59,14 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
 			const hits = findErrorHits(rows);
 			set({
 				errorSearchActive: true,
-				searchQuery: '',
 				searchHits: hits,
 				searchCurrent: hits.length > 0 ? 0 : -1,
 			});
 			if (hits.length === 0) return null;
 			return hits[0] ?? null;
 		}
-		// 해제 — hits/query 초기화
-		set({ errorSearchActive: false, searchQuery: '', searchHits: [], searchCurrent: -1 });
+		// 해제 — hits 초기화
+		set({ errorSearchActive: false, searchHits: [], searchCurrent: -1 });
 		return null;
 	},
 

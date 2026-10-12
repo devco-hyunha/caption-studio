@@ -26,6 +26,8 @@ const bindPrintableEditCallback = (
 		if (!isPrintableShortcutEvent(event)) return;
 		// Space는 선택 토글 키가 선점 — 타입 투 리플레이스에서 제외
 		if (event.code === 'Space' || event.key === ' ') return;
+		// Slash는 검색 패널 토글이 선점 — 에딧 창이 열리지 않도록 제외
+		if (event.code === 'Slash') return;
 		actions.beginEditFromTyping(event);
 	});
 };

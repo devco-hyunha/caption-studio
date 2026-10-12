@@ -1,8 +1,8 @@
 import type { CSSProperties, UIEvent } from 'react';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
-import { SheetSearchPanel } from '@/features/sheet-search';
+import { useSheetSearchStore } from '@/features/sheet-search';
 import { useSheetShortkey } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
@@ -49,6 +49,16 @@ const SheetBody = ({
 		onScrollTopChange,
 	});
 
+	// 스토어 게이트 — stable wrapper (cell-edit·search-actions가 공유, 순환 배선 방지)
+	const closeSearchPanel = useCallback(
+		() => useSheetSearchStore.getState().closeSearchPanel(),
+		[],
+	);
+	const isSearchInputFocused = useCallback(
+		() => useSheetSearchStore.getState().searchInputFocused,
+		[],
+	);
+
 	const {
 		mode,
 		target,
@@ -79,9 +89,11 @@ const SheetBody = ({
 		scrollContentRef,
 		setScrollTop,
 		onCommitCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
+		closeSearchPanel,
+		isSearchInputFocused,
 	});
 
-	const { searchHitKeys, handleSearchJump, closeSearchPanel, toggleSearch } = useSheetSearchActions({
+	const { searchHitKeys, handleSearchJump, toggleSearch } = useSheetSearchActions({
 		format,
 		rows,
 		isEditing,
@@ -180,20 +192,18 @@ const SheetBody = ({
 	);
 
 	const chrome = (
-		<>
-			<SheetBodyToolbar
-				multipleActive={multipleActive}
-				onToggleMultiple={handleToggleMultipleClick}
-				onInsertRow={handleInsertAtFocus}
-				onRemoveRow={handleRemoveAtFocus}
-			/>
-			<SheetSearchPanel
-				format={format}
-				timelines={timelines}
-				rows={rows}
-				onJump={handleSearchJump}
-			/>
-		</>
+		<SheetBodyToolbar
+			multipleActive={multipleActive}
+			onToggleMultiple={handleToggleMultipleClick}
+			onInsertRow={handleInsertAtFocus}
+			onRemoveRow={handleRemoveAtFocus}
+			search={{
+				format,
+				timelines,
+				rows,
+				onJump: handleSearchJump,
+			}}
+		/>
 	);
 
 	return (

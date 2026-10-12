@@ -7,6 +7,7 @@ import type {
 	ReactNode,
 	RefObject,
 } from 'react';
+import type { SheetSearchPanelProps } from '@/features/sheet-search';
 import type { SheetColumnId, SheetFormat, SheetRowView } from './primitives';
 
 export interface SheetTabView {
@@ -40,12 +41,13 @@ export interface SheetTabMenuState {
 	y: number;
 }
 
-/** 시트 상단 툴바 — 다중 선택 토글, 포커스 행 추가/삭제 */
+/** 시트 상단 툴바 — 다중 선택 토글, 포커스 행 추가/삭제. search는 툴바가 렌더하는 검색 패널 props */
 export interface SheetBodyToolbarProps {
 	multipleActive: boolean;
 	onToggleMultiple: () => void;
 	onInsertRow: () => void;
 	onRemoveRow: () => void;
+	search: SheetSearchPanelProps;
 	className?: string;
 }
 

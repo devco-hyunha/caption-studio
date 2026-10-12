@@ -34,17 +34,12 @@ const useSheetSearchActions = ({
 		applyFocus(hit.row, column);
 	};
 
-	/** mutate·에딧 진입 직전 — 열려 있을 때만 닫음 */
-	const closeSearchPanel = () => {
-		useSheetSearchStore.getState().closeSearchPanel();
-	};
-
 	/** `/` — 검색 패널 토글 */
 	const toggleSearch = () => {
 		useSheetSearchStore.getState().toggleSearchPanel();
 	};
 
-	return { searchHitKeys, handleSearchJump, closeSearchPanel, toggleSearch };
+	return { searchHitKeys, handleSearchJump, toggleSearch };
 };
 
 export { useSheetSearchActions };

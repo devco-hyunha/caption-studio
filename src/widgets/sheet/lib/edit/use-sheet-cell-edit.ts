@@ -11,10 +11,25 @@ import { useSheetCellEditor } from './use-sheet-cell-editor';
  * @returns mode, target, refs, endEdit, applyFocus, shortkey용 판별/진입 API, 셀 핸들러
  */
 const useSheetCellEdit = (params: UseSheetCellEditParams): UseSheetCellEditResult => {
-	const { format, rows, scrollRef, scrollContentRef, setScrollTop, onCommitCell } = params;
+	const {
+		format,
+		rows,
+		scrollRef,
+		scrollContentRef,
+		setScrollTop,
+		onCommitCell,
+		closeSearchPanel,
+		isSearchInputFocused,
+	} = params;
 
 	const focus = useSheetCellFocus({ format, rows, scrollRef, scrollContentRef, setScrollTop });
-	const editor = useSheetCellEditor({ format, focus, onCommitCell });
+	const editor = useSheetCellEditor({
+		format,
+		focus,
+		onCommitCell,
+		closeSearchPanel,
+		isSearchInputFocused,
+	});
 
 	const {
 		mode,

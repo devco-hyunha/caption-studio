@@ -175,6 +175,10 @@ export interface UseSheetCellEditParams {
 	scrollContentRef: RefObject<HTMLDivElement | null>;
 	setScrollTop: (scrollTop: number) => void;
 	onCommitCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+	/** 에딧 진입 직전 검색 패널 닫기 */
+	closeSearchPanel: () => void;
+	/** 검색 input 포커스 중 — 에딧 진입 차단 */
+	isSearchInputFocused: () => boolean;
 }
 
 export interface UseSheetCellEditResult {
@@ -306,6 +310,10 @@ export interface UseSheetCellEditorParams {
 	format: SheetFormat;
 	focus: UseSheetCellFocusResult;
 	onCommitCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+	/** 에딧 진입 직전 검색 패널 닫기 */
+	closeSearchPanel: () => void;
+	/** 검색 input 포커스 중 — 에딧 진입 차단 */
+	isSearchInputFocused: () => boolean;
 }
 
 export interface UseSheetCellEditorResult {
@@ -393,7 +401,7 @@ export interface UseSheetTimeActionsResult {
 	timeMinus: () => void;
 }
 
-/** 검색 훅 params — 포커스·에딧·점프 API (feature 스토어는 훅 내부에서 직접 사용) */
+/** 검색 훅 params — 포커스·에딧·점프 API */
 export interface UseSheetSearchActionsParams {
 	format: SheetFormat;
 	rows: SheetRowView[];
@@ -407,14 +415,12 @@ export interface UseSheetSearchActionsParams {
 	) => void;
 }
 
-/** 검색 훅 결과 — 패널 점프·패널 close·히트 셀 키 */
+/** 검색 훅 결과 — 패널 점프·패널 토글·히트 셀 키 */
 export interface UseSheetSearchActionsResult {
 	/** 검색 히트 셀 키 `"row:columnId"` (editable col 변환 후) */
 	searchHitKeys: ReadonlySet<string>;
 	/** 히트 셀로 점프 — 에딧 커밋 후 포커스 */
 	handleSearchJump: (hit: SearchHit) => void;
-	/** mutate·에딧 진입 직전 패널 닫기 */
-	closeSearchPanel: () => void;
 	/** `/` — 검색 패널 토글 */
 	toggleSearch: () => void;
 }

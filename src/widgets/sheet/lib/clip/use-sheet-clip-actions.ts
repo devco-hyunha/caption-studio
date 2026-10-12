@@ -81,11 +81,13 @@ const useSheetClipActions = ({
 	/** Backspace/Delete — 비에딧·비다중·text 타깃에서만 셀 비우기 */
 	const clearCell = () => {
 		if (isEditing() || isMultipleActive() || !isTextTarget()) return;
+		closeSearchPanel();
 		commitFocusedText('');
 	};
 
 	const clipCopy = () => {
 		if (isEditing() || isMultipleActive() || !isTextTarget()) return;
+		closeSearchPanel();
 		const value = readFocusedText();
 		if (value == null) return;
 		void navigator.clipboard?.writeText(value).catch(() => undefined);
@@ -93,6 +95,7 @@ const useSheetClipActions = ({
 
 	const clipCut = () => {
 		if (isEditing() || isMultipleActive() || !isTextTarget()) return;
+		closeSearchPanel();
 		const value = readFocusedText();
 		if (value == null) return;
 		void navigator.clipboard?.writeText(value).then(
@@ -105,6 +108,7 @@ const useSheetClipActions = ({
 
 	const clipPaste = () => {
 		if (isEditing() || isMultipleActive() || !isTextTarget()) return;
+		closeSearchPanel();
 		void navigator.clipboard?.readText().then(
 			(text) => {
 				commitFocusedText(text);

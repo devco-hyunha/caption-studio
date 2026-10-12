@@ -201,4 +201,17 @@ describe('useSheetSelectionActions', () => {
 		act(() => hook.result.current.handleToggleMultipleClick());
 		expect(endEdit).toHaveBeenCalledTimes(2);
 	});
+
+	it('행 CRUD(insert/append/remove) 직전 closeSearchPanel 호출', () => {
+		const { hook, closeSearchPanel } = renderActions(3);
+
+		act(() => hook.result.current.handleInsertAtFocus());
+		expect(closeSearchPanel).toHaveBeenCalledTimes(1);
+
+		act(() => hook.result.current.handleAppendRow({ row: 1, col: 1 }));
+		expect(closeSearchPanel).toHaveBeenCalledTimes(2);
+
+		act(() => hook.result.current.handleRemoveAtFocus());
+		expect(closeSearchPanel).toHaveBeenCalledTimes(3);
+	});
 });

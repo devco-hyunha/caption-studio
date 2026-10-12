@@ -62,7 +62,10 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
 	};
 
 	const handleErrorSearchChange = () => {
+		const wasActive = errorSearchActive;
 		const hit = toggleErrorSearch(rows);
+		// 체크 시 input 비움 (`/` searchInput.value='' parity)
+		if (!wasActive && inputRef.current) inputRef.current.value = '';
 		if (hit) onJump(hit);
 	};
 
@@ -71,7 +74,7 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
 	return (
 		<div
 			data-slot="sheet-search-panel"
-			className="flex shrink-0 flex-wrap items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-2 py-1.5"
+			className="flex flex-wrap items-center gap-2"
 		>
 			<Button
 				type="button"
