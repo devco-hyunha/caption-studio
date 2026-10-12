@@ -4,9 +4,9 @@ import type {
 	SheetColumnId,
 	SheetFormat,
 	SheetRowView,
-} from '../../types';
-import { COLUMN_WIDTHS } from '../columns';
-import { scrollColIntoView, scrollRowIntoView } from '../move/sheet-move';
+} from '../../../types';
+import { COLUMN_WIDTHS } from '../../columns';
+import { scrollColIntoView, scrollRowIntoView } from '../../move/sheet-move';
 import { resolveTargetByIndex } from './edit-target';
 
 /**

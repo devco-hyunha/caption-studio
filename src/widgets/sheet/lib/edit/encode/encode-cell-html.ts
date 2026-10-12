@@ -1,5 +1,5 @@
-import type { SheetColumnId } from '../../types';
-import { isTextColumn } from '../columns';
+import type { SheetColumnId } from '../../../types';
+import { isTextColumn } from '../../columns';
 
 /** 편집 HTML 정규화 */
 const validCellHtml = (text: string) =>

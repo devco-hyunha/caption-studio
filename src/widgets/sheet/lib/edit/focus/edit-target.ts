@@ -4,10 +4,10 @@ import type {
 	SheetColumnId,
 	SheetFormat,
 	SheetRowView,
-} from '../../types';
-import { COLUMN_WIDTHS, getColumnLeft } from '../columns';
-import { getCellValue } from '../get-cell-value';
-import { getRowTop } from '../move/sheet-move';
+} from '../../../types';
+import { COLUMN_WIDTHS, getColumnLeft } from '../../columns';
+import { getCellValue } from '../../get-cell-value';
+import { getRowTop } from '../../move/sheet-move';
 
 const measureCellPosition = (
 	cell: HTMLElement,

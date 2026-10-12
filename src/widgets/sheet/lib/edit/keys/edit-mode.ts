@@ -1,5 +1,5 @@
-import type { SheetEditKeyProbe, EditModeDeps } from '../../types';
-import { isTextColumn, isTimeColumn } from '../columns';
+import type { SheetEditKeyProbe, EditModeDeps } from '../../../types';
+import { isTextColumn, isTimeColumn } from '../../columns';
 import { shouldBeginEditFromKey } from './edit-keys';
 
 /** 편집 모드 판별 — mode/target ref만 읽는 순수 predicate (DOM·스토어 무관) */

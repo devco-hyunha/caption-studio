@@ -4,7 +4,7 @@ import type {
 	SheetCellEditorMode,
 	SheetEditKeyProbe,
 	EditModeDeps,
-} from '../../types';
+} from '../../../types';
 
 import { hasFocusMode, isEditingMode, isTextTargetMode, isTimeTargetMode, resolveEditKeyIntent } from './edit-mode';
 

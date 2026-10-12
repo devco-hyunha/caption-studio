@@ -1,5 +1,5 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
-import { encodeCellHtml } from './edit/encode-cell-html';
+import { encodeCellHtml } from './edit/encode/encode-cell-html';
 
 const FORMAT_TAGS: Record<SheetTextFormatCommand, 'b' | 'i' | 'u'> = {
 	bold: 'b',

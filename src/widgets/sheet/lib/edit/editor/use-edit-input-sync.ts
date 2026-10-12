@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import type { UseEditInputSyncParams } from '../../types';
-import { isTextColumn } from '../columns';
+import type { UseEditInputSyncParams } from '../../../types';
+import { isTextColumn } from '../../columns';
 import { focusEditorInput } from './edit-surface';
 
 /**

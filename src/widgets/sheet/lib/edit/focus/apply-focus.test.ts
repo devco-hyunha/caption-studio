@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FocusBodyMetrics, SheetRowView } from '../../types';
+import type { FocusBodyMetrics, SheetRowView } from '../../../types';
 import { computeFocusScroll } from './apply-focus';
 
 const ROWS: SheetRowView[] = [

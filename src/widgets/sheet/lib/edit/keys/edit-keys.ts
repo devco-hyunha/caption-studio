@@ -1,4 +1,4 @@
-import type { SheetEditKeyProbe } from '../../types';
+import type { SheetEditKeyProbe } from '../../../types';
 
 /** 문자 키 (Space 포함). 커스텀 키·IME 조합 중이면 false */
 const isPrintableKey = (event: SheetEditKeyProbe): boolean => {

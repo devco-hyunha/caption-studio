@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { canEditColumnId, isTextColumn } from '../columns';
+import { canEditColumnId, isTextColumn } from '../../columns';
 import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import { resolveTarget, resolveTargetByIndex } from './edit-target';
 import { computeFocusScroll } from './apply-focus';
@@ -12,7 +12,7 @@ import type {
 	SheetRowView,
 	UseSheetCellFocusParams,
 	UseSheetCellFocusResult,
-} from '../../types';
+} from '../../../types';
 
 /**
  * 시트 셀 포커스/스크롤 소유 hook.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SheetRowView } from '../../types';
+import type { SheetRowView } from '../../../types';
 import { resolveTargetByIndex } from './edit-target';
 
 const ROWS: SheetRowView[] = [

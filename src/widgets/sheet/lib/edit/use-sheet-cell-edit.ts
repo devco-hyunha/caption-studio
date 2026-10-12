@@ -2,8 +2,8 @@ import { MouseEvent as ReactMouseEvent } from 'react';
 import type { SheetColumnId, UseSheetCellEditParams, UseSheetCellEditResult } from '../../types';
 import { canEditColumnId } from '../columns';
 import { isMultipleActive } from '../is-multiple-active';
-import { useSheetCellFocus } from './use-sheet-cell-focus';
-import { useSheetCellEditor } from './use-sheet-cell-editor';
+import { useSheetCellFocus } from './focus/use-sheet-cell-focus';
+import { useSheetCellEditor } from './editor/use-sheet-cell-editor';
 
 /**
  * 셀 편집 오케스트레이터 — focus hook + editor hook를 조합하고 셀 이벤트 핸들러를 노출

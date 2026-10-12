@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SheetCellEditTarget, SheetCellEditorMode, UseSheetCellFocusResult } from '../../types';
+import type { SheetCellEditTarget, SheetCellEditorMode, UseSheetCellFocusResult } from '../../../types';
 import { useSheetCellEditor } from './use-sheet-cell-editor';
 
 const TEXT_TARGET: SheetCellEditTarget = {

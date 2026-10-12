@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SheetEditKeyProbe } from '../../types';
+import type { SheetEditKeyProbe } from '../../../types';
 import { isImeStartKey, isPrintableKey, shouldBeginEditFromKey } from './edit-keys';
 
 const base: SheetEditKeyProbe = {

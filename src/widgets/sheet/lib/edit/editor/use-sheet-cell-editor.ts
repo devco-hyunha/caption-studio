@@ -6,18 +6,18 @@ import type {
 	SheetColumnId,
 	UseSheetCellEditorParams,
 	UseSheetCellEditorResult,
-} from '../../types';
-import { canEditColumnId, isTextColumn } from '../columns';
-import { isMultipleActive } from '../is-multiple-active';
-import { encodeCellHtml, resolveCommitValue } from './encode-cell-html';
-import { isImeStartKey } from './edit-keys';
+} from '../../../types';
+import { canEditColumnId, isTextColumn } from '../../columns';
+import { isMultipleActive } from '../../is-multiple-active';
+import { encodeCellHtml, resolveCommitValue } from '../encode/encode-cell-html';
+import { isImeStartKey } from '../keys/edit-keys';
 import {
 	isEditingMode,
 	isTextTargetMode,
 	isTimeTargetMode,
 	hasFocusMode,
 	resolveEditKeyIntent,
-} from './edit-mode';
+} from '../keys/edit-mode';
 import { insertEditorLineBreak } from './edit-commands';
 import {
 	clearEditingSurfaceStyles,
