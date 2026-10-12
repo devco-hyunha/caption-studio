@@ -1,14 +1,17 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SheetColumnId, UseSheetClipActionsParams, UseSheetClipActionsResult } from '../../types';
+import type {
+	SheetColumnId,
+	UseSheetClipActionsParams,
+	UseSheetClipActionsResult,
+} from '../../types';
 import { applyTextFormatCommand } from '../apply-text-format';
 import { isMultipleActive } from '../is-multiple-active';
 
 /** clip 대상 열 — text/memo만 (time 열은 클립·서식 대상 아님) */
-const isTextMemoColumn = (
-	column: SheetColumnId | null | undefined,
-): column is 'text' | 'memo' => column === 'text' || column === 'memo';
+const isTextMemoColumn = (column: SheetColumnId | null | undefined): column is 'text' | 'memo' =>
+	column === 'text' || column === 'memo';
 
 const readTimelineText = (
 	timeline: SheetTimelineItem | undefined,
@@ -30,6 +33,7 @@ const useSheetClipActions = ({
 	isTextTarget,
 	inputRef,
 	onUpdateCell,
+	closeSearchPanel,
 }: UseSheetClipActionsParams): UseSheetClipActionsResult => {
 	/** 포커스 셀 text/memo 커밋 — 대상 없으면 false */
 	const commitFocusedText = (value: string): boolean => {
@@ -45,6 +49,9 @@ const useSheetClipActions = ({
 	};
 
 	const applyTextFormat = (command: SheetTextFormatCommand) => {
+		// 서식·클립 직전 검색 패널 닫기
+		closeSearchPanel();
+
 		// 에딧 중 — 현재 에디터에 execCommand (selection 유지)
 		if (isEditing()) {
 			inputRef.current?.focus();
@@ -58,9 +65,7 @@ const useSheetClipActions = ({
 
 		// 다중 선택 — 선택 행 text 일괄 (multiClip parity)
 		if (sheet.multipleActive) {
-			useSheetStore.getState().updateSelectedTexts((text) =>
-				applyTextFormatCommand(text, command),
-			);
+			useSheetStore.getState().updateSelectedTexts((text) => applyTextFormatCommand(text, command));
 			return;
 		}
 

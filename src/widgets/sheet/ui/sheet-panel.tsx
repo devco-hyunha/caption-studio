@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 import {
 	DEFAULT_CELL_STYLE,
@@ -12,11 +12,7 @@ import { SheetBody } from './sheet-body';
 import { SheetFooter } from './sheet-footer';
 import { SheetHeader } from './sheet-header';
 
-const DEFAULT_TABS: SheetTabView[] = [
-	{ name: 'sheet1' },
-	{ name: 'sheet2' },
-	{ name: 'sheet3' },
-];
+const DEFAULT_TABS: SheetTabView[] = [{ name: 'sheet1' }, { name: 'sheet2' }, { name: 'sheet3' }];
 
 /** 시트 패널 — 가로 스크롤을 헤더에 전파하고 시트 인덱스를 역보상하는 스크롤 컨테이너 */
 const SheetPanel = ({
@@ -38,10 +34,8 @@ const SheetPanel = ({
 }: SheetPanelProps) => {
 	const columnVars = createColumnVars(format, DEFAULT_FONT_SIZE);
 	const headPanelRef = useRef<HTMLDivElement>(null);
-	const resolvedActiveIndex = Math.min(
-		Math.max(0, activeTabIndex),
-		Math.max(0, tabs.length - 1),
-	);
+	const [chromePortalEl, setChromePortalEl] = useState<HTMLDivElement | null>(null);
+	const resolvedActiveIndex = Math.min(Math.max(0, activeTabIndex), Math.max(0, tabs.length - 1));
 
 	const handleHorizontalScroll = (scrollLeft: number) => {
 		const headPanel = headPanelRef.current;
@@ -77,12 +71,10 @@ const SheetPanel = ({
 				} as CSSProperties
 			}
 		>
+			{/* toolbar·검색 패널 — sheet-head 위 슬롯 (SheetBody가 portal) */}
+			<div ref={setChromePortalEl} data-slot="sheet-chrome" className="shrink-0" />
 			<div data-slot="sheet-head" className="shrink-0 overflow-hidden">
-				<div
-					ref={headPanelRef}
-					data-slot="sheet-head-panel"
-					className="will-change-transform"
-				>
+				<div ref={headPanelRef} data-slot="sheet-head-panel" className="will-change-transform">
 					<SheetHeader format={format} />
 				</div>
 			</div>
@@ -102,6 +94,7 @@ const SheetPanel = ({
 					onScrollTopChange={onScrollTopChange}
 					onHorizontalScroll={handleHorizontalScroll}
 					onUpdateCell={onUpdateCell}
+					chromePortalEl={chromePortalEl}
 				/>
 			</div>
 			<SheetFooter

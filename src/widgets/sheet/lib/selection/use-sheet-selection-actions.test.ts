@@ -17,8 +17,7 @@ const makeRow = (index: number): SheetRowView => ({
 	height: ROW_HEIGHT,
 });
 
-const makeRows = (count: number) =>
-	Array.from({ length: count }, (_, index) => makeRow(index));
+const makeRows = (count: number) => Array.from({ length: count }, (_, index) => makeRow(index));
 
 const resetStore = (rowCount: number) => {
 	useSheetStore.setState({
@@ -51,6 +50,7 @@ const renderActions = (
 	resetStore(rowCount);
 	const applyFocus = vi.fn();
 	const endEdit = vi.fn();
+	const closeSearchPanel = vi.fn();
 	const initialProps = {
 		format: 'smi' as const,
 		rows: makeRows(rowCount),
@@ -60,11 +60,11 @@ const renderActions = (
 		currentColumn: 'text' as const,
 		endEdit,
 		applyFocus,
+		closeSearchPanel,
 		...overrides,
 	};
 	const hook = renderHook(
-		(props: Parameters<typeof useSheetSelectionActions>[0]) =>
-			useSheetSelectionActions(props),
+		(props: Parameters<typeof useSheetSelectionActions>[0]) => useSheetSelectionActions(props),
 		{ initialProps },
 	);
 	const rerender = (rowCount: number, totalHeight = rowCount * ROW_HEIGHT) =>
@@ -77,12 +77,12 @@ const renderActions = (
 			currentColumn: 'text',
 			endEdit,
 			applyFocus,
+			closeSearchPanel,
 		});
-	return { hook, applyFocus, endEdit, rerender };
+	return { hook, applyFocus, endEdit, closeSearchPanel, rerender };
 };
 
-const activeSheet = () =>
-	useSheetStore.getState().sheets[useSheetStore.getState().active];
+const activeSheet = () => useSheetStore.getState().sheets[useSheetStore.getState().active];
 
 describe('useSheetSelectionActions', () => {
 	beforeEach(() => {

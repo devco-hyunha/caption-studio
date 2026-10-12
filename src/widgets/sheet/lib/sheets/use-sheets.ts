@@ -1,9 +1,6 @@
 import { useRef } from 'react';
-import {
-	getActiveScroll,
-	isEditableColumn,
-	useSheetStore,
-} from '@/entities/subtitle-sheet';
+import { getActiveScroll, isEditableColumn, useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetSearchStore } from '@/features/sheet-search';
 import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../../types';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
 
@@ -29,6 +26,11 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 		updateSheetScrollAction(active, bodyScrollTopRef.current);
 	};
 
+	/** 탭 전환·CRUD 후 searchHits 초기화 */
+	const clearSearchHits = () => {
+		useSheetSearchStore.getState().clearSearchHits();
+	};
+
 	const handleScrollTopChange = (scrollTop: number) => {
 		bodyScrollTopRef.current = Math.max(0, scrollTop);
 	};
@@ -39,6 +41,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 
 		persistActiveScroll();
 		selectSheetAction(index);
+		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
@@ -46,12 +49,14 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 	const handleAddTab = () => {
 		persistActiveScroll();
 		addSheetAction();
+		clearSearchHits();
 		bodyScrollTopRef.current = 0;
 	};
 
 	const handleDeleteTab = (index: number) => {
 		persistActiveScroll();
 		deleteSheetAction(index);
+		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 
@@ -60,6 +65,7 @@ const useSheets = (format: SheetFormat): UseSheetsResult => {
 	const handleCopyTab = (index: number) => {
 		persistActiveScroll();
 		copySheetAction(index);
+		clearSearchHits();
 		bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
 	};
 

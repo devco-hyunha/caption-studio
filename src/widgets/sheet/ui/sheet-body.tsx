@@ -1,5 +1,8 @@
 import type { CSSProperties, UIEvent } from 'react';
 import { useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import { SheetSearchPanel } from '@/features/sheet-search';
 import { useSheetShortkey } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
@@ -8,6 +11,7 @@ import { useSheetClipActions } from '../lib/clip/use-sheet-clip-actions';
 import { useSheetCellEdit } from '../lib/edit/use-sheet-cell-edit';
 import { useSheetMove } from '../lib/move/use-sheet-move';
 import { useSheetWindow } from '../lib/move/use-sheet-window';
+import { useSheetSearchActions } from '../lib/search/use-sheet-search-actions';
 import { useSheetSelectionActions } from '../lib/selection/use-sheet-selection-actions';
 import { useSheetTimeActions } from '../lib/time/use-sheet-time-actions';
 import { buildSheetShortkeyActions } from '../lib/shortkey/build-sheet-shortkey-actions';
@@ -15,6 +19,8 @@ import type { SheetBodyProps } from '../types';
 import { SheetBodyToolbar } from './sheet-body-toolbar';
 import { SheetCellEditor } from './sheet-cell-editor';
 import { SheetRow } from './sheet-row';
+
+const EMPTY_TIMELINES: readonly SheetTimelineItem[] = [];
 
 /**
  * 시트 body 윈도 + 행 렌더.
@@ -33,6 +39,7 @@ const SheetBody = ({
 	onScrollTopChange,
 	onHorizontalScroll,
 	onUpdateCell,
+	chromePortalEl = null,
 }: SheetBodyProps) => {
 	const scrollContentRef = useRef<HTMLDivElement>(null);
 	const { scrollRef, sheetWindow, handleScroll, setScrollTop } = useSheetWindow({
@@ -74,6 +81,14 @@ const SheetBody = ({
 		onCommitCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
 	});
 
+	const { searchHitKeys, handleSearchJump, closeSearchPanel, toggleSearch } = useSheetSearchActions({
+		format,
+		rows,
+		isEditing,
+		endEdit,
+		applyFocus,
+	});
+
 	const {
 		multipleActive,
 		handleAppendRow,
@@ -91,6 +106,7 @@ const SheetBody = ({
 		currentColumn,
 		endEdit,
 		applyFocus,
+		closeSearchPanel,
 	});
 
 	const clip = useSheetClipActions({
@@ -100,12 +116,14 @@ const SheetBody = ({
 		isTextTarget,
 		inputRef,
 		onUpdateCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
+		closeSearchPanel,
 	});
 
 	const time = useSheetTimeActions({
 		currentRowIndex,
 		currentColumn,
 		isTimeTarget,
+		closeSearchPanel,
 	});
 
 	const move = useSheetMove({
@@ -147,6 +165,7 @@ const SheetBody = ({
 			isTimeTarget,
 			timePlus: time.timePlus,
 			timeMinus: time.timeMinus,
+			toggleSearch,
 		});
 
 	useSheetShortkey({ getActions: getShortkeyActions });
@@ -156,14 +175,30 @@ const SheetBody = ({
 		onHorizontalScroll?.(event.currentTarget.scrollLeft);
 	};
 
-	return (
-		<div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+	const timelines = useSheetStore(
+		(state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
+	);
+
+	const chrome = (
+		<>
 			<SheetBodyToolbar
 				multipleActive={multipleActive}
 				onToggleMultiple={handleToggleMultipleClick}
 				onInsertRow={handleInsertAtFocus}
 				onRemoveRow={handleRemoveAtFocus}
 			/>
+			<SheetSearchPanel
+				format={format}
+				timelines={timelines}
+				rows={rows}
+				onJump={handleSearchJump}
+			/>
+		</>
+	);
+
+	return (
+		<>
+			{chromePortalEl ? createPortal(chrome, chromePortalEl) : null}
 			<div
 				ref={scrollRef}
 				data-slot="sheet-body"
@@ -216,6 +251,7 @@ const SheetBody = ({
 									row={row}
 									data-index={rowIndex}
 									currentColumn={currentRowIndex === row.index ? currentColumn : null}
+									searchHitKeys={searchHitKeys}
 									onCellClick={handleCellClick}
 									onCellDoubleClick={handleCellDoubleClick}
 									onCellContextMenu={handleCellContextMenu}
@@ -231,7 +267,7 @@ const SheetBody = ({
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

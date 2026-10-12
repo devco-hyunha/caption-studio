@@ -70,6 +70,8 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 	timePlus: () => void;
 	/** Ctrl+Minus — 다중: 선택 행 start/end 일괄 −jump · single: time 셀 −jump */
 	timeMinus: () => void;
+	/** `/` — 검색 패널 토글 */
+	toggleSearch: () => void;
 }
 
 export interface UseSheetShortkeyParams {

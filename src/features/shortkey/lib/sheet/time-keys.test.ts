@@ -32,6 +32,7 @@ const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortk
 	isTimeTarget: () => true,
 	timePlus: vi.fn(),
 	timeMinus: vi.fn(),
+	toggleSearch: vi.fn(),
 	...overrides,
 });
 

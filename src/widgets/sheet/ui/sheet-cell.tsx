@@ -23,6 +23,7 @@ const SheetCell = ({
 	html,
 	editable = false,
 	isCurrent = false,
+	isSearchHit = false,
 	className,
 	tabIndex = -1,
 	onCellClick,
@@ -57,9 +58,12 @@ const SheetCell = ({
 				COLUMN_FLEX[column],
 				column === 'index' && 'sticky left-0 z-10 bg-white',
 				editable && 'cursor-cell',
+				// 검색 히트 셀 하이라이트 — current가 search 위에
+				isSearchHit && 'bg-[#ffff95]',
 				isCurrent && 'bg-sky-100',
 				className,
 			)}
+			data-search={isSearchHit || undefined}
 			onClick={editable ? handleClick : undefined}
 			onDoubleClick={editable ? handleDoubleClick : undefined}
 			onContextMenu={editable ? handleContextMenu : undefined}

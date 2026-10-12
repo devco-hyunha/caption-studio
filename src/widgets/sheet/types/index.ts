@@ -51,6 +51,8 @@ export type {
 	UseSheetCellFocusResult,
 	UseSheetMoveParams,
 	UseSheetMoveResult,
+	UseSheetSearchActionsParams,
+	UseSheetSearchActionsResult,
 	UseSheetSelectionActionsParams,
 	UseSheetSelectionActionsResult,
 	UseSheetTabRenameParams,

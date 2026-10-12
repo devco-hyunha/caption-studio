@@ -5,6 +5,7 @@ import type {
 	MouseEvent,
 	RefObject,
 } from 'react';
+import type { SearchHit } from '@/features/sheet-search';
 import type {
 	SheetShortkeyActions,
 	SheetShortkeyMoveActions,
@@ -89,6 +90,8 @@ export interface UseSheetSelectionActionsParams {
 		column: SheetColumnId,
 		options?: { scrollTop?: number | null },
 	) => void;
+	/** 행 CRUD 직전 검색 패널 닫기 */
+	closeSearchPanel: () => void;
 }
 
 export interface UseSheetSelectionActionsResult {
@@ -351,6 +354,7 @@ export interface BuildSheetShortkeyActionsParams {
 	isTimeTarget: () => boolean;
 	timePlus: () => void;
 	timeMinus: () => void;
+	toggleSearch: () => void;
 }
 
 /** clip 훅 params — 포커스 셀·편집 판별·에디터 ref·커밋 */
@@ -361,6 +365,8 @@ export interface UseSheetClipActionsParams {
 	isTextTarget: () => boolean;
 	inputRef: RefObject<HTMLDivElement | null>;
 	onUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+	/** 서식·clear·클립 직전 검색 패널 닫기 */
+	closeSearchPanel: () => void;
 }
 
 /** clip 훅 결과 — shortkey actions에 주입할 clip API */
@@ -377,10 +383,38 @@ export interface UseSheetTimeActionsParams {
 	currentRowIndex: number | null;
 	currentColumn: SheetColumnId | null;
 	isTimeTarget: () => boolean;
+	/** ±jump 직전 검색 패널 닫기 */
+	closeSearchPanel: () => void;
 }
 
 /** time 훅 결과 — shortkey actions에 주입할 time ±jump API */
 export interface UseSheetTimeActionsResult {
 	timePlus: () => void;
 	timeMinus: () => void;
+}
+
+/** 검색 훅 params — 포커스·에딧·점프 API (feature 스토어는 훅 내부에서 직접 사용) */
+export interface UseSheetSearchActionsParams {
+	format: SheetFormat;
+	rows: SheetRowView[];
+	/** shortkey용 — `mode === 'edit'` 동기 판별 */
+	isEditing: () => boolean;
+	endEdit: (commit?: boolean) => void;
+	applyFocus: (
+		rowIndex: number,
+		column: SheetColumnId,
+		options?: { scrollTop?: number | null },
+	) => void;
+}
+
+/** 검색 훅 결과 — 패널 점프·패널 close·히트 셀 키 */
+export interface UseSheetSearchActionsResult {
+	/** 검색 히트 셀 키 `"row:columnId"` (editable col 변환 후) */
+	searchHitKeys: ReadonlySet<string>;
+	/** 히트 셀로 점프 — 에딧 커밋 후 포커스 */
+	handleSearchJump: (hit: SearchHit) => void;
+	/** mutate·에딧 진입 직전 패널 닫기 */
+	closeSearchPanel: () => void;
+	/** `/` — 검색 패널 토글 */
+	toggleSearch: () => void;
 }

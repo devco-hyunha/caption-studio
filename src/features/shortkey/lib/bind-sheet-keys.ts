@@ -5,6 +5,7 @@ import { registerSheetEditKeys } from './sheet/edit-keys';
 import { registerSheetMoveKeys } from './sheet/move-keys';
 import { registerSheetMutateKeys } from './sheet/mutate-keys';
 import { registerSheetSelectionKeys } from './sheet/selection-keys';
+import { registerSheetSearchKeys } from './sheet/search-keys';
 import { registerSheetTimeKeys } from './sheet/time-keys';
 
 /**
@@ -21,6 +22,7 @@ const registerSheetNavigationKeys = (
 	registerSheetMutateKeys(shortcuts, getActions);
 	registerSheetClipKeys(shortcuts, getActions);
 	registerSheetTimeKeys(shortcuts, getActions);
+	registerSheetSearchKeys(shortcuts, getActions);
 };
 
 export { registerSheetNavigationKeys };

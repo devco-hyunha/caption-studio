@@ -1,4 +1,5 @@
 import { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
+import { useSheetSearchStore } from '@/features/sheet-search';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type {
 	SheetCellEditTarget,
@@ -11,7 +12,13 @@ import { canEditColumnId, isTextColumn } from '../columns';
 import { isMultipleActive } from '../is-multiple-active';
 import { encodeCellHtml, resolveCommitValue } from './encode-cell-html';
 import { isImeStartKey } from './edit-keys';
-import { isEditingMode, isTextTargetMode, isTimeTargetMode, hasFocusMode, resolveEditKeyIntent } from './edit-mode';
+import {
+	isEditingMode,
+	isTextTargetMode,
+	isTimeTargetMode,
+	hasFocusMode,
+	resolveEditKeyIntent,
+} from './edit-mode';
 import { insertEditorLineBreak } from './edit-commands';
 import {
 	clearEditingSurfaceStyles,
@@ -56,6 +63,11 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 	/** 문자/IME 진입 — surface 즉시 노출, setMode는 compositionend/microtask 후 (IME 조합 보존) */
 	const activateEditFromTyping = (isIme: boolean) => {
 		if (isMultipleActive()) return;
+
+		// 검색 input 포커스 중이면 typing 에딧 진입도 차단
+		if (useSheetSearchStore.getState().searchInputFocused) return;
+		useSheetSearchStore.getState().closeSearchPanel();
+
 		markBootstrap(true);
 		modeRef.current = 'edit';
 		showEditingSurface(wrapRef.current);
@@ -78,6 +90,11 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 		if (!canEditColumnId(format, column)) return;
 		// context 편집은 text/memo만
 		if (!isTextColumn(column)) return;
+
+		// 검색 input 포커스 중이면 에딧 진입 차단
+		if (useSheetSearchStore.getState().searchInputFocused) return;
+		// 에딧 진입 직전 검색 패널 닫기
+		useSheetSearchStore.getState().closeSearchPanel();
 
 		const next: SheetCellEditTarget | null =
 			cell != null

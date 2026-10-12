@@ -19,8 +19,11 @@ const useSheetSelectionActions = ({
 	currentColumn,
 	endEdit,
 	applyFocus,
+	closeSearchPanel,
 }: UseSheetSelectionActionsParams): UseSheetSelectionActionsResult => {
-	const multipleActive = useSheetStore((state) => state.sheets[state.active]?.multipleActive === true);
+	const multipleActive = useSheetStore(
+		(state) => state.sheets[state.active]?.multipleActive === true,
+	);
 	const toggleMultipleAction = useSheetStore((state) => state.toggleMultiple);
 	const toggleSelectedRowAction = useSheetStore((state) => state.toggleSelectedRow);
 	const setMultipleStartAction = useSheetStore((state) => state.setMultipleStart);
@@ -61,6 +64,7 @@ const useSheetSelectionActions = ({
 
 	/** Tab이 마지막 행 아래로 나간 경우: 커서 행 뒤에 행 삽입 */
 	const handleAppendRow = (cursor: SheetMoveCursor) => {
+		closeSearchPanel();
 		const insertIndex = insertTimelineAfterAction(cursor.row, format);
 		if (insertIndex == null) return;
 		focusAfter(insertIndex, cursor.col);
@@ -89,6 +93,7 @@ const useSheetSelectionActions = ({
 	/** 행 추가: 포커스 행 바로 아래 삽입 후 그 행으로 포커스 */
 	const handleInsertAtFocus = () => {
 		if (isEditing) endEdit(true);
+		closeSearchPanel();
 		const insertIndex = insertTimelineAfterAction(resolveFocusRow(), format);
 		if (insertIndex == null) return;
 		focusAfter(insertIndex, resolveFocusCol());
@@ -97,6 +102,7 @@ const useSheetSelectionActions = ({
 	/** 행 삭제: 포커스 행 삭제 후 삭제된 위치(또는 이전 행)로 포커스 */
 	const handleRemoveAtFocus = () => {
 		if (isEditing) endEdit(true);
+		closeSearchPanel();
 		const focusRow = removeTimelineAtAction(resolveFocusRow());
 		if (focusRow == null) return;
 		focusAfter(focusRow, resolveFocusCol());

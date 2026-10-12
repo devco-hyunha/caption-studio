@@ -1,6 +1,10 @@
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SheetColumnId, UseSheetTimeActionsParams, UseSheetTimeActionsResult } from '../../types';
+import type {
+	SheetColumnId,
+	UseSheetTimeActionsParams,
+	UseSheetTimeActionsResult,
+} from '../../types';
 import { isMultipleActive } from '../is-multiple-active';
 import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from '../time-jump';
 
@@ -17,6 +21,7 @@ const useSheetTimeActions = ({
 	currentRowIndex,
 	currentColumn,
 	isTimeTarget,
+	closeSearchPanel,
 }: UseSheetTimeActionsParams): UseSheetTimeActionsResult => {
 	const nudgeSelectedRows = (direction: 'plus' | 'minus') => {
 		const store = useSheetStore.getState();
@@ -51,6 +56,8 @@ const useSheetTimeActions = ({
 	};
 
 	const timePlus = () => {
+		// mutate 직전 검색 패널 닫기
+		closeSearchPanel();
 		if (isMultipleActive()) {
 			nudgeSelectedRows('plus');
 			return;
@@ -59,6 +66,7 @@ const useSheetTimeActions = ({
 	};
 
 	const timeMinus = () => {
+		closeSearchPanel();
 		if (isMultipleActive()) {
 			nudgeSelectedRows('minus');
 			return;

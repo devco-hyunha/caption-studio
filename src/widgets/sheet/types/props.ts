@@ -104,6 +104,8 @@ export interface SheetBodyProps {
 	/** body 가로 스크롤 → header translateX 동기화 */
 	onHorizontalScroll?: (scrollLeft: number) => void;
 	onUpdateCell?: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+	/** 툴바·검색 패널 — sheet-head 위 슬롯에 portal */
+	chromePortalEl?: HTMLElement | null;
 }
 
 export interface SheetRowProps {
@@ -112,6 +114,8 @@ export interface SheetRowProps {
 	style?: CSSProperties;
 	'data-index'?: number;
 	currentColumn?: SheetColumnId | null;
+	/** 검색 히트 셀 — `"row:columnId"` 키 */
+	searchHitKeys?: ReadonlySet<string>;
 	onCellClick?: (
 		event: MouseEvent<HTMLDivElement>,
 		rowIndex: number,
@@ -137,6 +141,8 @@ export interface SheetCellProps {
 	html?: string;
 	editable?: boolean;
 	isCurrent?: boolean;
+	/** 검색 히트 셀 배경 — `#ffff95` */
+	isSearchHit?: boolean;
 	className?: string;
 	tabIndex?: number;
 	onCellClick?: (
