@@ -1,9 +1,9 @@
-import { useSheetStore } from '@/entities/subtitle-sheet';
 import {
-	cloneTimelineSnapshot,
-	emptyTimelineSnapshot,
-	useSheetHistoryStore,
-} from '@/features/sheet-history';
+	cloneTimeline,
+	createEmptyTimeline,
+	useSheetStore,
+} from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { usePendingFocus } from '../focus/use-pending-focus';
 import type {
@@ -46,7 +46,7 @@ const useSheetSelectionActions = ({
 			command: 'insert',
 			id: insertIndex,
 			before: null,
-			after: cloneTimelineSnapshot(after),
+			after: cloneTimeline(after),
 			current: { row: focusRow, col: focusCol },
 		});
 	};
@@ -100,7 +100,7 @@ const useSheetSelectionActions = ({
 		const sheet = store.sheets[store.active];
 		const before = sheet?.timelines[row];
 		if (!before) return;
-		const beforeSnap = cloneTimelineSnapshot(before);
+		const beforeSnap = cloneTimeline(before);
 		const wasLast = (sheet?.timelines.length ?? 0) <= 1;
 
 		const focusRow = removeTimelineAtAction(row);
@@ -112,7 +112,7 @@ const useSheetSelectionActions = ({
 				command: 'update',
 				id: row,
 				before: beforeSnap,
-				after: emptyTimelineSnapshot(),
+				after: createEmptyTimeline(),
 				current: { row, col },
 			});
 		} else {

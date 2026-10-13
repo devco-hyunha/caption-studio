@@ -21,11 +21,11 @@ import {
 import {
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
-	removeActiveTimelineAtForHistory,
 	replaceActiveTimelinePatches,
 	replaceTimelineAt as replaceActiveTimelineAt,
 	replaceTimelinePatches as replaceActiveSelectedTimelinePatches,
 	setActiveMultipleStart,
+	setActiveTimelines,
 	spliceActiveTimelineAt,
 	toggleActiveSelectedRow,
 	toggleMultiple,
@@ -102,7 +102,7 @@ const useSheetStore = create<SheetStore>()(
 
 			/** 행 삭제 — 삭제 후 포커스할 행 반환(마지막 행이면 이전 행), 실패 시 null */
 			removeTimelineAt: (row) => {
-				const result = removeActiveTimelineAt(get(), row);
+				const result = removeActiveTimelineAt(get(), row, true);
 				if (!result) return null;
 				set(result.state);
 				return result.focusRow;
@@ -110,7 +110,7 @@ const useSheetStore = create<SheetStore>()(
 
 			/** undo/redo 전용 행 삭제 — multipleActive 게이트 없음(M5). 포커스 행 반환 */
 			removeTimelineAtForHistory: (row) => {
-				const result = removeActiveTimelineAtForHistory(get(), row);
+				const result = removeActiveTimelineAt(get(), row, false);
 				if (!result) return null;
 				set(result.state);
 				return result.focusRow;
@@ -151,6 +151,14 @@ const useSheetStore = create<SheetStore>()(
 			/** undo/redo — multi 패치 */
 			replaceTimelinePatches: (patches) => {
 				const next = replaceActiveTimelinePatches(get(), patches);
+				if (!next) return false;
+				set(next);
+				return true;
+			},
+
+			/** import — 활성 탭 timelines 통째 교체 */
+			setActiveTimelines: (timelines) => {
+				const next = setActiveTimelines(get(), timelines);
 				if (!next) return false;
 				set(next);
 				return true;

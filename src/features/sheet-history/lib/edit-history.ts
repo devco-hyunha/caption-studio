@@ -81,6 +81,14 @@ const resetForSheets = (
 	return { stacks, activeSheetIndex };
 };
 
+/** import — 활성 탭 스택만 빈 스택으로 교체. 타 탭 스택은 유지 */
+const resetActiveStack = (stacks: HistoryStack[], activeIndex: number): HistoryStack[] => {
+	const index = Math.min(Math.max(0, activeIndex), stacks.length - 1);
+	const next = [...stacks];
+	next[index] = createEmptyStack();
+	return next;
+};
+
 const setActiveSheetIndex = (
 	activeSheetIndex: number,
 	stacks: HistoryStack[],
@@ -137,6 +145,7 @@ export {
 	prevEntry,
 	pushEntry,
 	removeStackAt,
+	resetActiveStack,
 	resetForSheets,
 	setActiveSheetIndex,
 };

@@ -1,8 +1,10 @@
 import type { CSSProperties, UIEvent } from 'react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
+import { SubtitleIoPanel } from '@/features/subtitle-io';
 import { useSheetShortkey } from '@/features/shortkey';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns';
@@ -200,24 +202,49 @@ const SheetBody = ({
 	const timelines = useSheetStore(
 		(state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
 	);
+	const storeSheets = useSheetStore((state) => state.sheets);
+	const setActiveTimelinesAction = useSheetStore((state) => state.setActiveTimelines);
+
+	const workbookTabs = useMemo(
+		() => storeSheets.map((sheet) => ({ name: sheet.name, timelines: sheet.timelines })),
+		[storeSheets],
+	);
+
+	/** import — 활성 탭 timelines 교체 + 활성 탭 history·search 초기화 + 포커스 row 0 */
+	const handleSubtitleImported = (nextTimelines: SheetTimelineItem[]) => {
+		endEdit(false);
+		if (!setActiveTimelinesAction(nextTimelines)) return;
+		useSheetHistoryStore.getState().resetActiveStack();
+		useSheetSearchStore.getState().clearSearchHits();
+		setScrollTop(0);
+		applyFocus(0, 'text');
+	};
 
 	const chrome = (
-		<SheetBodyToolbar
-			multipleActive={multipleActive}
-			onToggleMultiple={handleToggleMultipleClick}
-			onInsertRow={handleInsertAtFocus}
-			onRemoveRow={handleRemoveAtFocus}
-			canUndo={canUndo}
-			canRedo={canRedo}
-			onUndo={handleUndo}
-			onRedo={handleRedo}
-			search={{
-				format,
-				timelines,
-				rows,
-				onJump: handleSearchJump,
-			}}
-		/>
+		<>
+			<SubtitleIoPanel
+				sheetFormat={format}
+				timelines={timelines}
+				workbookTabs={workbookTabs}
+				onImported={handleSubtitleImported}
+			/>
+			<SheetBodyToolbar
+				multipleActive={multipleActive}
+				onToggleMultiple={handleToggleMultipleClick}
+				onInsertRow={handleInsertAtFocus}
+				onRemoveRow={handleRemoveAtFocus}
+				canUndo={canUndo}
+				canRedo={canRedo}
+				onUndo={handleUndo}
+				onRedo={handleRedo}
+				search={{
+					format,
+					timelines,
+					rows,
+					onJump: handleSearchJump,
+				}}
+			/>
+		</>
 	);
 
 	return (

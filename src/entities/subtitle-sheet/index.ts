@@ -60,7 +60,6 @@ export {
 	setActiveMultipleStart,
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
-	removeActiveTimelineAtForHistory,
 	updateActiveSelectedTexts,
 } from './lib/active-sheet';
 

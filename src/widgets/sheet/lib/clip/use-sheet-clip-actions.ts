@@ -1,8 +1,7 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
-import { useSheetStore } from '@/entities/subtitle-sheet';
+import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import {
-	cloneTimelineSnapshot,
 	useSheetHistoryStore,
 	type HistoryTimelinePatch,
 } from '@/features/sheet-history';
@@ -78,7 +77,7 @@ const useSheetClipActions = ({
 			const backups: HistoryTimelinePatch[] = selected.flatMap((index) => {
 				const timeline = sheet.timelines[index];
 				if (!timeline) return [];
-				return [{ index, data: cloneTimelineSnapshot(timeline) }];
+				return [{ index, data: cloneTimeline(timeline) }];
 			});
 			if (backups.length === 0) return;
 
@@ -91,7 +90,7 @@ const useSheetClipActions = ({
 			const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
 				const timeline = afterSheet?.timelines[index];
 				if (!timeline) return [];
-				return [{ index, data: cloneTimelineSnapshot(timeline) }];
+				return [{ index, data: cloneTimeline(timeline) }];
 			});
 			if (currents.length === 0) return;
 

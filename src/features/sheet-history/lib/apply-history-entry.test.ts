@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import {
+	cloneTimeline,
+	useSheetStore,
+	type SheetTimelineItem,
+} from '@/entities/subtitle-sheet';
 import type { HistoryEntry, HistoryTimelinePatch } from '../types';
 import {
 	applyHistoryRedo,
 	applyHistoryUndo,
-	cloneTimelineSnapshot,
 	timelineSnapshotEquals,
 } from './apply-history-entry';
 
@@ -14,7 +17,7 @@ const resetSheets = (timelines: SheetTimelineItem[]) => {
 		sheets: [
 			{
 				name: 'sheet1',
-				timelines: timelines.map(cloneTimelineSnapshot),
+				timelines: timelines.map(cloneTimeline),
 				smiName: '',
 				smiLang: '',
 				scroll: 0,

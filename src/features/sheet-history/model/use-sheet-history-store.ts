@@ -11,6 +11,7 @@ import {
 	prevEntry,
 	pushEntry,
 	removeStackAt,
+	resetActiveStack,
 	resetForSheets,
 	setActiveSheetIndex as setActiveIndexState,
 } from '../lib/edit-history';
@@ -23,6 +24,10 @@ const useSheetHistoryStore = create<SheetHistoryStore>((set, get) => ({
 
 	resetForSheets: (sheetCount, activeIndex = 0) => {
 		set(resetForSheets(sheetCount, activeIndex));
+	},
+
+	resetActiveStack: () => {
+		set((state) => ({ stacks: resetActiveStack(state.stacks, state.activeSheetIndex) }));
 	},
 
 	setActiveSheetIndex: (index) => {

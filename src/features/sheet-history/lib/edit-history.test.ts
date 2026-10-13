@@ -10,6 +10,7 @@ import {
 	prevEntry,
 	pushEntry,
 	removeStackAt,
+	resetActiveStack,
 	resetForSheets,
 } from './edit-history';
 
@@ -79,5 +80,28 @@ describe('resetForSheets / addStack / removeStackAt / insertStackAt', () => {
 		const removed = removeStackAt(stacks, 1, 2);
 		expect(removed.stacks).toHaveLength(3);
 		expect(removed.activeSheetIndex).toBe(1);
+	});
+});
+
+describe('resetActiveStack', () => {
+	it('활성 탭 스택만 비우고 타 탭 스택은 유지한다', () => {
+		const stacks = resetForSheets(3, 1).stacks;
+		stacks[1] = pushEntry(stacks[1], entry('update', 0));
+		stacks[2] = pushEntry(stacks[2], entry('update', 5));
+
+		const next = resetActiveStack(stacks, 1);
+
+		expect(next[1]?.entries).toHaveLength(0);
+		expect(next[1]?.index).toBe(-1);
+		expect(next[2]?.entries.map((item) => item.id)).toEqual([5]);
+	});
+
+	it('index가 범위를 벗어나면 마지막 탭을 초기화한다', () => {
+		const stacks = resetForSheets(2, 0).stacks;
+		stacks[0] = pushEntry(stacks[0], entry('update', 0));
+		const next = resetActiveStack(stacks, 9);
+
+		expect(next[1]?.entries).toHaveLength(0);
+		expect(next[0]?.entries).toHaveLength(1);
 	});
 });

@@ -1,7 +1,6 @@
-import { useSheetStore } from '@/entities/subtitle-sheet';
+import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import {
-	cloneTimelineSnapshot,
 	useSheetHistoryStore,
 	type HistoryTimelinePatch,
 } from '@/features/sheet-history';
@@ -14,14 +13,14 @@ import { isMultipleActive } from '../is-multiple-active';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from '../time-jump';
 
-/** time 열 타깃 — starttime/endtime만 */
+/** time Ã¬ÂÂ´ Ã­ÂÂÃªÂ¹Â Ã¢ÂÂ starttime/endtimeÃ«Â§Â */
 const isTimeColumnPair = (
 	column: SheetColumnId | null | undefined,
 ): column is 'starttime' | 'endtime' => column === 'starttime' || column === 'endtime';
 
 /**
- * 시트 time ±jump 동작 API — Ctrl+Plus/Minus.
- * 다중 선택은 선택 행 start/end 일괄, 단건은 포커스 time 열만. jump는 `jump_val`(기본 30ms).
+ * Ã¬ÂÂÃ­ÂÂ¸ time ÃÂ±jump Ã«ÂÂÃ¬ÂÂ API Ã¢ÂÂ Ctrl+Plus/Minus.
+ * Ã«ÂÂ¤Ã¬Â¤Â Ã¬ÂÂ Ã­ÂÂÃ¬ÂÂ Ã¬ÂÂ Ã­ÂÂ Ã­ÂÂ start/end Ã¬ÂÂ¼ÃªÂ´Â, Ã«ÂÂ¨ÃªÂ±Â´Ã¬ÂÂ Ã­ÂÂ¬Ã¬Â»Â¤Ã¬ÂÂ¤ time Ã¬ÂÂ´Ã«Â§Â. jumpÃ«ÂÂ `jump_val`(ÃªÂ¸Â°Ã«Â³Â¸ 30ms).
  */
 const useSheetTimeActions = ({
 	format,
@@ -41,7 +40,7 @@ const useSheetTimeActions = ({
 		sheet.selectedRows.forEach((rowIndex) => {
 			const timeline = sheet.timelines[rowIndex];
 			if (!timeline) return;
-			backups.push({ index: rowIndex, data: cloneTimelineSnapshot(timeline) });
+			backups.push({ index: rowIndex, data: cloneTimeline(timeline) });
 			patches.set(rowIndex, nudgeTimelineByStep(timeline, step, direction));
 		});
 		if (patches.size === 0) return;
@@ -53,7 +52,7 @@ const useSheetTimeActions = ({
 		const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
 			const timeline = afterSheet?.timelines[index];
 			if (!timeline) return [];
-			return [{ index, data: cloneTimelineSnapshot(timeline) }];
+			return [{ index, data: cloneTimeline(timeline) }];
 		});
 		if (currents.length === 0) return;
 
@@ -76,7 +75,7 @@ const useSheetTimeActions = ({
 		if (!timeline) return;
 
 		const step = readTimeJumpMs();
-		const beforeSnap = cloneTimelineSnapshot(timeline);
+		const beforeSnap = cloneTimeline(timeline);
 		const next = nudgeTimelineColumn(timeline, currentColumn, step, direction);
 		if (next.start === timeline.start && next.end === timeline.end) return;
 
@@ -90,13 +89,13 @@ const useSheetTimeActions = ({
 			command: 'update',
 			id: currentRowIndex,
 			before: beforeSnap,
-			after: cloneTimelineSnapshot(after),
+			after: cloneTimeline(after),
 			current: focus,
 		});
 	};
 
 	const timePlus = () => {
-		// mutate 직전 검색 패널 닫기
+		// mutate Ã¬Â§ÂÃ¬Â Â ÃªÂ²ÂÃ¬ÂÂ Ã­ÂÂ¨Ã«ÂÂ Ã«ÂÂ«ÃªÂ¸Â°
 		closeSearchPanel();
 		if (isMultipleActive()) {
 			nudgeSelectedRows('plus');

@@ -1,9 +1,4 @@
-import {
-	cloneTimeline,
-	createEmptyTimeline,
-	useSheetStore,
-	type SheetTimelineItem,
-} from '@/entities/subtitle-sheet';
+import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
 import type { HistoryCursor, HistoryEntry, HistoryTimelinePatch } from '../types';
 
 const isTimelineItem = (value: unknown): value is SheetTimelineItem =>
@@ -115,15 +110,8 @@ const applyHistoryRedo = (entry: HistoryEntry): HistoryCursor | null => {
 	return null;
 };
 
-const cloneTimelineSnapshot = (timeline: SheetTimelineItem): SheetTimelineItem =>
-	cloneTimeline(timeline);
-
-const emptyTimelineSnapshot = (): SheetTimelineItem => createEmptyTimeline();
-
 export {
 	applyHistoryRedo,
 	applyHistoryUndo,
-	cloneTimelineSnapshot,
-	emptyTimelineSnapshot,
 	timelineSnapshotEquals,
 };

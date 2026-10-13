@@ -25,3 +25,4 @@
 | dev.4 | [2.9.0-dev.4.md](./2.9.0-dev.4.md) | 시트 clip(BIU·clear·X/C/V) · time ±jump · SMI dur/error parity |
 | dev.5 | [2.9.0-dev.5.md](./2.9.0-dev.5.md) | 시트 검색 패널(text/memo·prev/next) · error-search · `/` 단축키 · 히트 셀 하이라이트 |
 | dev.6 | [2.9.0-dev.6.md](./2.9.0-dev.6.md) | 시트 undo/redo — 탭별 비영속 스택 · Ctrl+Z/Y·Ctrl+Shift+Z · toolbar 버튼 · push/clear 지점 |
+| dev.7 | [2.9.0-dev.7.md](./2.9.0-dev.7.md) | Subtitle I/O — SMI/SRT/VTT/JSON/Excel parse·serialize · 가져오기·내보내기 · 인코딩 분리 · 병합·재사용 리팩터링 |

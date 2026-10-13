@@ -10,6 +10,12 @@ export default defineConfig({
 	},
 	resolve: {
 		tsconfigPaths: true,
+		alias: {
+			buffer: 'buffer/',
+		},
+	},
+	optimizeDeps: {
+		include: ['buffer', 'iconv-lite'],
 	},
 	plugins: [
 		tailwindcss(),

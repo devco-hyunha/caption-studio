@@ -1,49 +1,10 @@
+import { encodeHtml } from '@/entities/subtitle';
 import type { SheetColumnId } from '../../../types';
 import { isTextColumn } from '../../columns';
 
-/** 편집 HTML 정규화 */
-const validCellHtml = (text: string) =>
-	text
-		.replace(/<strong/gi, '<b')
-		.replace(/<\/strong/gi, '</b')
-		.replace(/<script/gi, '&lt;script')
-		.replace(/<\/script/gi, '&gt;/script')
-		.replace(/<br \/>/gi, '<br>')
-		.replace(/\t/gi, '')
-		.replace(/<em/gi, '<i')
-		.replace(/<\/em/gi, '</i')
-		.replace(/<div>/gi, '')
-		.replace(/<br><\/div>/gi, '<br>')
-		.replace(/<\/div>/gi, '<br>')
-		.replace(/<span>/gi, '')
-		.replace(/<\/span>/gi, '')
-		.replace(/<p>/gi, '')
-		.replace(/<br><\/p>/gi, '<br>')
-		.replace(/<\/p>/gi, '<br>');
-
-/** contentEditable DOM → 저장용 HTML */
-const encodeCellHtml = (input: HTMLElement | null | undefined): string => {
-	if (!input) return '';
-
-	const clone = input.cloneNode(true) as HTMLElement;
-	clone.querySelectorAll('*').forEach((el) => {
-		Array.from(el.attributes).forEach((attr) => {
-			if (attr.name === 'color') return;
-			try {
-				el.removeAttribute(attr.name);
-			} catch {
-				// ignore
-			}
-		});
-	});
-
-	const text = clone.innerHTML.replace(/\n/gi, '').replace(/\t/gi, '');
-	const contents = validCellHtml(text);
-	if (contents.length >= 4 && contents.lastIndexOf('<br>') === contents.length - 4) {
-		return contents.slice(0, contents.length - 4);
-	}
-	return contents;
-};
+/** contentEditable DOM → 저장용 HTML — entities encodeHtml 정본 위임 (clone·color 보존) */
+const encodeCellHtml = (input: HTMLElement | null | undefined): string =>
+	encodeHtml(input ?? null, { clone: true, colorMode: 'keep' });
 
 /** 커밋 값 파생 — text/memo는 HTML 유지, time 열은 innerText trim */
 const resolveCommitValue = (column: SheetColumnId, encoded: string, innerText?: string): string =>

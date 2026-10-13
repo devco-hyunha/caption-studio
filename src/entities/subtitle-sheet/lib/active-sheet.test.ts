@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { SheetsState } from '../types';
-import { replaceTimelineAt, replaceTimelinePatches, updateActiveSelectedTexts } from './active-sheet';
+import {
+	replaceTimelineAt,
+	replaceTimelinePatches,
+	removeActiveTimelineAt,
+	setActiveTimelines,
+	updateActiveSelectedTexts,
+} from './active-sheet';
 
 const state = (overrides: Partial<SheetsState> = {}): SheetsState => ({
 	active: 0,
@@ -23,11 +29,7 @@ const state = (overrides: Partial<SheetsState> = {}): SheetsState => ({
 describe('updateActiveSelectedTexts', () => {
 	it('선택 행 text에만 transform 적용', () => {
 		const next = updateActiveSelectedTexts(state(), (text) => `<b>${text}</b>`);
-		expect(next?.sheets[0].timelines.map((t) => t.text)).toEqual([
-			'<b>a</b>',
-			'b',
-			'<b>c</b>',
-		]);
+		expect(next?.sheets[0].timelines.map((t) => t.text)).toEqual(['<b>a</b>', 'b', '<b>c</b>']);
 	});
 
 	it('multiple이 아니면 null', () => {
@@ -135,5 +137,86 @@ describe('replaceTimelinePatches', () => {
 		const next = replaceTimelinePatches(two, new Map([[1, { start: 99, text: 'y' }]]));
 		expect(next?.sheets[0].timelines[0]).toEqual({ text: 'a' });
 		expect(next?.sheets[1].timelines[1]).toEqual({ start: 99, text: 'y' });
+	});
+});
+
+describe('removeActiveTimelineAt (clearSelection param)', () => {
+	it('normal(true): multiple 중이면 null', () => {
+		expect(removeActiveTimelineAt(state(), 1, true)).toBeNull();
+	});
+
+	it('normal(true): multiple이 아니면 행 삭제 + 선택 초기화', () => {
+		const off = state({
+			sheets: [{ ...state().sheets[0], multipleActive: false }],
+		});
+		const next = removeActiveTimelineAt(off, 1, true);
+		expect(next?.state.sheets[0].timelines.map((t) => t.text)).toEqual(['a', 'c']);
+		expect(next?.state.sheets[0].selectedRows).toEqual([]);
+		expect(next?.state.sheets[0].multipleStart).toBeNull();
+	});
+
+	it('history(false): multiple 중에도 삭제, 선택 유지 (M5)', () => {
+		const next = removeActiveTimelineAt(state(), 1, false);
+		expect(next?.state.sheets[0].timelines.map((t) => t.text)).toEqual(['a', 'c']);
+		expect(next?.state.sheets[0].selectedRows).toEqual([0, 2]);
+		expect(next?.state.sheets[0].multipleActive).toBe(true);
+		expect(next?.state.sheets[0].multipleStart).toBe(0);
+	});
+
+	it('focusRow clamp — 마지막 행 삭제 시 직전 행', () => {
+		const off = state({
+			sheets: [{ ...state().sheets[0], multipleActive: false }],
+		});
+		const last = removeActiveTimelineAt(off, 2, true);
+		expect(last?.focusRow).toBe(1);
+	});
+
+	it('행 범위 밖이면 null', () => {
+		const off = state({
+			sheets: [{ ...state().sheets[0], multipleActive: false }],
+		});
+		expect(removeActiveTimelineAt(off, 9, true)).toBeNull();
+		expect(removeActiveTimelineAt(off, 9, false)).toBeNull();
+	});
+});
+
+describe('setActiveTimelines', () => {
+	it('활성 탭 timelines를 복사로 교체하고 스크롤·선택·포커스를 초기화한다', () => {
+		const next = setActiveTimelines(state(), [{ start: 10, end: 20, text: 'new', memo: 'm' }]);
+		const sheet = next?.sheets[0];
+
+		expect(sheet?.timelines).toEqual([{ start: 10, end: 20, text: 'new', memo: 'm' }]);
+		expect(sheet?.scroll).toBe(0);
+		expect(sheet?.selectedRows).toEqual([]);
+		expect(sheet?.multipleActive).toBe(false);
+		expect(sheet?.multipleStart).toBeNull();
+		expect(sheet?.current).toEqual({});
+	});
+
+	it('빈 배열은 빈 행 1개', () => {
+		const next = setActiveTimelines(state(), []);
+		expect(next?.sheets[0].timelines).toEqual([{ start: 0, end: 0, text: '', memo: '' }]);
+	});
+
+	it('활성 탭만 교체하고 타 탭은 유지', () => {
+		const two = state({
+			active: 1,
+			sheets: [
+				state().sheets[0],
+				{ ...state().sheets[0], name: 'sheet2', timelines: [{ text: 'keep' }] },
+			],
+		});
+		const next = setActiveTimelines(two, [{ start: 1, text: 'new' }]);
+
+		expect(next?.sheets[0].timelines.map((t) => t.text)).toEqual(['a', 'b', 'c']);
+		expect(next?.sheets[1].timelines).toEqual([{ start: 1, text: 'new' }]);
+	});
+
+	it('입력 배열을 mutate하지 않는다 (clone)', () => {
+		const input = [{ start: 1, text: 'x' }];
+		const next = setActiveTimelines(state(), input);
+
+		expect(next?.sheets[0].timelines[0]).not.toBe(input[0]);
+		expect(input).toEqual([{ start: 1, text: 'x' }]);
 	});
 });

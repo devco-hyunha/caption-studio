@@ -1,4 +1,4 @@
-/** 활성 시트 다중 선택 / 행 CRUD 래퍼 — SheetsState 변경은 entities 책임 */
+/** 활성 시트 다중 선택 / 행 CRUD / import 래퍼 — SheetsState 변경은 entities 책임 */
 import type { Sheet, SheetTimelineFormat, SheetTimelineItem, SheetsState } from '../types';
 import { cloneTimeline } from './sheet-core';
 import {
@@ -13,12 +13,15 @@ import {
 	spliceTimelineAt,
 } from './mutate/rows-mutate';
 
+/** 활성 시트 조회 — 없으면 undefined */
+const getActiveSheet = (state: SheetsState): Sheet | undefined => state.sheets[state.active];
+
 /** 활성 시트만 patch. patch가 같은 시트를 돌려주면 변경 없음(null) */
 const patchActiveSheet = (
 	state: SheetsState,
 	patch: (sheet: Sheet) => Sheet | null,
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet) return null;
 	const nextSheet = patch(sheet);
 	if (!nextSheet || nextSheet === sheet) return null;
@@ -32,20 +35,25 @@ const patchActiveSheet = (
 	};
 };
 
+/** patch 없으면 원본 state 유지 — selection 계열의 `next ?? state` 근원 */
+const patchActiveSheetKeep = (
+	state: SheetsState,
+	patch: (sheet: Sheet) => Sheet | null,
+): SheetsState => patchActiveSheet(state, patch) ?? state;
+
 /** multiple 모드 on/off */
 const toggleMultiple = (state: SheetsState, currentRow: number): SheetsState => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet) return state;
 
 	const nextSelection = sheet.multipleActive
 		? exitMultipleSelection()
 		: enterMultipleSelection(Math.max(0, currentRow));
 
-	const next = patchActiveSheet(state, (active) => ({
+	return patchActiveSheetKeep(state, (active) => ({
 		...active,
 		...nextSelection,
 	}));
-	return next ?? state;
 };
 
 /** Space / Shift 범위. multiple 아니면 no-op */
@@ -54,7 +62,7 @@ const toggleActiveSelectedRow = (
 	row: number,
 	withShift: boolean,
 ): SheetsState => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet?.multipleActive) return state;
 
 	const nextSelection = toggleSelectedRow(
@@ -62,24 +70,22 @@ const toggleActiveSelectedRow = (
 		row,
 		withShift,
 	);
-	const next = patchActiveSheet(state, (active) => ({
+	return patchActiveSheetKeep(state, (active) => ({
 		...active,
 		selectedRows: nextSelection.selectedRows,
 		multipleStart: nextSelection.multipleStart,
 	}));
-	return next ?? state;
 };
 
 /** multiple 이동(비-Shift) 앵커 */
 const setActiveMultipleStart = (state: SheetsState, row: number): SheetsState => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet?.multipleActive) return state;
 	if (sheet.multipleStart === row) return state;
-	const next = patchActiveSheet(state, (active) => ({
+	return patchActiveSheetKeep(state, (active) => ({
 		...active,
 		multipleStart: row,
 	}));
-	return next ?? state;
 };
 
 /**
@@ -91,7 +97,7 @@ const insertActiveTimelineAfter = (
 	row: number,
 	format: SheetTimelineFormat,
 ): { state: SheetsState; insertIndex: number } | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet || sheet.multipleActive) return null;
 
 	const { timelines, insertIndex } = insertTimelineAfter(sheet.timelines, row, format);
@@ -113,7 +119,7 @@ const updateActiveSelectedTexts = (
 	state: SheetsState,
 	transform: (text: string, rowIndex: number) => string,
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet?.multipleActive) return null;
 	if (sheet.selectedRows.length === 0) return null;
 
@@ -133,15 +139,18 @@ const updateActiveSelectedTexts = (
 };
 
 /**
- * 행 삭제. multiple 중이면 null.
- * 성공 시 `{ state, focusRow }`.
+ * 행 삭제. 성공 시 `{ state, focusRow }`.
+ * `clearSelection`(normal): multiple 중이면 null + 선택 초기화.
+ * `clearSelection`(history, false): 게이트 없음, 선택 유지 (M5 — 스택·데이터 함께 이동).
  */
 const removeActiveTimelineAt = (
 	state: SheetsState,
 	row: number,
+	clearSelection: boolean,
 ): { state: SheetsState; focusRow: number } | null => {
-	const sheet = state.sheets[state.active];
-	if (!sheet || sheet.multipleActive) return null;
+	const sheet = getActiveSheet(state);
+	if (!sheet) return null;
+	if (clearSelection && sheet.multipleActive) return null;
 
 	const result = removeTimelineAt(sheet.timelines, row);
 	if (!result) return null;
@@ -149,8 +158,7 @@ const removeActiveTimelineAt = (
 	const next = patchActiveSheet(state, (active) => ({
 		...active,
 		timelines: result.timelines,
-		selectedRows: [],
-		multipleStart: null,
+		...(clearSelection ? { selectedRows: [], multipleStart: null } : {}),
 	}));
 	if (!next) return null;
 	return { state: next, focusRow: result.focusRow };
@@ -165,7 +173,7 @@ const replaceTimelineAt = (
 	row: number,
 	timeline: SheetTimelineItem,
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet?.timelines[row]) return null;
 
 	const timelines = [
@@ -184,7 +192,7 @@ const replaceTimelinePatches = (
 	state: SheetsState,
 	patches: Map<number, SheetTimelineItem>,
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet?.multipleActive) return null;
 	if (sheet.selectedRows.length === 0 || patches.size === 0) return null;
 
@@ -209,32 +217,10 @@ const spliceActiveTimelineAt = (
 	index: number,
 	data: SheetTimelineItem,
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet) return null;
 	const timelines = spliceTimelineAt(sheet.timelines, index, data);
 	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
-};
-
-/**
- * undo/redo 전용 행 제거 — multipleActive 게이트 없음 (M5).
- * 다중 선택 중에도 스택과 데이터가 함께 이동해야 하므로 selection은 유지한다.
- */
-const removeActiveTimelineAtForHistory = (
-	state: SheetsState,
-	row: number,
-): { state: SheetsState; focusRow: number } | null => {
-	const sheet = state.sheets[state.active];
-	if (!sheet) return null;
-
-	const result = removeTimelineAt(sheet.timelines, row);
-	if (!result) return null;
-
-	const next = patchActiveSheet(state, (active) => ({
-		...active,
-		timelines: result.timelines,
-	}));
-	if (!next) return null;
-	return { state: next, focusRow: result.focusRow };
 };
 
 /**
@@ -244,7 +230,7 @@ const replaceActiveTimelinePatches = (
 	state: SheetsState,
 	patches: readonly { index: number; data: SheetTimelineItem }[],
 ): SheetsState | null => {
-	const sheet = state.sheets[state.active];
+	const sheet = getActiveSheet(state);
 	if (!sheet || patches.length === 0) return null;
 
 	let timelines = sheet.timelines;
@@ -259,6 +245,31 @@ const replaceActiveTimelinePatches = (
 	return patchActiveSheet(state, (active) => ({ ...active, timelines }));
 };
 
+/**
+ * import — 활성 탭 timelines 통째 교체. 빈 배열은 빈 행 1개.
+ * 스크롤·다중 선택·포커스 초기화.
+ */
+const setActiveTimelines = (
+	state: SheetsState,
+	timelines: readonly SheetTimelineItem[],
+): SheetsState | null => {
+	const sheet = getActiveSheet(state);
+	if (!sheet) return null;
+
+	const nextTimelines =
+		timelines.length === 0 ? [cloneTimeline()] : timelines.map((item) => cloneTimeline(item));
+
+	return patchActiveSheet(state, (active) => ({
+		...active,
+		timelines: nextTimelines,
+		scroll: 0,
+		selectedRows: [],
+		multipleActive: false,
+		multipleStart: null,
+		current: {},
+	}));
+};
+
 export {
 	patchActiveSheet,
 	replaceTimelineAt,
@@ -270,6 +281,6 @@ export {
 	setActiveMultipleStart,
 	insertActiveTimelineAfter,
 	removeActiveTimelineAt,
-	removeActiveTimelineAtForHistory,
 	updateActiveSelectedTexts,
+	setActiveTimelines,
 };

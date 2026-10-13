@@ -33,6 +33,8 @@ export interface SheetHistoryStore {
 	activeSheetIndex: number;
 
 	resetForSheets: (sheetCount: number, activeIndex?: number) => void;
+	/** import — 활성 탭 스택만 초기화 */
+	resetActiveStack: () => void;
 	setActiveSheetIndex: (index: number) => void;
 	addHistoryStack: () => void;
 	insertHistoryStackAt: (index: number) => void;
