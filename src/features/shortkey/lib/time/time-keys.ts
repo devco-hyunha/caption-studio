@@ -35,6 +35,19 @@ const registerSheetTimeKeys = (shortcuts: ShortcutsApi, getActions: () => SheetS
         preventDefault: true,
       },
     ),
+    defineSheetKey(
+      SHORTKEY_IDS.TIME_CARVE,
+      () => {
+        const actions = getActions();
+        if (actions.isMultiple()) return;
+        actions.timeCarve();
+      },
+      {
+        placeholder: SHORTKEY_PLACEHOLDERS.TIME_CARVE,
+        type: SHORTKEY_TYPES.DOWN,
+        preventDefault: true,
+      },
+    ),
   ]);
 };
 

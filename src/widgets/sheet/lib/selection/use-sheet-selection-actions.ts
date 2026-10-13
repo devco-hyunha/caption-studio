@@ -1,5 +1,10 @@
 import { cloneTimeline, createEmptyTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore } from '@/features/sheet-history';
+import {
+  rebuildVideoTimeSlotsFromActiveSheet,
+  syncVideoTimeSlotsAfterInsert,
+  syncVideoTimeSlotsAfterRemove,
+} from '@/features/video-sync';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { usePendingFocus } from '../focus/use-pending-focus';
 import type {
@@ -52,6 +57,7 @@ const useSheetSelectionActions = ({
     closeSearchPanel();
     const insertIndex = insertTimelineAfterAction(cursor.row, format);
     if (insertIndex == null) return;
+    syncVideoTimeSlotsAfterInsert(insertIndex);
     pushInsertHistory(insertIndex, cursor.row, cursor.col);
     focusAfter(insertIndex, cursor.col);
   };
@@ -83,6 +89,7 @@ const useSheetSelectionActions = ({
     const { row, col } = resolveFocus();
     const insertIndex = insertTimelineAfterAction(row, format);
     if (insertIndex == null) return;
+    syncVideoTimeSlotsAfterInsert(insertIndex);
     pushInsertHistory(insertIndex, row, col);
     focusAfter(insertIndex, col);
   };
@@ -104,6 +111,7 @@ const useSheetSelectionActions = ({
 
     // U5: lastIndex===0이면 update(EMPTY)로 대체 (행 유지)
     if (wasLast) {
+      rebuildVideoTimeSlotsFromActiveSheet();
       useSheetHistoryStore.getState().pushHistory({
         command: 'update',
         id: row,
@@ -112,6 +120,7 @@ const useSheetSelectionActions = ({
         current: { row, col },
       });
     } else {
+      syncVideoTimeSlotsAfterRemove(row);
       useSheetHistoryStore.getState().pushHistory({
         command: 'remove',
         id: row,

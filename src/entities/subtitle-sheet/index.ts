@@ -6,6 +6,9 @@ export type {
   SheetTimelineFormat,
   SheetSelectionState,
   SheetTimelineItem,
+  TimeSearchAllHit,
+  TimeSearchHit,
+  TimeSlotIndex,
   EditableColumn,
   SheetsState,
 } from './types';
@@ -20,7 +23,13 @@ export {
   normalizeTabName,
 } from './lib/core/tab-names';
 
-export { cloneTimeline, createSheet, createState, normalizeState } from './lib/core/sheet-core';
+export {
+  cloneTimeline,
+  createSheet,
+  createState,
+  EMPTY_TIMELINES,
+  normalizeState,
+} from './lib/core/sheet-core';
 
 export {
   addSheet,
@@ -64,5 +73,22 @@ export {
 } from './lib/active/active-sheet';
 
 export { loadState } from './lib/storage/storage';
+
+export { OPEN_END_MS, resolveEndMs, timeSearch, timeSearchAll } from './lib/time/time-search';
+
+export { resolveStartMs } from './lib/time/time-range';
+
+export { findNextStartNeighborIndex, findPrevStartNeighborIndex } from './lib/time/start-neighbor';
+
+export {
+  MINUTE_MS,
+  candidateRowIndicesAt,
+  cloneTimeSlotIndex,
+  insertRowTimeSlot,
+  rebuildTimeSlotIndex,
+  removeRowTimeSlot,
+  shiftTimeSlotIndices,
+  syncRowTimeSlot,
+} from './lib/time/time-slot-index';
 
 export { useSheetStore } from './model/use-sheet-store';

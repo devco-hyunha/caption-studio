@@ -1,11 +1,16 @@
 import type { CSSProperties, UIEvent } from 'react';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
+import { EMPTY_TIMELINES, useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
 import { SubtitleIoPanel } from '@/features/subtitle-io';
 import { useSheetShortkey } from '@/features/shortkey';
+import {
+  rebuildVideoTimeSlotsFromActiveSheet,
+  registerSheetTimeCarveHandler,
+  useVideoSyncStore,
+} from '@/features/video-sync';
 import { cn } from '@/shared/lib/utils';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT } from '../lib/columns/columns';
 import { isMultipleActive } from '../lib/selection/is-multiple-active';
@@ -16,14 +21,13 @@ import { useSheetWindow } from '../lib/move/use-sheet-window';
 import { useSheetSearchActions } from '../lib/search/use-sheet-search-actions';
 import { useSheetSelectionActions } from '../lib/selection/use-sheet-selection-actions';
 import { useSheetTimeActions } from '../lib/time/use-sheet-time-actions';
+import { useSheetVideoActions } from '../lib/video/use-sheet-video-actions';
 import { useSheetUndoActions } from '../lib/undo/use-sheet-undo-actions';
 import { buildSheetShortkeyActions } from '../lib/shortkey/build-sheet-shortkey-actions';
 import type { SheetBodyProps } from '../types';
 import { SheetBodyToolbar } from './sheet-body-toolbar';
 import { SheetCellEditor } from './sheet-cell-editor';
 import { SheetRow } from './sheet-row';
-
-const EMPTY_TIMELINES: readonly SheetTimelineItem[] = [];
 
 /**
  * 시트 body 윈도 + 행 렌더.
@@ -137,8 +141,26 @@ const SheetBody = ({
     currentRowIndex,
     currentColumn,
     isTimeTarget,
+    isEditing,
     closeSearchPanel,
+    onUpdateCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
   });
+
+  const video = useSheetVideoActions({
+    isEditing,
+    currentRowIndex,
+    currentColumn,
+    endEdit,
+    applyFocus,
+  });
+
+  /** 「시간 입력」 버튼 · Ctrl+` 공용 — 시트 핸들러 등록 */
+  useEffect(() => {
+    registerSheetTimeCarveHandler(time.timeCarve);
+    return () => {
+      registerSheetTimeCarveHandler(null);
+    };
+  }, [time.timeCarve]);
 
   const { canUndo, canRedo, handleUndo, handleRedo } = useSheetUndoActions({
     format,
@@ -187,6 +209,16 @@ const SheetBody = ({
       isTimeTarget,
       timePlus: time.timePlus,
       timeMinus: time.timeMinus,
+      timeCarve: time.timeCarve,
+      videoJump: video.videoJump,
+      sheetJump: video.sheetJump,
+      videoPlayToggle: video.videoPlayToggle,
+      videoSeekPrev: video.videoSeekPrev,
+      videoSeekNext: video.videoSeekNext,
+      volumeUp: video.volumeUp,
+      volumeDown: video.volumeDown,
+      cuePrev: video.cuePrev,
+      cueNext: video.cueNext,
       toggleSearch,
       undo: handleUndo,
       redo: handleRedo,
@@ -203,6 +235,8 @@ const SheetBody = ({
     (state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
   );
   const storeSheets = useSheetStore((state) => state.sheets);
+  const playbackActiveIndices = useVideoSyncStore((state) => state.activeIndices);
+  const playbackSet = useMemo(() => new Set(playbackActiveIndices), [playbackActiveIndices]);
   const setActiveTimelinesAction = useSheetStore((state) => state.setActiveTimelines);
 
   const workbookTabs = useMemo(
@@ -210,10 +244,11 @@ const SheetBody = ({
     [storeSheets],
   );
 
-  /** import — 활성 탭 timelines 교체 + 활성 탭 history·search 초기화 + 포커스 row 0 */
+  /** import — 활성 탭 timelines 교체 + 슬롯 rebuild + 활성 탭 history·search 초기화 + 포커스 row 0 */
   const handleSubtitleImported = (nextTimelines: SheetTimelineItem[]) => {
     endEdit(false);
     if (!setActiveTimelinesAction(nextTimelines)) return;
+    rebuildVideoTimeSlotsFromActiveSheet();
     useSheetHistoryStore.getState().resetActiveStack();
     useSheetSearchStore.getState().clearSearchHits();
     setScrollTop(0);
@@ -294,12 +329,13 @@ const SheetBody = ({
               if (!row) return null;
 
               const rowHeight = row.height ?? estimateRowHeight ?? DEFAULT_ESTIMATE_ROW_HEIGHT;
+              const rowView = playbackSet.has(row.index) ? { ...row, isPlaybackActive: true } : row;
 
               return (
                 <SheetRow
                   key={row.index}
                   format={format}
-                  row={row}
+                  row={rowView}
                   data-index={rowIndex}
                   currentColumn={currentRowIndex === row.index ? currentColumn : null}
                   searchHitKeys={searchHitKeys}

@@ -1,4 +1,4 @@
-import { formatTimecode } from '@/shared/lib/timecode';
+import { formatTime } from '@/shared/lib/timecode';
 import { converters } from '../parse/convert';
 import type {
   FormatExportDataOptions,
@@ -40,9 +40,9 @@ const formatExportData = ({
   if (convertTarget === 'srt' || sheetFormat === 'srt') {
     return timelines.map(({ start, end, text, memo = '' }) => ({
       start,
-      starttime: formatTimecode(start),
+      starttime: formatTime(start),
       end,
-      endtime: formatTimecode(end ?? 0),
+      endtime: formatTime(end ?? 0),
       text,
       memo,
     }));
@@ -51,7 +51,7 @@ const formatExportData = ({
   if (sheetFormat === 'smi' || convertTarget === 'smi') {
     return timelines.map(({ start, text, memo = '' }) => ({
       start,
-      starttime: formatTimecode(start),
+      starttime: formatTime(start),
       text,
       memo,
     }));

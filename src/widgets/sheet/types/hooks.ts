@@ -362,6 +362,16 @@ export interface BuildSheetShortkeyActionsParams {
   isTimeTarget: () => boolean;
   timePlus: () => void;
   timeMinus: () => void;
+  timeCarve: () => void;
+  videoJump: () => void;
+  sheetJump: () => void;
+  videoPlayToggle: () => void;
+  videoSeekPrev: () => void;
+  videoSeekNext: () => void;
+  volumeUp: () => void;
+  volumeDown: () => void;
+  cuePrev: () => void;
+  cueNext: () => void;
   toggleSearch: () => void;
   undo: () => void;
   redo: () => void;
@@ -395,8 +405,33 @@ export interface UseSheetTimeActionsParams {
   currentRowIndex: number | null;
   currentColumn: SheetColumnId | null;
   isTimeTarget: () => boolean;
+  isEditing: () => boolean;
   /** ±jump 직전 검색 패널 닫기 */
   closeSearchPanel: () => void;
+  /** timeCarve — 플레이어 시각을 time 셀에 커밋 */
+  onUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+}
+
+/** video shortkey 훅 params — 포커스·편집·포커스 적용 */
+export interface UseSheetVideoActionsParams {
+  isEditing: () => boolean;
+  currentRowIndex: number | null;
+  currentColumn: SheetColumnId | null;
+  endEdit: (commit?: boolean) => void;
+  applyFocus: (rowIndex: number, column: SheetColumnId) => void;
+}
+
+/** video shortkey 훅 결과 — shortkey actions에 주입할 video API */
+export interface UseSheetVideoActionsResult {
+  videoJump: () => void;
+  sheetJump: () => void;
+  videoPlayToggle: () => void;
+  videoSeekPrev: () => void;
+  videoSeekNext: () => void;
+  volumeUp: () => void;
+  volumeDown: () => void;
+  cuePrev: () => void;
+  cueNext: () => void;
 }
 
 /** pending focus 훅 params — 렌더 반영 후 포커스 적용 (selection·undo 공유) */
@@ -436,6 +471,8 @@ export interface UseSheetUndoActionsResult {
 export interface UseSheetTimeActionsResult {
   timePlus: () => void;
   timeMinus: () => void;
+  /** Ctrl+` · 「시간 입력」 — 포커스 start/end 셀에 플레이어 시각 반영 */
+  timeCarve: () => void;
 }
 
 /** 검색 훅 params — 포커스·에딧·점프 API */

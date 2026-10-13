@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore } from '@/features/sheet-history';
+import { registerVideoPlayerControlApi } from '@/features/video-sync';
 import { useSheetTimeActions } from './use-sheet-time-actions';
 
 const resetStore = () => {
@@ -30,6 +31,8 @@ const renderTime = (overrides: Partial<Parameters<typeof useSheetTimeActions>[0]
   resetStore();
   const closeSearchPanel = vi.fn();
   const isTimeTarget = vi.fn(() => true);
+  const isEditing = vi.fn(() => false);
+  const onUpdateCell = vi.fn(() => true);
   const hook = renderHook(
     (props: Parameters<typeof useSheetTimeActions>[0]) => useSheetTimeActions(props),
     {
@@ -38,12 +41,14 @@ const renderTime = (overrides: Partial<Parameters<typeof useSheetTimeActions>[0]
         currentRowIndex: 1,
         currentColumn: 'starttime' as const,
         isTimeTarget,
+        isEditing,
         closeSearchPanel,
+        onUpdateCell,
         ...overrides,
       },
     },
   );
-  return { hook, closeSearchPanel };
+  return { hook, closeSearchPanel, isEditing, onUpdateCell };
 };
 
 describe('useSheetTimeActions closeSearchPanel', () => {
@@ -107,5 +112,52 @@ describe('useSheetTimeActions closeSearchPanel', () => {
     expect(last?.id).toBeNull();
     expect((last?.before as { index: number }[]).map((p) => p.index)).toEqual([0, 1]);
     expect((last?.after as { index: number }[]).map((p) => p.index)).toEqual([0, 1]);
+  });
+});
+
+describe('useSheetTimeActions timeCarve', () => {
+  beforeEach(() => {
+    resetStore();
+    registerVideoPlayerControlApi(null);
+  });
+
+  it('플레이어 시각을 포커스 time 셀에 timecode로 커밋', () => {
+    registerVideoPlayerControlApi({
+      seekTo: () => true,
+      getCurrentTime: () => 1.5,
+      toggle: () => {},
+      setVolume: () => {},
+      getVolume: () => 0,
+    });
+    const { hook, closeSearchPanel, onUpdateCell } = renderTime();
+
+    act(() => hook.result.current.timeCarve());
+
+    expect(closeSearchPanel).toHaveBeenCalledTimes(1);
+    expect(onUpdateCell).toHaveBeenCalledWith(1, 'starttime', '00:00:01,500');
+  });
+
+  it('에딧 중·time 타깃 아니면 커밋하지 않는다', () => {
+    registerVideoPlayerControlApi({
+      seekTo: () => true,
+      getCurrentTime: () => 1.5,
+      toggle: () => {},
+      setVolume: () => {},
+      getVolume: () => 0,
+    });
+    const { hook, onUpdateCell } = renderTime({ isEditing: () => true });
+    act(() => hook.result.current.timeCarve());
+    expect(onUpdateCell).not.toHaveBeenCalled();
+
+    const notTime = renderTime({ isTimeTarget: () => false });
+    act(() => notTime.hook.result.current.timeCarve());
+    expect(notTime.onUpdateCell).not.toHaveBeenCalled();
+  });
+
+  it('플레이어 미등록이면 커밋하지 않는다', () => {
+    const { hook, onUpdateCell } = renderTime();
+
+    act(() => hook.result.current.timeCarve());
+    expect(onUpdateCell).not.toHaveBeenCalled();
   });
 });

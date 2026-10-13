@@ -1,7 +1,8 @@
 import type { SheetTimelineItem, SheetsState } from '@/entities/subtitle-sheet';
+import { formatTime } from '@/shared/lib/timecode';
+import { asHtmlString } from '@/shared/lib/utils';
 import type { SheetFormat, SheetRowView, SheetTabView } from '../../types';
 import { calcRowHeight } from '../columns/row-height';
-import { formatTimecode } from '@/shared/lib/timecode';
 
 /** dur 열 — (end - start) 초 */
 const formatDurationSec = (start: number, end: number) => ((end - start) / 1000).toFixed(3);
@@ -14,9 +15,6 @@ const resolveStart = (timeline: SheetTimelineItem) => {
   if (Number.isFinite(sync)) return sync;
   return 0;
 };
-
-/** text/memo는 HTML 문자열 그대로 (그 외 타입은 빈 문자열) */
-const asHtmlString = (value: unknown) => (typeof value === 'string' ? value : '');
 
 /**
  * 타임라인 → 행 뷰.
@@ -58,8 +56,8 @@ const mapTimelinesToRows = (
 
     return {
       index,
-      starttime: formatTimecode(start),
-      endtime: formatTimecode(end),
+      starttime: formatTime(start),
+      endtime: formatTime(end),
       dur,
       text,
       memo: asHtmlString(timeline.memo),

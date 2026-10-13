@@ -7,6 +7,7 @@ import { registerSheetMutateKeys } from './mutate/mutate-keys';
 import { registerSheetSelectionKeys } from './selection/selection-keys';
 import { registerSheetSearchKeys } from './search/search-keys';
 import { registerSheetTimeKeys } from './time/time-keys';
+import { registerSheetVideoKeys } from './video/video-keys';
 import { registerSheetUndoKeys } from './history/undo-keys';
 
 /**
@@ -23,6 +24,7 @@ const registerSheetNavigationKeys = (
   registerSheetMutateKeys(shortcuts, getActions);
   registerSheetClipKeys(shortcuts, getActions);
   registerSheetTimeKeys(shortcuts, getActions);
+  registerSheetVideoKeys(shortcuts, getActions);
   registerSheetSearchKeys(shortcuts, getActions);
   registerSheetUndoKeys(shortcuts, getActions);
 };

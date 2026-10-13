@@ -8,6 +8,9 @@ const EMPTY_TIMELINE: SheetTimelineItem = Object.freeze({
   memo: '',
 });
 
+/** 시트 없는 상태의 timelines 기준 (store selector 공통) */
+const EMPTY_TIMELINES: readonly SheetTimelineItem[] = [];
+
 /** 타임라인 복사 — 빈 값은 `EMPTY_TIMELINE` 기준 */
 const cloneTimeline = (timeline: SheetTimelineItem = EMPTY_TIMELINE): SheetTimelineItem => ({
   start: timeline.start,
@@ -92,4 +95,4 @@ const normalizeState = (raw: unknown): SheetsState => {
 
 const createState = (): SheetsState => normalizeState(null);
 
-export { cloneTimeline, createSheet, createState, normalizeSheet, normalizeState };
+export { cloneTimeline, createSheet, createState, EMPTY_TIMELINES, normalizeSheet, normalizeState };

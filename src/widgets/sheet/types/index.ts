@@ -59,6 +59,8 @@ export type {
   UseSheetTabRenameResult,
   UseSheetTimeActionsParams,
   UseSheetTimeActionsResult,
+  UseSheetVideoActionsParams,
+  UseSheetVideoActionsResult,
   UseSheetUndoActionsParams,
   UseSheetUndoActionsResult,
   UsePendingFocusParams,

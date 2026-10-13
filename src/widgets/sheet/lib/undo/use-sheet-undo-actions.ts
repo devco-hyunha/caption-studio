@@ -4,6 +4,7 @@ import {
   useSheetHistoryStore,
 } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
+import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
 import { usePendingFocus } from '../focus/use-pending-focus';
 import type { UseSheetUndoActionsParams, UseSheetUndoActionsResult } from '../../types';
 
@@ -34,6 +35,7 @@ const useSheetUndoActions = ({
     useSheetSearchStore.getState().closeSearchPanel();
     const focus = useSheetHistoryStore.getState().undo();
     if (!focus) return;
+    rebuildVideoTimeSlotsFromActiveSheet();
     focusAfter(focus.row, focus.col);
   };
 
@@ -42,6 +44,7 @@ const useSheetUndoActions = ({
     useSheetSearchStore.getState().closeSearchPanel();
     const focus = useSheetHistoryStore.getState().redo();
     if (!focus) return;
+    rebuildVideoTimeSlotsFromActiveSheet();
     focusAfter(focus.row, focus.col);
   };
 

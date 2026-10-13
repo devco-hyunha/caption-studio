@@ -1,6 +1,12 @@
 import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore, type HistoryTimelinePatch } from '@/features/sheet-history';
+import {
+  getVideoPlayerControlApi,
+  rebuildVideoTimeSlotsFromActiveSheet,
+  syncVideoTimeSlotsAfterRowTimeEdit,
+} from '@/features/video-sync';
+import { formatTime, secondsToMs } from '@/shared/lib/timecode';
 import type {
   SheetColumnId,
   UseSheetTimeActionsParams,
@@ -24,7 +30,9 @@ const useSheetTimeActions = ({
   currentRowIndex,
   currentColumn,
   isTimeTarget,
+  isEditing,
   closeSearchPanel,
+  onUpdateCell,
 }: UseSheetTimeActionsParams): UseSheetTimeActionsResult => {
   const nudgeSelectedRows = (direction: 'plus' | 'minus') => {
     const store = useSheetStore.getState();
@@ -60,6 +68,7 @@ const useSheetTimeActions = ({
       after: currents,
       current: resolveFocusCursor(format, currentRowIndex, currentColumn),
     });
+    rebuildVideoTimeSlotsFromActiveSheet();
   };
 
   const nudgeFocusedCell = (direction: 'plus' | 'minus') => {
@@ -88,6 +97,7 @@ const useSheetTimeActions = ({
       after: cloneTimeline(after),
       current: focus,
     });
+    syncVideoTimeSlotsAfterRowTimeEdit(currentRowIndex);
   };
 
   const timePlus = () => {
@@ -109,7 +119,20 @@ const useSheetTimeActions = ({
     nudgeFocusedCell('minus');
   };
 
-  return { timePlus, timeMinus };
+  /** Ctrl+` · 「시간 입력」 — 플레이어 시각을 포커스 start/end 셀에 커밋 */
+  const timeCarve = () => {
+    if (isEditing()) return;
+    if (isMultipleActive()) return;
+    if (!isTimeTarget() || !isTimeColumnPair(currentColumn) || currentRowIndex == null) return;
+
+    const seconds = getVideoPlayerControlApi()?.getCurrentTime();
+    if (seconds == null || !Number.isFinite(seconds)) return;
+
+    closeSearchPanel();
+    onUpdateCell(currentRowIndex, currentColumn, formatTime(secondsToMs(seconds)));
+  };
+
+  return { timePlus, timeMinus, timeCarve };
 };
 
 export { useSheetTimeActions, isTimeColumnPair };
