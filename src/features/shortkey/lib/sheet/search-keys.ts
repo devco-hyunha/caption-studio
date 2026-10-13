@@ -1,9 +1,9 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
 import {
-	SHORTKEY_IDS,
-	SHORTKEY_PLACEHOLDERS,
-	SHORTKEY_TYPES,
+  SHORTKEY_IDS,
+  SHORTKEY_PLACEHOLDERS,
+  SHORTKEY_TYPES,
 } from '../../model/default-sheet-shortkey-masks';
 import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
 
@@ -13,24 +13,24 @@ import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
  * 에딧 중에는 검색창 동작을 막는다 (타입 투 리플레이스·에디터 입력 보존).
  */
 const registerSheetSearchKeys = (
-	shortcuts: ShortcutsApi,
-	getActions: () => SheetShortkeyActions,
+  shortcuts: ShortcutsApi,
+  getActions: () => SheetShortkeyActions,
 ) => {
-	registerSheetKeys(shortcuts, [
-		defineSheetKey(
-			SHORTKEY_IDS.SEARCH,
-			() => {
-				const actions = getActions();
-				if (actions.isEditing()) return;
-				actions.toggleSearch();
-			},
-			{
-				placeholder: SHORTKEY_PLACEHOLDERS.SEARCH,
-				type: SHORTKEY_TYPES.HOLD,
-				preventDefault: true,
-			},
-		),
-	]);
+  registerSheetKeys(shortcuts, [
+    defineSheetKey(
+      SHORTKEY_IDS.SEARCH,
+      () => {
+        const actions = getActions();
+        if (actions.isEditing()) return;
+        actions.toggleSearch();
+      },
+      {
+        placeholder: SHORTKEY_PLACEHOLDERS.SEARCH,
+        type: SHORTKEY_TYPES.HOLD,
+        preventDefault: true,
+      },
+    ),
+  ]);
 };
 
 export { registerSheetSearchKeys };

@@ -3,17 +3,17 @@ import { NotFound } from '@/pages/not-found';
 import { routeTree } from './routeTree.gen';
 
 export const getRouter = () => {
-	const router = createRouter({
-		routeTree,
-		scrollRestoration: true,
-		defaultNotFoundComponent: NotFound,
-	});
+  const router = createRouter({
+    routeTree,
+    scrollRestoration: true,
+    defaultNotFoundComponent: NotFound,
+  });
 
-	return router;
+  return router;
 };
 
 declare module '@tanstack/react-router' {
-	interface Register {
-		router: ReturnType<typeof getRouter>;
-	}
+  interface Register {
+    router: ReturnType<typeof getRouter>;
+  }
 }

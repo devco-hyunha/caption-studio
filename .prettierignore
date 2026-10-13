@@ -7,3 +7,4 @@ public/css
 legacy
 package-lock.json
 *.min.js
+*.md

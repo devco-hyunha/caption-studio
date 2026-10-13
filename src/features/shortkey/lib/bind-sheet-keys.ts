@@ -14,17 +14,17 @@ import { registerSheetUndoKeys } from './sheet/undo-keys';
  * mask는 shortkey store에서 조회한다.
  */
 const registerSheetNavigationKeys = (
-	shortcuts: ShortcutsApi,
-	getActions: () => SheetShortkeyActions,
+  shortcuts: ShortcutsApi,
+  getActions: () => SheetShortkeyActions,
 ) => {
-	registerSheetMoveKeys(shortcuts, getActions);
-	registerSheetEditKeys(shortcuts, getActions);
-	registerSheetSelectionKeys(shortcuts, getActions);
-	registerSheetMutateKeys(shortcuts, getActions);
-	registerSheetClipKeys(shortcuts, getActions);
-	registerSheetTimeKeys(shortcuts, getActions);
-	registerSheetSearchKeys(shortcuts, getActions);
-	registerSheetUndoKeys(shortcuts, getActions);
+  registerSheetMoveKeys(shortcuts, getActions);
+  registerSheetEditKeys(shortcuts, getActions);
+  registerSheetSelectionKeys(shortcuts, getActions);
+  registerSheetMutateKeys(shortcuts, getActions);
+  registerSheetClipKeys(shortcuts, getActions);
+  registerSheetTimeKeys(shortcuts, getActions);
+  registerSheetSearchKeys(shortcuts, getActions);
+  registerSheetUndoKeys(shortcuts, getActions);
 };
 
 export { registerSheetNavigationKeys };

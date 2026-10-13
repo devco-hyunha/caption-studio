@@ -7,33 +7,33 @@ import { normalizeMask } from '@/shared/lib/shortcuts';
 
 /** shortkey mask 스토어 — localStorage 영속, 변경분만 저장 */
 const useShortkeyStore = create<ShortkeyStore>()(
-	persist(
-		(set) => ({
-			masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS },
+  persist(
+    (set) => ({
+      masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS },
 
-			setMask: (id, mask) => {
-				set((state) => ({
-					masks: {
-						...state.masks,
-						[id]: normalizeMask(mask),
-					},
-				}));
-			},
+      setMask: (id, mask) => {
+        set((state) => ({
+          masks: {
+            ...state.masks,
+            [id]: normalizeMask(mask),
+          },
+        }));
+      },
 
-			resetMasks: () => {
-				set({ masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS } });
-			},
-		}),
-		{
-			name: STORAGE_KEY_SHORTKEY,
-			storage: createJSONStorage(() => localStorage),
-			partialize: (state) => ({ masks: toSaveMasks(state.masks) }),
-			merge: (persisted, current) => ({
-				...current,
-				masks: mergeMasks(persisted, current.masks),
-			}),
-		},
-	),
+      resetMasks: () => {
+        set({ masks: { ...DEFAULT_SHEET_SHORTKEY_MASKS } });
+      },
+    }),
+    {
+      name: STORAGE_KEY_SHORTKEY,
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ masks: toSaveMasks(state.masks) }),
+      merge: (persisted, current) => ({
+        ...current,
+        masks: mergeMasks(persisted, current.masks),
+      }),
+    },
+  ),
 );
 
 export { useShortkeyStore };

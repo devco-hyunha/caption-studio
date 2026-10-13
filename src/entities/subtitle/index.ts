@@ -10,10 +10,10 @@ export { serializeJsonWorkbook } from './lib/serialize/serialize-json';
 export { buildExcel } from './lib/excel/build-excel';
 export { formatExportData } from './lib/export/format-export-data';
 export {
-	DEFAULT_ENCODING,
-	DEFAULT_EXPORT_ENCODING_SMI,
-	DEFAULT_EXPORT_ENCODING_SRT,
-	SUBTITLE_ENCODINGS,
-	decodeBytes,
-	encodeText,
+  DEFAULT_ENCODING,
+  DEFAULT_EXPORT_ENCODING_SMI,
+  DEFAULT_EXPORT_ENCODING_SRT,
+  SUBTITLE_ENCODINGS,
+  decodeBytes,
+  encodeText,
 } from './lib/encoding/encoding';

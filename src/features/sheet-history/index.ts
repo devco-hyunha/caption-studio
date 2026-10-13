@@ -1,11 +1,11 @@
 export type {
-	HistoryCommand,
-	HistoryCursor,
-	HistoryEntry,
-	HistoryStack,
-	HistoryTimelinePatch,
-	SheetHistoryButtonsProps,
-	SheetHistoryStore,
+  HistoryCommand,
+  HistoryCursor,
+  HistoryEntry,
+  HistoryStack,
+  HistoryTimelinePatch,
+  SheetHistoryButtonsProps,
+  SheetHistoryStore,
 } from './types';
 
 /** 스택 판정만 public — stack 연산·apply는 model 내부 */

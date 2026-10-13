@@ -7,58 +7,58 @@ import type { SheetSelectionState } from '../../types';
  * - `withShift === true`: start~row 구간의 미선택 행을 추가
  */
 const toggleSelectedRow = (
-	state: SheetSelectionState,
-	row: number,
-	withShift: boolean,
+  state: SheetSelectionState,
+  row: number,
+  withShift: boolean,
 ): SheetSelectionState => {
-	if (!withShift) {
-		const currentIndex = state.selectedRows.indexOf(row);
-		if (currentIndex === -1) {
-			return {
-				multipleStart: row,
-				selectedRows: [...state.selectedRows, row],
-			};
-		}
-		return {
-			multipleStart: row,
-			selectedRows: [
-				...state.selectedRows.slice(0, currentIndex),
-				...state.selectedRows.slice(currentIndex + 1),
-			],
-		};
-	}
+  if (!withShift) {
+    const currentIndex = state.selectedRows.indexOf(row);
+    if (currentIndex === -1) {
+      return {
+        multipleStart: row,
+        selectedRows: [...state.selectedRows, row],
+      };
+    }
+    return {
+      multipleStart: row,
+      selectedRows: [
+        ...state.selectedRows.slice(0, currentIndex),
+        ...state.selectedRows.slice(currentIndex + 1),
+      ],
+    };
+  }
 
-	const start = state.multipleStart ?? row;
-	const selectionStart = Math.min(start, row);
-	const selectionEnd = Math.max(start, row);
-	const next = [...state.selectedRows];
-	for (let index = selectionStart; index <= selectionEnd; index++) {
-		if (next.includes(index)) continue;
-		next.push(index);
-	}
-	return {
-		multipleStart: state.multipleStart,
-		selectedRows: next,
-	};
+  const start = state.multipleStart ?? row;
+  const selectionStart = Math.min(start, row);
+  const selectionEnd = Math.max(start, row);
+  const next = [...state.selectedRows];
+  for (let index = selectionStart; index <= selectionEnd; index++) {
+    if (next.includes(index)) continue;
+    next.push(index);
+  }
+  return {
+    multipleStart: state.multipleStart,
+    selectedRows: next,
+  };
 };
 
 /** multiple 진입 — 현재 행을 시작 선택으로 */
 const enterMultipleSelection = (
-	currentRow: number,
+  currentRow: number,
 ): SheetSelectionState & { multipleActive: true } => {
-	const toggled = toggleSelectedRow(
-		{ selectedRows: [], multipleStart: currentRow },
-		currentRow,
-		false,
-	);
-	return { ...toggled, multipleActive: true };
+  const toggled = toggleSelectedRow(
+    { selectedRows: [], multipleStart: currentRow },
+    currentRow,
+    false,
+  );
+  return { ...toggled, multipleActive: true };
 };
 
 /** multiple 종료 — 선택 해제 */
 const exitMultipleSelection = (): SheetSelectionState & { multipleActive: false } => ({
-	multipleActive: false,
-	multipleStart: null,
-	selectedRows: [],
+  multipleActive: false,
+  multipleStart: null,
+  selectedRows: [],
 });
 
 export { toggleSelectedRow, enterMultipleSelection, exitMultipleSelection };

@@ -1,43 +1,43 @@
 import type { HistoryEntry, HistoryStack } from '../types';
 
 const createEmptyStack = (): HistoryStack => ({
-	entries: [],
-	index: -1,
+  entries: [],
+  index: -1,
 });
 
 const ensureStackAt = (stacks: HistoryStack[], index: number): HistoryStack[] => {
-	if (stacks[index]) return stacks;
-	const next = [...stacks];
-	next[index] = createEmptyStack();
-	return next;
+  if (stacks[index]) return stacks;
+  const next = [...stacks];
+  next[index] = createEmptyStack();
+  return next;
 };
 
 const getActiveStack = (
-	stacks: readonly HistoryStack[],
-	activeSheetIndex: number,
+  stacks: readonly HistoryStack[],
+  activeSheetIndex: number,
 ): HistoryStack => {
-	const stack = stacks[activeSheetIndex];
-	return stack ?? createEmptyStack();
+  const stack = stacks[activeSheetIndex];
+  return stack ?? createEmptyStack();
 };
 
 const canUndo = (stack: HistoryStack): boolean => stack.entries.length > 0 && stack.index >= 0;
 
 const canRedo = (stack: HistoryStack): boolean =>
-	stack.entries.length > 0 && stack.index < stack.entries.length - 1;
+  stack.entries.length > 0 && stack.index < stack.entries.length - 1;
 
 /**
  * 활성 스택에 entry push. undo 중간이면 앞부분만 남기고 truncate.
  */
 const pushEntry = (stack: HistoryStack, entry: HistoryEntry): HistoryStack => {
-	const entries =
-		stack.index !== stack.entries.length - 1
-			? stack.entries.slice(0, stack.index + 1)
-			: [...stack.entries];
-	entries.push(entry);
-	return {
-		entries,
-		index: entries.length - 1,
-	};
+  const entries =
+    stack.index !== stack.entries.length - 1
+      ? stack.entries.slice(0, stack.index + 1)
+      : [...stack.entries];
+  entries.push(entry);
+  return {
+    entries,
+    index: entries.length - 1,
+  };
 };
 
 /**
@@ -45,107 +45,107 @@ const pushEntry = (stack: HistoryStack, entry: HistoryEntry): HistoryStack => {
  * 더 없으면 null (index는 -1까지).
  */
 const prevEntry = (stack: HistoryStack): { stack: HistoryStack; entry: HistoryEntry } | null => {
-	if (!canUndo(stack)) return null;
-	const entry = stack.entries[stack.index];
-	if (!entry) return null;
-	return {
-		entry,
-		stack: { ...stack, index: stack.index - 1 },
-	};
+  if (!canUndo(stack)) return null;
+  const entry = stack.entries[stack.index];
+  if (!entry) return null;
+  return {
+    entry,
+    stack: { ...stack, index: stack.index - 1 },
+  };
 };
 
 /**
  * redo 한 칸 — index 증가 후, 적용할 entry 반환.
  */
 const nextEntry = (stack: HistoryStack): { stack: HistoryStack; entry: HistoryEntry } | null => {
-	if (!canRedo(stack)) return null;
-	const nextIndex = stack.index + 1;
-	const entry = stack.entries[nextIndex];
-	if (!entry) return null;
-	return {
-		entry,
-		stack: { ...stack, index: nextIndex },
-	};
+  if (!canRedo(stack)) return null;
+  const nextIndex = stack.index + 1;
+  const entry = stack.entries[nextIndex];
+  if (!entry) return null;
+  return {
+    entry,
+    stack: { ...stack, index: nextIndex },
+  };
 };
 
 const resetForSheets = (
-	sheetCount: number,
-	activeIndex = 0,
+  sheetCount: number,
+  activeIndex = 0,
 ): {
-	stacks: HistoryStack[];
-	activeSheetIndex: number;
+  stacks: HistoryStack[];
+  activeSheetIndex: number;
 } => {
-	const count = Math.max(1, sheetCount);
-	const stacks = Array.from({ length: count }, () => createEmptyStack());
-	const activeSheetIndex = Math.min(Math.max(0, activeIndex), count - 1);
-	return { stacks, activeSheetIndex };
+  const count = Math.max(1, sheetCount);
+  const stacks = Array.from({ length: count }, () => createEmptyStack());
+  const activeSheetIndex = Math.min(Math.max(0, activeIndex), count - 1);
+  return { stacks, activeSheetIndex };
 };
 
 /** import — 활성 탭 스택만 빈 스택으로 교체. 타 탭 스택은 유지 */
 const resetActiveStack = (stacks: HistoryStack[], activeIndex: number): HistoryStack[] => {
-	const index = Math.min(Math.max(0, activeIndex), stacks.length - 1);
-	const next = [...stacks];
-	next[index] = createEmptyStack();
-	return next;
+  const index = Math.min(Math.max(0, activeIndex), stacks.length - 1);
+  const next = [...stacks];
+  next[index] = createEmptyStack();
+  return next;
 };
 
 const setActiveSheetIndex = (
-	activeSheetIndex: number,
-	stacks: HistoryStack[],
+  activeSheetIndex: number,
+  stacks: HistoryStack[],
 ): { activeSheetIndex: number; stacks: HistoryStack[] } => {
-	// L2: 상한 clamp — length 초과 시 배열 구멍(undefined stack)을 만들지 않는다
-	const nextIndex = Math.min(Math.max(0, activeSheetIndex), stacks.length - 1);
-	return {
-		activeSheetIndex: nextIndex,
-		stacks: ensureStackAt(stacks, nextIndex),
-	};
+  // L2: 상한 clamp — length 초과 시 배열 구멍(undefined stack)을 만들지 않는다
+  const nextIndex = Math.min(Math.max(0, activeSheetIndex), stacks.length - 1);
+  return {
+    activeSheetIndex: nextIndex,
+    stacks: ensureStackAt(stacks, nextIndex),
+  };
 };
 
 const addStack = (stacks: HistoryStack[]): HistoryStack[] => [...stacks, createEmptyStack()];
 
 /** copy 탭 — `index` 위치에 빈 스택 삽입 */
 const insertStackAt = (stacks: HistoryStack[], index: number): HistoryStack[] => {
-	const clamped = Math.max(0, Math.min(index, stacks.length));
-	return [...stacks.slice(0, clamped), createEmptyStack(), ...stacks.slice(clamped)];
+  const clamped = Math.max(0, Math.min(index, stacks.length));
+  return [...stacks.slice(0, clamped), createEmptyStack(), ...stacks.slice(clamped)];
 };
 
 const removeStackAt = (
-	stacks: HistoryStack[],
-	index: number,
-	activeSheetIndex: number,
+  stacks: HistoryStack[],
+  index: number,
+  activeSheetIndex: number,
 ): { stacks: HistoryStack[]; activeSheetIndex: number } => {
-	if (stacks.length <= 1) {
-		return {
-			stacks: [createEmptyStack()],
-			activeSheetIndex: 0,
-		};
-	}
-	if (index < 0 || index >= stacks.length) {
-		return { stacks, activeSheetIndex };
-	}
+  if (stacks.length <= 1) {
+    return {
+      stacks: [createEmptyStack()],
+      activeSheetIndex: 0,
+    };
+  }
+  if (index < 0 || index >= stacks.length) {
+    return { stacks, activeSheetIndex };
+  }
 
-	const nextStacks = [...stacks.slice(0, index), ...stacks.slice(index + 1)];
-	let nextActive = activeSheetIndex;
-	if (index < activeSheetIndex) nextActive -= 1;
-	else if (index === activeSheetIndex) {
-		nextActive = Math.min(activeSheetIndex, nextStacks.length - 1);
-	}
+  const nextStacks = [...stacks.slice(0, index), ...stacks.slice(index + 1)];
+  let nextActive = activeSheetIndex;
+  if (index < activeSheetIndex) nextActive -= 1;
+  else if (index === activeSheetIndex) {
+    nextActive = Math.min(activeSheetIndex, nextStacks.length - 1);
+  }
 
-	return { stacks: nextStacks, activeSheetIndex: nextActive };
+  return { stacks: nextStacks, activeSheetIndex: nextActive };
 };
 
 export {
-	addStack,
-	canRedo,
-	canUndo,
-	createEmptyStack,
-	getActiveStack,
-	insertStackAt,
-	nextEntry,
-	prevEntry,
-	pushEntry,
-	removeStackAt,
-	resetActiveStack,
-	resetForSheets,
-	setActiveSheetIndex,
+  addStack,
+  canRedo,
+  canUndo,
+  createEmptyStack,
+  getActiveStack,
+  insertStackAt,
+  nextEntry,
+  prevEntry,
+  pushEntry,
+  removeStackAt,
+  resetActiveStack,
+  resetForSheets,
+  setActiveSheetIndex,
 };

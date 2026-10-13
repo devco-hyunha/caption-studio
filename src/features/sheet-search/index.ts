@@ -1,17 +1,17 @@
 export type {
-	ErrorRowLike,
-	SearchHit,
-	SheetSearchPanelProps,
-	SheetSearchFormat,
-	SheetSearchStore,
+  ErrorRowLike,
+  SearchHit,
+  SheetSearchPanelProps,
+  SheetSearchFormat,
+  SheetSearchStore,
 } from './types';
 
 export {
-	TEXT_MEMO_COLS,
-	canSearchNext,
-	canSearchPrev,
-	findSearchHits,
-	stepSearchIndex,
+  TEXT_MEMO_COLS,
+  canSearchNext,
+  canSearchPrev,
+  findSearchHits,
+  stepSearchIndex,
 } from './lib/sheet-search';
 
 export { countErrorRows, findErrorHits } from './lib/error-hits';

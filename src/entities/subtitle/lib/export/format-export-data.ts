@@ -1,23 +1,23 @@
 import { formatTimecode } from '@/shared/lib/timecode';
 import { converters } from '../parse/convert';
 import type {
-	FormatExportDataOptions,
-	SubtitleExportFormat,
-	SubtitleFormat,
-	SubtitleTimeline,
+  FormatExportDataOptions,
+  SubtitleExportFormat,
+  SubtitleFormat,
+  SubtitleTimeline,
 } from '../../types';
 
 /** export 포맷 → 변환 목표 시트 포맷 */
 const resolveConvertTarget = (
-	exportFormat: SubtitleExportFormat,
-	sheetFormat: SubtitleFormat,
-	dataFormat?: SubtitleFormat,
+  exportFormat: SubtitleExportFormat,
+  sheetFormat: SubtitleFormat,
+  dataFormat?: SubtitleFormat,
 ): SubtitleFormat => {
-	if (exportFormat === 'vtt') return 'srt';
-	if (exportFormat === 'json' || exportFormat === 'excel') {
-		return dataFormat ?? sheetFormat;
-	}
-	return exportFormat;
+  if (exportFormat === 'vtt') return 'srt';
+  if (exportFormat === 'json' || exportFormat === 'excel') {
+    return dataFormat ?? sheetFormat;
+  }
+  return exportFormat;
 };
 
 /**
@@ -25,39 +25,39 @@ const resolveConvertTarget = (
  * VTT는 내부적으로 srt 변환, JSON은 dataFormat(smi|srt) 배열.
  */
 const formatExportData = ({
-	exportFormat,
-	sheetFormat,
-	sheetData,
-	dataFormat,
+  exportFormat,
+  sheetFormat,
+  sheetData,
+  dataFormat,
 }: FormatExportDataOptions): SubtitleTimeline[] => {
-	const convertTarget = resolveConvertTarget(exportFormat, sheetFormat, dataFormat);
+  const convertTarget = resolveConvertTarget(exportFormat, sheetFormat, dataFormat);
 
-	const timelines =
-		sheetFormat !== convertTarget
-			? converters[convertTarget](sheetFormat, sheetData).timelines
-			: [...sheetData];
+  const timelines =
+    sheetFormat !== convertTarget
+      ? converters[convertTarget](sheetFormat, sheetData).timelines
+      : [...sheetData];
 
-	if (convertTarget === 'srt' || sheetFormat === 'srt') {
-		return timelines.map(({ start, end, text, memo = '' }) => ({
-			start,
-			starttime: formatTimecode(start),
-			end,
-			endtime: formatTimecode(end ?? 0),
-			text,
-			memo,
-		}));
-	}
+  if (convertTarget === 'srt' || sheetFormat === 'srt') {
+    return timelines.map(({ start, end, text, memo = '' }) => ({
+      start,
+      starttime: formatTimecode(start),
+      end,
+      endtime: formatTimecode(end ?? 0),
+      text,
+      memo,
+    }));
+  }
 
-	if (sheetFormat === 'smi' || convertTarget === 'smi') {
-		return timelines.map(({ start, text, memo = '' }) => ({
-			start,
-			starttime: formatTimecode(start),
-			text,
-			memo,
-		}));
-	}
+  if (sheetFormat === 'smi' || convertTarget === 'smi') {
+    return timelines.map(({ start, text, memo = '' }) => ({
+      start,
+      starttime: formatTimecode(start),
+      text,
+      memo,
+    }));
+  }
 
-	return [];
+  return [];
 };
 
 export { formatExportData, resolveConvertTarget };

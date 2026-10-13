@@ -3,93 +3,93 @@ import { useState } from 'react';
 import { useSheetHistoryStore } from '@/features/sheet-history';
 import { Button } from '@/shared/ui/button';
 import {
-	DEFAULT_ESTIMATE_ROW_HEIGHT,
-	SheetPanel,
-	useSheets,
-	type SheetFormat,
+  DEFAULT_ESTIMATE_ROW_HEIGHT,
+  SheetPanel,
+  useSheets,
+  type SheetFormat,
 } from '@/widgets/sheet';
 
 const EditPage = () => {
-	const [format, setFormat] = useState<SheetFormat>('srt');
-	const {
-		tabs,
-		activeTabIndex,
-		rows,
-		activeScrollTop,
-		handleScrollTopChange,
-		handleSelectTab,
-		handleAddTab,
-		handleDeleteTab,
-		handleRenameTab,
-		handleCopyTab,
-		handleUpdateCell,
-	} = useSheets(format);
+  const [format, setFormat] = useState<SheetFormat>('srt');
+  const {
+    tabs,
+    activeTabIndex,
+    rows,
+    activeScrollTop,
+    handleScrollTopChange,
+    handleSelectTab,
+    handleAddTab,
+    handleDeleteTab,
+    handleRenameTab,
+    handleCopyTab,
+    handleUpdateCell,
+  } = useSheets(format);
 
-	const handleFormatSmi = () => {
-		if (format === 'smi') return;
-		setFormat('smi');
-		// 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (`/` settings/format.js · 리뷰 H1)
-		useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
-	};
+  const handleFormatSmi = () => {
+    if (format === 'smi') return;
+    setFormat('smi');
+    // 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (`/` settings/format.js · 리뷰 H1)
+    useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
+  };
 
-	const handleFormatSrt = () => {
-		if (format === 'srt') return;
-		setFormat('srt');
-		useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
-	};
+  const handleFormatSrt = () => {
+    if (format === 'srt') return;
+    setFormat('srt');
+    useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
+  };
 
-	return (
-		<main className="bg-background text-foreground flex h-dvh flex-col gap-4 overflow-hidden p-6 font-sans">
-			<header className="flex shrink-0 flex-wrap items-end justify-between gap-3">
-				<div className="space-y-1">
-					<h1 className="text-2xl font-bold tracking-tight">Edit</h1>
-					<p className="text-muted-foreground text-sm">
-						시트 UI — subtitleSheets 탭 연동 + page 스냅
-					</p>
-				</div>
-				<div className="flex gap-2" role="group" aria-label="시트 포맷">
-					<Button
-						type="button"
-						variant={format === 'smi' ? 'default' : 'outline'}
-						size="sm"
-						aria-pressed={format === 'smi'}
-						onClick={handleFormatSmi}
-					>
-						SMI
-					</Button>
-					<Button
-						type="button"
-						variant={format === 'srt' ? 'default' : 'outline'}
-						size="sm"
-						aria-pressed={format === 'srt'}
-						onClick={handleFormatSrt}
-					>
-						SRT
-					</Button>
-				</div>
-			</header>
-			<div className="min-h-0 flex-1">
-				<SheetPanel
-					format={format}
-					rows={rows}
-					estimateRowHeight={DEFAULT_ESTIMATE_ROW_HEIGHT}
-					tabs={tabs}
-					activeTabIndex={activeTabIndex}
-					scrollTop={activeScrollTop}
-					onScrollTopChange={handleScrollTopChange}
-					onSelectTab={handleSelectTab}
-					onAddTab={handleAddTab}
-					onDeleteTab={handleDeleteTab}
-					onRenameTab={handleRenameTab}
-					onCopyTab={handleCopyTab}
-					onUpdateCell={handleUpdateCell}
-				/>
-			</div>
-		</main>
-	);
+  return (
+    <main className="bg-background text-foreground flex h-dvh flex-col gap-4 overflow-hidden p-6 font-sans">
+      <header className="flex shrink-0 flex-wrap items-end justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Edit</h1>
+          <p className="text-muted-foreground text-sm">
+            시트 UI — subtitleSheets 탭 연동 + page 스냅
+          </p>
+        </div>
+        <div className="flex gap-2" role="group" aria-label="시트 포맷">
+          <Button
+            type="button"
+            variant={format === 'smi' ? 'default' : 'outline'}
+            size="sm"
+            aria-pressed={format === 'smi'}
+            onClick={handleFormatSmi}
+          >
+            SMI
+          </Button>
+          <Button
+            type="button"
+            variant={format === 'srt' ? 'default' : 'outline'}
+            size="sm"
+            aria-pressed={format === 'srt'}
+            onClick={handleFormatSrt}
+          >
+            SRT
+          </Button>
+        </div>
+      </header>
+      <div className="min-h-0 flex-1">
+        <SheetPanel
+          format={format}
+          rows={rows}
+          estimateRowHeight={DEFAULT_ESTIMATE_ROW_HEIGHT}
+          tabs={tabs}
+          activeTabIndex={activeTabIndex}
+          scrollTop={activeScrollTop}
+          onScrollTopChange={handleScrollTopChange}
+          onSelectTab={handleSelectTab}
+          onAddTab={handleAddTab}
+          onDeleteTab={handleDeleteTab}
+          onRenameTab={handleRenameTab}
+          onCopyTab={handleCopyTab}
+          onUpdateCell={handleUpdateCell}
+        />
+      </div>
+    </main>
+  );
 };
 
 export const Route = createFileRoute('/edit')({
-	ssr: false,
-	component: EditPage,
+  ssr: false,
+  component: EditPage,
 });

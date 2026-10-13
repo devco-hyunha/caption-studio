@@ -8,11 +8,11 @@ const formatDurationSec = (start: number, end: number) => ((end - start) / 1000)
 
 /** start 없으면 sync를 시작점으로 사용 (옛 JSON 호환) */
 const resolveStart = (timeline: SheetTimelineItem) => {
-	const start = Number(timeline.start);
-	if (Number.isFinite(start)) return start;
-	const sync = Number(timeline.sync);
-	if (Number.isFinite(sync)) return sync;
-	return 0;
+  const start = Number(timeline.start);
+  if (Number.isFinite(start)) return start;
+  const sync = Number(timeline.sync);
+  if (Number.isFinite(sync)) return sync;
+  return 0;
 };
 
 /** text/memo는 HTML 문자열 그대로 (그 외 타입은 빈 문자열) */
@@ -24,62 +24,60 @@ const asHtmlString = (value: unknown) => (typeof value === 'string' ? value : ''
  * SRT: storedEnd 우선, dur = storedEnd − start.
  */
 const mapTimelinesToRows = (
-	timelines: SheetTimelineItem[],
-	format: SheetFormat,
-	selectedRows: readonly number[] = [],
+  timelines: SheetTimelineItem[],
+  format: SheetFormat,
+  selectedRows: readonly number[] = [],
 ): SheetRowView[] => {
-	const selectedSet = new Set(selectedRows);
-	const isSmi = format === 'smi';
+  const selectedSet = new Set(selectedRows);
+  const isSmi = format === 'smi';
 
-	return timelines.map((timeline, index, list) => {
-		const start = resolveStart(timeline);
-		const nextStart = list[index + 1] ? resolveStart(list[index + 1]) : undefined;
-		const hasNext = index < list.length - 1;
-		const storedEnd = Number(timeline.end);
+  return timelines.map((timeline, index, list) => {
+    const start = resolveStart(timeline);
+    const nextStart = list[index + 1] ? resolveStart(list[index + 1]) : undefined;
+    const hasNext = index < list.length - 1;
+    const storedEnd = Number(timeline.end);
 
-		const end = isSmi
-			? (hasNext ? (nextStart as number) : start)
-			: Number.isFinite(storedEnd)
-				? storedEnd
-				: Number.isFinite(nextStart)
-					? (nextStart as number)
-					: start;
+    const end = isSmi
+      ? hasNext
+        ? (nextStart as number)
+        : start
+      : Number.isFinite(storedEnd)
+        ? storedEnd
+        : Number.isFinite(nextStart)
+          ? (nextStart as number)
+          : start;
 
-		const dur = isSmi && !hasNext ? '' : formatDurationSec(start, end);
+    const dur = isSmi && !hasNext ? '' : formatDurationSec(start, end);
 
-		// `/` convert.js errorRows parity — SMI: start > nextStart. SRT: end > nextStart · end < start
-		const isError = isSmi
-			? hasNext && start > (nextStart as number)
-			: (hasNext && storedEnd > (nextStart as number)) || storedEnd < start;
+    // `/` convert.js errorRows parity — SMI: start > nextStart. SRT: end > nextStart · end < start
+    const isError = isSmi
+      ? hasNext && start > (nextStart as number)
+      : (hasNext && storedEnd > (nextStart as number)) || storedEnd < start;
 
-		const text = asHtmlString(timeline.text);
+    const text = asHtmlString(timeline.text);
 
-		return {
-			index,
-			starttime: formatTimecode(start),
-			endtime: formatTimecode(end),
-			dur,
-			text,
-			memo: asHtmlString(timeline.memo),
-			height: calcRowHeight(text),
-			isSelected: selectedSet.has(index),
-			isError,
-		};
-	});
+    return {
+      index,
+      starttime: formatTimecode(start),
+      endtime: formatTimecode(end),
+      dur,
+      text,
+      memo: asHtmlString(timeline.memo),
+      height: calcRowHeight(text),
+      isSelected: selectedSet.has(index),
+      isError,
+    };
+  });
 };
 
 /** 활성 시트의 행 뷰 (다중 선택 반영) */
 const getActiveSheetRows = (state: SheetsState, format: SheetFormat): SheetRowView[] => {
-	const sheet = state.sheets[state.active] ?? state.sheets[0];
-	if (!sheet) return mapTimelinesToRows([], format);
-	return mapTimelinesToRows(sheet.timelines, format, sheet.selectedRows);
+  const sheet = state.sheets[state.active] ?? state.sheets[0];
+  if (!sheet) return mapTimelinesToRows([], format);
+  return mapTimelinesToRows(sheet.timelines, format, sheet.selectedRows);
 };
 
 const toSheetTabs = (sheets: SheetsState['sheets']): SheetTabView[] =>
-	sheets.map((sheet) => ({ name: sheet.name }));
+  sheets.map((sheet) => ({ name: sheet.name }));
 
-export {
-	getActiveSheetRows,
-	mapTimelinesToRows,
-	toSheetTabs,
-};
+export { getActiveSheetRows, mapTimelinesToRows, toSheetTabs };

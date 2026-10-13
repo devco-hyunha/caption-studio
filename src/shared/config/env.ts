@@ -23,27 +23,27 @@ const isProduction = (): boolean => import.meta.env.PROD;
  * 허용 목록 방식 — localhost·미리보기 호스트에서는 false.
  */
 const isProductionHost = (): boolean => {
-	if (typeof globalThis.location === 'undefined') return false;
-	return globalThis.location.hostname === PRODUCTION_HOST;
+  if (typeof globalThis.location === 'undefined') return false;
+  return globalThis.location.hostname === PRODUCTION_HOST;
 };
 
 /** 읽기 전용 env 스냅샷 (디버그·설정 주입용) */
 const getEnv = (): AppEnv => ({
-	appTitle: APP_TITLE,
-	appUrl: APP_URL,
-	productionHost: PRODUCTION_HOST,
-	mode: ENV_MODE,
-	isDev: import.meta.env.DEV,
-	isProd: import.meta.env.PROD,
+  appTitle: APP_TITLE,
+  appUrl: APP_URL,
+  productionHost: PRODUCTION_HOST,
+  mode: ENV_MODE,
+  isDev: import.meta.env.DEV,
+  isProd: import.meta.env.PROD,
 });
 
 export {
-	APP_TITLE,
-	APP_URL,
-	ENV_MODE,
-	PRODUCTION_HOST,
-	getEnv,
-	isDevelopment,
-	isProduction,
-	isProductionHost,
+  APP_TITLE,
+  APP_URL,
+  ENV_MODE,
+  PRODUCTION_HOST,
+  getEnv,
+  isDevelopment,
+  isProduction,
+  isProductionHost,
 };

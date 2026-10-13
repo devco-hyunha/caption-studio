@@ -11,37 +11,37 @@ import { createShortcuts } from '@/shared/lib/shortcuts';
  * masks 변경 시 removeAll + 재등록.
  */
 const useSheetShortkey = ({ getActions }: UseSheetShortkeyParams) => {
-	const getActionsRef = useRef(getActions);
+  const getActionsRef = useRef(getActions);
 
-	useEffect(() => {
-		getActionsRef.current = getActions;
-	}, [getActions]);
+  useEffect(() => {
+    getActionsRef.current = getActions;
+  }, [getActions]);
 
-	useEffect(() => {
-		const shortcuts = createShortcuts();
-		const resolveActions = () => getActionsRef.current();
+  useEffect(() => {
+    const shortcuts = createShortcuts();
+    const resolveActions = () => getActionsRef.current();
 
-		const rebind = () => {
-			shortcuts.removeAll();
-			registerSheetNavigationKeys(shortcuts, resolveActions);
-			bindPrintableEditCallback(shortcuts, resolveActions);
-		};
+    const rebind = () => {
+      shortcuts.removeAll();
+      registerSheetNavigationKeys(shortcuts, resolveActions);
+      bindPrintableEditCallback(shortcuts, resolveActions);
+    };
 
-		rebind();
-		shortcuts.start();
+    rebind();
+    shortcuts.start();
 
-		const unsubscribe = useShortkeyStore.subscribe((state, prev) => {
-			if (state.masks === prev.masks) return;
-			rebind();
-		});
+    const unsubscribe = useShortkeyStore.subscribe((state, prev) => {
+      if (state.masks === prev.masks) return;
+      rebind();
+    });
 
-		return () => {
-			unsubscribe();
-			shortcuts.stop();
-			shortcuts.removeAll();
-			shortcuts.callback(null);
-		};
-	}, []);
+    return () => {
+      unsubscribe();
+      shortcuts.stop();
+      shortcuts.removeAll();
+      shortcuts.callback(null);
+    };
+  }, []);
 };
 
 export { useSheetShortkey };
