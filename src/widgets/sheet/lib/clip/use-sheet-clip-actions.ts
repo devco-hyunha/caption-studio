@@ -7,8 +7,8 @@ import type {
   UseSheetClipActionsParams,
   UseSheetClipActionsResult,
 } from '../../types';
-import { applyTextFormatCommand } from '../apply-text-format';
-import { isMultipleActive } from '../is-multiple-active';
+import { applyTextFormatCommand } from '../format/apply-text-format';
+import { isMultipleActive } from '../selection/is-multiple-active';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 
 /** clip 대상 열 — text/memo만 (time 열은 클립·서식 대상 아님) */

@@ -1,6 +1,6 @@
 import { encodeHtml } from '@/entities/subtitle';
 import type { SheetColumnId } from '../../../types';
-import { isTextColumn } from '../../columns';
+import { isTextColumn } from '../../columns/columns';
 
 /** contentEditable DOM → 저장용 HTML — entities encodeHtml 정본 위임 (clone·color 보존) */
 const encodeCellHtml = (input: HTMLElement | null | undefined): string =>

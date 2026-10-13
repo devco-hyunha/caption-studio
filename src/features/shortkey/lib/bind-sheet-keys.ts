@@ -1,13 +1,13 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../types';
-import { registerSheetClipKeys } from './sheet/clip-keys';
-import { registerSheetEditKeys } from './sheet/edit-keys';
-import { registerSheetMoveKeys } from './sheet/move-keys';
-import { registerSheetMutateKeys } from './sheet/mutate-keys';
-import { registerSheetSelectionKeys } from './sheet/selection-keys';
-import { registerSheetSearchKeys } from './sheet/search-keys';
-import { registerSheetTimeKeys } from './sheet/time-keys';
-import { registerSheetUndoKeys } from './sheet/undo-keys';
+import { registerSheetClipKeys } from './clip/clip-keys';
+import { registerSheetEditKeys } from './edit/edit-keys';
+import { registerSheetMoveKeys } from './move/move-keys';
+import { registerSheetMutateKeys } from './mutate/mutate-keys';
+import { registerSheetSelectionKeys } from './selection/selection-keys';
+import { registerSheetSearchKeys } from './search/search-keys';
+import { registerSheetTimeKeys } from './time/time-keys';
+import { registerSheetUndoKeys } from './history/undo-keys';
 
 /**
  * 시트 네비게이션 키 일괄 등록 — 기능별 registrar의 조합.

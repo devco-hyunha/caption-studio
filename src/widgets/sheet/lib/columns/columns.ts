@@ -1,4 +1,4 @@
-import type { SheetColumnDef, SheetColumnId, SheetFormat } from '../types';
+import type { SheetColumnDef, SheetColumnId, SheetFormat } from '../../types';
 
 /** `columns.js` COLUMN_WIDTH_RATE: width = ceil(fontSize * rate) */
 const COLUMN_WIDTH_RATE = {

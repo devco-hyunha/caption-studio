@@ -5,8 +5,8 @@ import type {
   SheetFormat,
   SheetRowView,
 } from '../../../types';
-import { COLUMN_WIDTHS, getColumnLeft } from '../../columns';
-import { getCellValue } from '../../get-cell-value';
+import { COLUMN_WIDTHS, getColumnLeft } from '../../columns/columns';
+import { getCellValue } from '../../cell/get-cell-value';
 import { getRowTop } from '../../move/sheet-move';
 
 const measureCellPosition = (cell: HTMLElement, scrollContent: HTMLElement): SheetCellRect => {

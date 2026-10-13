@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createShortcuts } from '@/shared/lib/shortcuts';
 import type { SheetShortkeyActions } from '../../types';
-import { bindPrintableEditCallback } from './printable-edit';
+import { bindPrintableEditCallback } from '../edit/printable-edit';
 import { registerSheetSearchKeys } from './search-keys';
 
 const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortkeyActions => ({

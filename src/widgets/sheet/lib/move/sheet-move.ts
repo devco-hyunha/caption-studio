@@ -8,7 +8,7 @@ import type {
   SheetPageViewBox,
   SheetScrollIntoViewResult,
 } from '../../types';
-import { EDITABLE_COLUMNS } from '../columns';
+import { EDITABLE_COLUMNS } from '../columns/columns';
 
 /** 포맷별 편집 가능 열 (index 제외) */
 const getEditableColumns = (format: SheetFormat): readonly SheetColumnId[] =>

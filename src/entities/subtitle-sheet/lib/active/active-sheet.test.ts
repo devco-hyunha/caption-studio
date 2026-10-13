@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SheetsState } from '../types';
+import type { SheetsState } from '../../types';
 import {
   replaceTimelineAt,
   replaceTimelinePatches,

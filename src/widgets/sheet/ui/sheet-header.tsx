@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/utils';
-import { getColumns } from '../lib/columns';
+import { getColumns } from '../lib/columns/columns';
 import type { SheetHeaderProps } from '../types';
 import { SheetCell } from './sheet-cell';
 

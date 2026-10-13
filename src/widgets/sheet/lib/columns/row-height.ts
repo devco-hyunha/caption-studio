@@ -1,4 +1,4 @@
-import type { RowHeightInfo } from '../types';
+import type { RowHeightInfo } from '../../types';
 import { DEFAULT_FONT_SIZE, createCellStyle, rowContentHeight } from './columns';
 
 /** text HTML의 `<br` 기준 줄 수 */

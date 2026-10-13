@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils';
-import { getColumns, isTextColumn } from '../lib/columns';
-import { getCellValue } from '../lib/get-cell-value';
+import { getColumns, isTextColumn } from '../lib/columns/columns';
+import { getCellValue } from '../lib/cell/get-cell-value';
 import type { SheetRowProps } from '../types';
 import { SheetCell } from './sheet-cell';
 

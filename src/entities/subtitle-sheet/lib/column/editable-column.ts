@@ -1,4 +1,4 @@
-import type { EditableColumn } from '../types';
+import type { EditableColumn } from '../../types';
 
 const EDITABLE_COLUMN_IDS = [
   'text',

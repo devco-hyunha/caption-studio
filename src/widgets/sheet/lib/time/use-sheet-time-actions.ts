@@ -6,18 +6,18 @@ import type {
   UseSheetTimeActionsParams,
   UseSheetTimeActionsResult,
 } from '../../types';
-import { isMultipleActive } from '../is-multiple-active';
+import { isMultipleActive } from '../selection/is-multiple-active';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
-import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from '../time-jump';
+import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from './time-jump';
 
-/** time Ã¬ÂÂ´ Ã­ÂÂÃªÂ¹Â Ã¢ÂÂ starttime/endtimeÃ«Â§Â */
+/** time 열 타깃 — starttime/endtime만 */
 const isTimeColumnPair = (
   column: SheetColumnId | null | undefined,
 ): column is 'starttime' | 'endtime' => column === 'starttime' || column === 'endtime';
 
 /**
- * Ã¬ÂÂÃ­ÂÂ¸ time ÃÂ±jump Ã«ÂÂÃ¬ÂÂ API Ã¢ÂÂ Ctrl+Plus/Minus.
- * Ã«ÂÂ¤Ã¬Â¤Â Ã¬ÂÂ Ã­ÂÂÃ¬ÂÂ Ã¬ÂÂ Ã­ÂÂ Ã­ÂÂ start/end Ã¬ÂÂ¼ÃªÂ´Â, Ã«ÂÂ¨ÃªÂ±Â´Ã¬ÂÂ Ã­ÂÂ¬Ã¬Â»Â¤Ã¬ÂÂ¤ time Ã¬ÂÂ´Ã«Â§Â. jumpÃ«ÂÂ `jump_val`(ÃªÂ¸Â°Ã«Â³Â¸ 30ms).
+ * 시트 time ±jump 동작 API — Ctrl+Plus/Minus.
+ * 다중 선택은 선택 행 start/end 일괄, 단건은 포커스 time 열만. jump는 `jump_val`(기본 30ms).
  */
 const useSheetTimeActions = ({
   format,
@@ -91,7 +91,7 @@ const useSheetTimeActions = ({
   };
 
   const timePlus = () => {
-    // mutate Ã¬Â§ÂÃ¬Â Â ÃªÂ²ÂÃ¬ÂÂ Ã­ÂÂ¨Ã«ÂÂ Ã«ÂÂ«ÃªÂ¸Â°
+    // mutate 직전 검색 패널 닫기
     closeSearchPanel();
     if (isMultipleActive()) {
       nudgeSelectedRows('plus');

@@ -7,8 +7,8 @@ import {
   STORAGE_KEY_SHEETS,
   loadState,
   toSaveState,
-} from '../lib/storage';
-import { createState } from '../lib/sheet-core';
+} from '../lib/storage/storage';
+import { createState } from '../lib/core/sheet-core';
 import {
   addSheet,
   copySheet,
@@ -30,7 +30,7 @@ import {
   toggleActiveSelectedRow,
   toggleMultiple,
   updateActiveSelectedTexts,
-} from '../lib/active-sheet';
+} from '../lib/active/active-sheet';
 
 const getInitialState = (): SheetsState =>
   typeof window !== 'undefined' ? loadState() : createState();

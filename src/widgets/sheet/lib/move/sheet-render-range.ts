@@ -1,6 +1,6 @@
 import type { RowHeightInfo, SheetWindowResult } from '../../types';
 import { findRowAfterOffset } from './find-row-after-offset';
-import { sumRowHeights } from '../row-height';
+import { sumRowHeights } from '../columns/row-height';
 
 const EMPTY_WINDOW: SheetWindowResult = {
   pageIndex: 0,

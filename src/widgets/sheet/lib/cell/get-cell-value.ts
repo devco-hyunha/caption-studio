@@ -1,4 +1,4 @@
-import type { SheetColumnId, SheetRowView } from '../types';
+import type { SheetColumnId, SheetRowView } from '../../types';
 
 /** `SheetRowView` → 표시/편집용 셀 문자열 */
 const getCellValue = (row: SheetRowView, column: SheetColumnId): string => {

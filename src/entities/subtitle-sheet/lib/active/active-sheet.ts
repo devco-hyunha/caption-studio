@@ -1,17 +1,17 @@
 /** 활성 시트 다중 선택 / 행 CRUD / import 래퍼 — SheetsState 변경은 entities 책임 */
-import type { Sheet, SheetTimelineFormat, SheetTimelineItem, SheetsState } from '../types';
-import { cloneTimeline } from './sheet-core';
+import type { Sheet, SheetTimelineFormat, SheetTimelineItem, SheetsState } from '../../types';
+import { cloneTimeline } from '../core/sheet-core';
 import {
   enterMultipleSelection,
   exitMultipleSelection,
   toggleSelectedRow,
-} from './selection/sheet-selection';
+} from '../selection/sheet-selection';
 import {
   insertTimelineAfter,
   removeTimelineAt,
   replaceTimelineRow,
   spliceTimelineAt,
-} from './mutate/rows-mutate';
+} from '../mutate/rows-mutate';
 
 /** 활성 시트 조회 — 없으면 undefined */
 const getActiveSheet = (state: SheetsState): Sheet | undefined => state.sheets[state.active];

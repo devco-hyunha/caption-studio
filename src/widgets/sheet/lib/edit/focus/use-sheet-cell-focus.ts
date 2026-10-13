@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { canEditColumnId, isTextColumn } from '../../columns';
+import { canEditColumnId, isTextColumn } from '../../columns/columns';
 import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import { resolveTarget, resolveTargetByIndex } from './edit-target';
 import { computeFocusScroll } from './apply-focus';

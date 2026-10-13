@@ -25,7 +25,7 @@ export {
   getColumns,
   createColumnVars,
   canEditColumnId,
-} from './lib/columns';
+} from './lib/columns/columns';
 
 export { getActiveSheetRows, mapTimelinesToRows, toSheetTabs } from './lib/sheets/subtitle-sheets';
 export { useSheets } from './lib/sheets/use-sheets';

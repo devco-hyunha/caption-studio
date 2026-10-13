@@ -6,7 +6,7 @@ import {
   DEFAULT_ESTIMATE_ROW_HEIGHT,
   DEFAULT_FONT_SIZE,
   createColumnVars,
-} from '../lib/columns';
+} from '../lib/columns/columns';
 import type { SheetPanelProps, SheetTabView } from '../types';
 import { SheetBody } from './sheet-body';
 import { SheetFooter } from './sheet-footer';

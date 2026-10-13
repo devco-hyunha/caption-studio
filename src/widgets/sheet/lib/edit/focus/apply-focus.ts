@@ -5,7 +5,7 @@ import type {
   SheetFormat,
   SheetRowView,
 } from '../../../types';
-import { COLUMN_WIDTHS } from '../../columns';
+import { COLUMN_WIDTHS } from '../../columns/columns';
 import { scrollColIntoView, scrollRowIntoView } from '../../move/sheet-move';
 import { resolveTargetByIndex } from './edit-target';
 

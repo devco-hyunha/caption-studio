@@ -10,7 +10,7 @@ export type {
   SheetsState,
 } from './types';
 
-export { EDITABLE_COLUMN_IDS, isEditableColumn } from './lib/editable-column';
+export { EDITABLE_COLUMN_IDS, isEditableColumn } from './lib/column/editable-column';
 
 export {
   TAB_NAME_RE,
@@ -18,9 +18,9 @@ export {
   createTabName,
   isValidTabName,
   normalizeTabName,
-} from './lib/tab-names';
+} from './lib/core/tab-names';
 
-export { cloneTimeline, createSheet, createState, normalizeState } from './lib/sheet-core';
+export { cloneTimeline, createSheet, createState, normalizeState } from './lib/core/sheet-core';
 
 export {
   addSheet,
@@ -61,8 +61,8 @@ export {
   insertActiveTimelineAfter,
   removeActiveTimelineAt,
   updateActiveSelectedTexts,
-} from './lib/active-sheet';
+} from './lib/active/active-sheet';
 
-export { loadState } from './lib/storage';
+export { loadState } from './lib/storage/storage';
 
 export { useSheetStore } from './model/use-sheet-store';

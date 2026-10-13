@@ -7,8 +7,8 @@ import type {
   UseSheetCellEditorParams,
   UseSheetCellEditorResult,
 } from '../../../types';
-import { canEditColumnId, isTextColumn } from '../../columns';
-import { isMultipleActive } from '../../is-multiple-active';
+import { canEditColumnId, isTextColumn } from '../../columns/columns';
+import { isMultipleActive } from '../../selection/is-multiple-active';
 import { encodeCellHtml, resolveCommitValue } from '../encode/encode-cell-html';
 import { isImeStartKey } from '../keys/edit-keys';
 import {

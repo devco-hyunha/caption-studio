@@ -1,6 +1,6 @@
 import type { StateStorage } from 'zustand/middleware';
-import type { SavedState, SheetsState } from '../types';
-import { normalizeState } from './sheet-core';
+import type { SavedState, SheetsState } from '../../types';
+import { normalizeState } from '../core/sheet-core';
 
 const STORAGE_KEY_SHEETS = 'subtitleSheets';
 const STORAGE_KEY_TEMP = 'SUBTITLE_TEMP';

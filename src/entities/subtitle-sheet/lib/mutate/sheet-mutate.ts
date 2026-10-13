@@ -1,7 +1,7 @@
 import type { EditableColumn, Sheet, SheetsState } from '../../types';
 import { parseTimecode } from '@/shared/lib/timecode';
-import { cloneTimeline, createSheet } from '../sheet-core';
-import { createCopyName, createTabName, isValidTabName, normalizeTabName } from '../tab-names';
+import { cloneTimeline, createSheet } from '../core/sheet-core';
+import { createCopyName, createTabName, isValidTabName, normalizeTabName } from '../core/tab-names';
 
 /** 시트 깊은 복사 — scroll/current/다중 선택은 초기화 */
 const cloneSheet = (sheet: Sheet, name: string): Sheet => ({

@@ -1,5 +1,5 @@
 /** 행 CRUD 순수 로직 — 탭 CRUD(`sheet-mutate`)와 분리 */
-import { cloneTimeline } from '../sheet-core';
+import { cloneTimeline } from '../core/sheet-core';
 import type { SheetTimelineFormat, SheetTimelineItem } from '../../types';
 
 const createEmptyTimeline = (): SheetTimelineItem => cloneTimeline();

@@ -1,4 +1,4 @@
-import type { Sheet, SheetTimelineItem, SheetsState } from '../types';
+import type { Sheet, SheetTimelineItem, SheetsState } from '../../types';
 import { createTabName, normalizeTabName } from './tab-names';
 
 const EMPTY_TIMELINE: SheetTimelineItem = Object.freeze({

@@ -1,7 +1,7 @@
 import { MouseEvent as ReactMouseEvent } from 'react';
 import type { SheetColumnId, UseSheetCellEditParams, UseSheetCellEditResult } from '../../types';
-import { canEditColumnId } from '../columns';
-import { isMultipleActive } from '../is-multiple-active';
+import { canEditColumnId } from '../columns/columns';
+import { isMultipleActive } from '../selection/is-multiple-active';
 import { useSheetCellFocus } from './focus/use-sheet-cell-focus';
 import { useSheetCellEditor } from './editor/use-sheet-cell-editor';
 

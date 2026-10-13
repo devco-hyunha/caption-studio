@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 import { cn } from '@/shared/lib/utils';
-import { isTextColumn } from '../lib/columns';
+import { isTextColumn } from '../lib/columns/columns';
 import type { SheetCellProps, SheetColumnId } from '../types';
 
 const COLUMN_FLEX: Record<SheetColumnId, string> = {

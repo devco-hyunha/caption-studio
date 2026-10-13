@@ -1,6 +1,6 @@
 import type { SheetTimelineItem, SheetsState } from '@/entities/subtitle-sheet';
 import type { SheetFormat, SheetRowView, SheetTabView } from '../../types';
-import { calcRowHeight } from '../row-height';
+import { calcRowHeight } from '../columns/row-height';
 import { formatTimecode } from '@/shared/lib/timecode';
 
 /** dur 열 — (end - start) 초 */
