@@ -1,6 +1,4 @@
 export type {
-  SheetTimeCarveHandler,
-  VideoActiveIndices,
   VideoPlayerControlApi,
   VideoSyncActions,
   VideoSyncState,

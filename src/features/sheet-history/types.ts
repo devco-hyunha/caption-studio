@@ -1,3 +1,4 @@
+import type { Fn } from '@/shared/types/fn';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
 /** 히스토리 포커스 좌표 — editable col index */
@@ -34,24 +35,24 @@ export interface SheetHistoryStore {
 
   resetForSheets: (sheetCount: number, activeIndex?: number) => void;
   /** import — 활성 탭 스택만 초기화 */
-  resetActiveStack: () => void;
+  resetActiveStack: Fn<void>;
   setActiveSheetIndex: (index: number) => void;
-  addHistoryStack: () => void;
+  addHistoryStack: Fn<void>;
   insertHistoryStackAt: (index: number) => void;
   removeHistoryStackAt: (index: number) => void;
 
   pushHistory: (entry: HistoryEntry) => void;
   /** 성공 시 포커스할 cursor */
-  undo: () => HistoryCursor | null;
-  redo: () => HistoryCursor | null;
-  canUndo: () => boolean;
-  canRedo: () => boolean;
+  undo: Fn<HistoryCursor | null>;
+  redo: Fn<HistoryCursor | null>;
+  canUndo: Fn<boolean>;
+  canRedo: Fn<boolean>;
 }
 
 export interface SheetHistoryButtonsProps {
   canUndo: boolean;
   canRedo: boolean;
-  onUndo: () => void;
-  onRedo: () => void;
+  onUndo: Fn<void>;
+  onRedo: Fn<void>;
   className?: string;
 }

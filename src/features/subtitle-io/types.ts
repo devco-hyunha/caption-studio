@@ -1,11 +1,8 @@
 import type { SubtitleExportFormat, SubtitleFormat } from '@/entities/subtitle';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
-export type SubtitleIoFormat = SubtitleFormat;
-export type SubtitleIoExportFormat = SubtitleExportFormat;
-
 export interface ImportSubtitleResult {
-  format: SubtitleIoFormat;
+  format: SubtitleFormat;
   timelines: SheetTimelineItem[];
 }
 
@@ -32,8 +29,8 @@ export interface SubtitleIoPanelProps {
 }
 
 export interface ExportSubtitleOptions {
-  sheetFormat: SubtitleIoFormat;
-  exportFormat: SubtitleIoExportFormat;
+  sheetFormat: SubtitleFormat;
+  exportFormat: SubtitleExportFormat;
   /** 활성 탭 (smi/srt/vtt) */
   timelines: readonly SheetTimelineItem[];
   /** json/excel — 자막 탭 전체 */

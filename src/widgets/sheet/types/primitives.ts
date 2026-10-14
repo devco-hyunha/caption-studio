@@ -1,3 +1,6 @@
+import type { RefObject } from 'react';
+import type { Fn } from '@/shared/types/fn';
+
 export type SheetFormat = 'smi' | 'srt';
 
 export type SheetColumnId = 'index' | 'starttime' | 'endtime' | 'dur' | 'text' | 'memo';
@@ -23,9 +26,8 @@ export interface SheetColumnDef {
   editable: boolean;
 }
 
-export interface RowHeightInfo {
-  height: number;
-}
+/** 행 높이 — `SheetRowView.height`만 소비하는 렌더 윈도 입력 */
+export type RowHeightInfo = Pick<SheetRowView, 'height'>;
 
 /** 셀 위치·min 크기 — 에디터 오버레이 좌표 */
 export interface SheetCellRect {
@@ -58,14 +60,6 @@ export interface SheetPageMoveResult {
   scrollTop: number | null;
 }
 
-export interface SheetScrollIntoViewResult {
-  scrollTop: number | null;
-}
-
-export interface SheetColScrollIntoViewResult {
-  scrollLeft: number | null;
-}
-
 export interface SheetWindowResult {
   /** viewport 높이 기준 page (floor(scrollTop / viewportHeight)) */
   pageIndex: number;
@@ -75,4 +69,59 @@ export interface SheetWindowResult {
   totalHeight: number;
   /** 윈도에 포함할 행 index (inclusive start ~ exclusive end) */
   indices: number[];
+}
+
+export interface SheetTabView {
+  name: string;
+}
+
+/** 셀 에디터 — 비활성 / 포커스(선택) / 편집 */
+export type SheetCellEditorMode = 'hidden' | 'focus' | 'edit';
+
+/** applyFocus 옵션 — 스크롤 위치 지정 */
+export interface ApplyFocusOptions {
+  scrollTop?: number | null;
+}
+
+export interface SheetCellEditTarget extends SheetCellRect {
+  rowIndex: number;
+  column: SheetColumnId;
+  value: string;
+}
+
+/** applyFocus 스크롤 계산 입력 — body 실측값 */
+export interface FocusBodyMetrics {
+  scrollTop: number;
+  scrollLeft: number;
+  clientHeight: number;
+  clientWidth: number;
+}
+
+/** applyFocus 스크롤 계산 결과 */
+export interface FocusScrollResult {
+  target: SheetCellEditTarget;
+  rowScroll: number | null;
+  scrollLeft: number | null;
+}
+
+/**
+ * 편집 진입 probe — React KeyboardEvent와 window KeyboardEvent의 공통 부분집합.
+ * 두 이벤트 타입을 한 함수로 처리하기 위한 최소 계약.
+ */
+export interface SheetEditKeyProbe {
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+  key: string;
+  code: string;
+  preventDefault?: Fn<void>;
+  isComposing?: boolean;
+  nativeEvent?: { isComposing?: boolean; keyCode?: number };
+  keyCode?: number;
+}
+
+/** 편집 모드 ref 쌍 — 순수 판별(edit-mode) 입력 */
+export interface EditModeDeps {
+  modeRef: RefObject<SheetCellEditorMode>;
+  targetRef: RefObject<SheetCellEditTarget | null>;
 }

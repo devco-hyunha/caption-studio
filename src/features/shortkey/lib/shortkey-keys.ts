@@ -5,7 +5,7 @@ import type {
   ShortcutType,
 } from '@/shared/types/shortkey';
 import { SHORTKEY_TYPES } from '../model/default-sheet-shortkey-masks';
-import type { SheetShortkeyId } from '../model/default-sheet-shortkey-masks';
+import type { SheetShortkeyId } from '../types';
 import { useShortkeyStore } from '../model/use-shortkey-store';
 
 /** IME 조합 중 keydown(특히 Tab 확정)은 네비게이션에서 무시 — 이중 이동 방지 */

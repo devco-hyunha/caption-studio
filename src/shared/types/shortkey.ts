@@ -1,5 +1,7 @@
 /** shortkey 엔진 — 도메인 무관 범용 규격 */
 
+import type { Fn } from './fn';
+
 export type ShortcutType = 'down' | 'hold' | 'up';
 
 /** document keydown 핸들러 — React.KeyboardEvent와 구분 */
@@ -32,9 +34,9 @@ export interface ShortcutsApi {
   code: CodeMap;
   callback: (fn: ShortcutKeyHandler | null) => void;
   start: (list?: string) => ShortcutsApi;
-  stop: () => ShortcutsApi;
+  stop: Fn<ShortcutsApi>;
   add: (params: ShortcutParams) => ShortcutsApi;
   remove: (params: Pick<ShortcutParams, 'mask' | 'type' | 'list'>) => ShortcutsApi;
-  removeAll: () => void;
+  removeAll: Fn<void>;
   search: (mask: string) => boolean;
 }

@@ -1,13 +1,11 @@
+import type { Fn } from '@/shared/types/fn';
 import type { SheetTimelineItem, TimeSlotIndex } from '@/entities/subtitle-sheet';
-
-/** 재생 시각에 활성인 행 index 목록 (겹침 포함) */
-export type VideoActiveIndices = number[];
 
 export interface VideoSyncState {
   /** 분 버킷 인덱스 · 비영속 */
   timeSlots: TimeSlotIndex;
-  /** 마지막 timeSearchAll 결과 */
-  activeIndices: VideoActiveIndices;
+  /** 마지막 timeSearchAll 결과 — 재생 시각에 활성인 행 index (겹침 포함) */
+  activeIndices: number[];
 }
 
 export interface VideoSyncActions {
@@ -20,9 +18,9 @@ export interface VideoSyncActions {
   /** 행 삭제 (삭제 전 index) */
   removeRowTimeSlot: (atIndex: number) => void;
   /** onProgress 등에서 활성 행 갱신 */
-  setActiveIndices: (indices: VideoActiveIndices) => void;
-  clearActiveIndices: () => void;
-  reset: () => void;
+  setActiveIndices: (indices: number[]) => void;
+  clearActiveIndices: Fn<void>;
+  reset: Fn<void>;
 }
 
 export type VideoSyncStore = VideoSyncState & VideoSyncActions;
@@ -31,11 +29,8 @@ export type VideoSyncStore = VideoSyncState & VideoSyncActions;
 export interface VideoPlayerControlApi {
   /** 성공 시 true (미디어 미준비 등이면 false) */
   seekTo: (seconds: number) => boolean;
-  getCurrentTime: () => number;
-  toggle: () => void;
+  getCurrentTime: Fn<number>;
+  toggle: Fn<void>;
   setVolume: (volume: number) => void;
-  getVolume: () => number;
+  getVolume: Fn<number>;
 }
-
-/** 시트가 등록 — 비디오 「시간 입력」·Ctrl+` 공용 */
-export type SheetTimeCarveHandler = () => void;

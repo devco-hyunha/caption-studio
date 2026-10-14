@@ -1,3 +1,5 @@
+import type { Fn } from '@/shared/types/fn';
+
 /** React 리렌더 없이 편집 면 노출 — IME 조합 중 setMode 금지용 */
 const showEditingSurface = (wrap: HTMLElement | null) => {
   if (!wrap) return;
@@ -16,7 +18,7 @@ const clearEditingSurfaceStyles = (wrap: HTMLElement | null) => {
 };
 
 /** IME 조합 종료 후 flush — compositionend 1회 리스너 (setMode 지연 동기화) */
-const flushModeOnCompositionEnd = (input: HTMLElement | null, flush: () => void) => {
+const flushModeOnCompositionEnd = (input: HTMLElement | null, flush: Fn<void>) => {
   if (!input) return;
   input.addEventListener('compositionend', flush, { once: true });
 };

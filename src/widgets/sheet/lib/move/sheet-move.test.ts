@@ -56,23 +56,23 @@ describe('sheet-move', () => {
   });
 
   it('scrollRowIntoView only adjusts when the row is outside the viewport', () => {
-    expect(scrollRowIntoView(ROWS, 1, 0, 80)).toEqual({ scrollTop: null });
-    expect(scrollRowIntoView(ROWS, 0, 20, 80)).toEqual({ scrollTop: 0 });
-    expect(scrollRowIntoView(ROWS, 3, 0, 80)).toEqual({ scrollTop: 80 });
+    expect(scrollRowIntoView(ROWS, 1, 0, 80)).toBeNull();
+    expect(scrollRowIntoView(ROWS, 0, 20, 80)).toBe(0);
+    expect(scrollRowIntoView(ROWS, 3, 0, 80)).toBe(80);
   });
 
   it('scrollColIntoView only adjusts when the column is outside the viewport', () => {
-    expect(scrollColIntoView(100, 50, 0, 200)).toEqual({ scrollLeft: null });
-    expect(scrollColIntoView(0, 50, 20, 200)).toEqual({ scrollLeft: 0 });
-    expect(scrollColIntoView(180, 50, 0, 200)).toEqual({ scrollLeft: 30 });
+    expect(scrollColIntoView(100, 50, 0, 200)).toBeNull();
+    expect(scrollColIntoView(0, 50, 20, 200)).toBe(0);
+    expect(scrollColIntoView(180, 50, 0, 200)).toBe(30);
   });
 
   it('scrollColIntoView keeps focus clear of sticky left inset', () => {
     // starttime(left=54)가 sticky index(54) 아래에 가려진 경우 → scrollLeft 0
-    expect(scrollColIntoView(54, 108, 40, 200, 54)).toEqual({ scrollLeft: 0 });
+    expect(scrollColIntoView(54, 108, 40, 200, 54)).toBe(0);
     // sticky 열(index) 자체는 보정 없음
-    expect(scrollColIntoView(0, 54, 100, 200, 54)).toEqual({ scrollLeft: null });
+    expect(scrollColIntoView(0, 54, 100, 200, 54)).toBeNull();
     // 뷰 안이면 유지
-    expect(scrollColIntoView(54, 108, 0, 200, 54)).toEqual({ scrollLeft: null });
+    expect(scrollColIntoView(54, 108, 0, 200, 54)).toBeNull();
   });
 });

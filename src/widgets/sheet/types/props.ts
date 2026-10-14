@@ -8,14 +8,18 @@ import type {
   RefObject,
   UIEvent,
 } from 'react';
+import type { Fn } from '@/shared/types/fn';
 import type { SearchHit, ErrorRowLike } from '@/features/sheet-search';
 import type { ExportWorkbookTab } from '@/features/subtitle-io';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SheetCellRect, SheetColumnId, SheetFormat, SheetRowView } from './primitives';
-
-export interface SheetTabView {
-  name: string;
-}
+import type {
+  SheetCellEditorMode,
+  SheetCellRect,
+  SheetColumnId,
+  SheetFormat,
+  SheetRowView,
+  SheetTabView,
+} from './primitives';
 
 export interface SheetPanelProps {
   format: SheetFormat;
@@ -28,7 +32,7 @@ export interface SheetPanelProps {
   scrollTop?: number;
   onScrollTopChange?: (scrollTop: number) => void;
   onSelectTab?: (index: number) => void;
-  onAddTab?: () => void;
+  onAddTab?: Fn<void>;
   onDeleteTab?: (index: number) => void;
   onRenameTab?: (index: number, name: string) => boolean;
   onCopyTab?: (index: number) => void;
@@ -79,13 +83,13 @@ export interface SheetBodyRowsProps {
 /** toolbar 소비 필드 번들 — composite action 결과 중 toolbar가 쓰는 부분만 (ISP) */
 export interface SheetBodyToolbarActions {
   multipleActive: boolean;
-  handleToggleMultipleClick: () => void;
-  handleInsertAtFocus: () => void;
-  handleRemoveAtFocus: () => void;
+  handleToggleMultipleClick: Fn<void>;
+  handleInsertAtFocus: Fn<void>;
+  handleRemoveAtFocus: Fn<void>;
   canUndo: boolean;
   canRedo: boolean;
-  handleUndo: () => void;
-  handleRedo: () => void;
+  handleUndo: Fn<void>;
+  handleRedo: Fn<void>;
   /** 검색 히트 점프 — sheet-body search 훅 */
   handleSearchJump: (hit: SearchHit) => void;
 }
@@ -126,7 +130,7 @@ export interface SheetFooterProps {
   activeIndex: number;
   className?: string;
   onSelectTab?: (index: number) => void;
-  onAddTab?: () => void;
+  onAddTab?: Fn<void>;
   onDeleteTab?: (index: number) => void;
   onRenameTab?: (index: number, name: string) => boolean;
   onCopyTab?: (index: number) => void;
@@ -203,7 +207,7 @@ export interface SheetCellEvents {
 export interface SheetInputEvents {
   onInputKeyDown?: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
   onInputClick?: (event: MouseEvent<HTMLDivElement>) => void;
-  onInputBlur?: () => void;
+  onInputBlur?: Fn<void>;
 }
 
 export interface SheetRowProps {
@@ -233,9 +237,6 @@ export interface SheetCellProps {
   /** 셀 이벤트 번들 */
   cellEvents?: SheetCellEvents;
 }
-
-/** 셀 에디터 — 비활성 / 포커스(선택) / 편집 */
-export type SheetCellEditorMode = 'hidden' | 'focus' | 'edit';
 
 export interface SheetCellEditorProps {
   mode?: SheetCellEditorMode;

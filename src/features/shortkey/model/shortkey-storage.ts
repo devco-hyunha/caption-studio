@@ -1,5 +1,4 @@
-import type { ShortkeyMasks, ShortkeyPersistedState } from '../types';
-import type { SheetShortkeyId } from './default-sheet-shortkey-masks';
+import type { SheetShortkeyId, ShortkeyMasks, ShortkeyPersistedState } from '../types';
 import { DEFAULT_SHEET_SHORTKEY_MASKS, SHORTKEY_IDS } from './default-sheet-shortkey-masks';
 import { normalizeMask } from '@/shared/lib/shortcuts';
 

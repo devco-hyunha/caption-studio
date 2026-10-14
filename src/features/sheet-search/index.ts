@@ -1,10 +1,4 @@
-export type {
-  ErrorRowLike,
-  SearchHit,
-  SheetSearchPanelProps,
-  SheetSearchFormat,
-  SheetSearchStore,
-} from './types';
+export type { ErrorRowLike, SearchHit, SheetSearchPanelProps, SheetSearchStore } from './types';
 
 export {
   TEXT_MEMO_COLS,

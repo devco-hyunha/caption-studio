@@ -1,7 +1,11 @@
 /** shortkey 시트 키 바인딩 타입 (S2: 이동·에딧·선택·CRUD) — 엔진 규격은 shared */
 
+import type { Fn } from '@/shared/types/fn';
 import type { ShortcutKeyHandler } from '@/shared/types/shortkey';
-import type { SheetShortkeyId } from './model/default-sheet-shortkey-masks';
+import type { SHORTKEY_IDS } from './model/default-sheet-shortkey-masks';
+
+/** 시트 shortkey id — `SHORTKEY_IDS` 값 집합에서 파생 */
+export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
 
 /** 서식 명령 — bold/italic/underline */
 export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline';
@@ -17,7 +21,7 @@ export interface ShortkeyPersistedState {
 export interface ShortkeyStore {
   masks: Record<SheetShortkeyId, string>;
   setMask: (id: SheetShortkeyId, mask: string) => void;
-  resetMasks: () => void;
+  resetMasks: Fn<void>;
 }
 
 /** 시트 이동 — shortkey가 호출하는 API */
@@ -34,70 +38,70 @@ export interface SheetShortkeyMoveActions {
 
 /** `/edit` 시트가 shortkey에 주입하는 동작 API (위젯 → feature, 역참조 없음) */
 export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
-  isEditing: () => boolean;
-  isTextTarget: () => boolean;
-  hasFocus: () => boolean;
-  isMultiple: () => boolean;
+  isEditing: Fn<boolean>;
+  isTextTarget: Fn<boolean>;
+  hasFocus: Fn<boolean>;
+  isMultiple: Fn<boolean>;
   /** F2 / Enter(비에딧) — 기존 값 로드 */
-  beginEdit: () => void;
+  beginEdit: Fn<void>;
   /** Esc — 값 취소, focus 유지 */
-  cancelEdit: () => void;
+  cancelEdit: Fn<void>;
   /** printable / IME — 타입 투 리플레이스 (지연 setMode) */
   beginEditFromTyping: ShortcutKeyHandler;
   /** Enter(에딧 중) — 줄바꿈 */
-  insertEditorLineBreak: () => void;
+  insertEditorLineBreak: Fn<void>;
   /** multiple 모드 토글 */
-  toggleMultiple: () => void;
+  toggleMultiple: Fn<void>;
   /** Space — multiple 중 현재 행 토글 */
-  toggleRowSelect: () => void;
+  toggleRowSelect: Fn<void>;
   /** 현재 행 뒤 삽입 */
-  insertRow: () => void;
+  insertRow: Fn<void>;
   /** 현재 행 삭제 */
-  removeRow: () => void;
+  removeRow: Fn<void>;
   /** bold / italic / underline — multiple·에딧·단건 clip */
   applyTextFormat: (command: SheetTextFormatCommand) => void;
   /** Backspace/Delete — text/memo 셀 비우기 (비에딧) */
-  clearCell: () => void;
+  clearCell: Fn<void>;
   /** Ctrl+X — 비에딧 text/memo cut */
-  clipCut: () => void;
+  clipCut: Fn<void>;
   /** Ctrl+C — 비에딧 text/memo copy */
-  clipCopy: () => void;
+  clipCopy: Fn<void>;
   /** Ctrl+V — 비에딧 text/memo paste */
-  clipPaste: () => void;
+  clipPaste: Fn<void>;
   /** shortkey용 — starttime/endtime 타깃 */
-  isTimeTarget: () => boolean;
+  isTimeTarget: Fn<boolean>;
   /** Ctrl+Plus — 다중: 선택 행 start/end 일괄 +jump · single: time 셀 +jump */
-  timePlus: () => void;
+  timePlus: Fn<void>;
   /** Ctrl+Minus — 다중: 선택 행 start/end 일괄 −jump · single: time 셀 −jump */
-  timeMinus: () => void;
+  timeMinus: Fn<void>;
   /** `/` — 검색 패널 토글 */
-  toggleSearch: () => void;
+  toggleSearch: Fn<void>;
   /** Ctrl+Z — 에딧 중이 아닐 때만 */
-  undo: () => void;
+  undo: Fn<void>;
   /** Ctrl+Y */
-  redo: () => void;
+  redo: Fn<void>;
   /** Ctrl+` — 포커스 start/end 셀에 플레이어 시각 반영 */
-  timeCarve: () => void;
+  timeCarve: Fn<void>;
   /** Ctrl+Q — 현재 행 start로 플레이어 seek */
-  videoJump: () => void;
+  videoJump: Fn<void>;
   /** Alt+Q — 재생 중 출력 행으로 시트 포커스·스크롤 (영상 seek 없음) */
-  sheetJump: () => void;
+  sheetJump: Fn<void>;
   /** Ctrl+Space — 재생/일시정지 */
-  videoPlayToggle: () => void;
+  videoPlayToggle: Fn<void>;
   /** Ctrl+← — −10초 */
-  videoSeekPrev: () => void;
+  videoSeekPrev: Fn<void>;
   /** Ctrl+→ — +10초 */
-  videoSeekNext: () => void;
+  videoSeekNext: Fn<void>;
   /** Ctrl+↑ — 볼륨 +0.1 */
-  volumeUp: () => void;
+  volumeUp: Fn<void>;
   /** Ctrl+↓ — 볼륨 −0.1 */
-  volumeDown: () => void;
+  volumeDown: Fn<void>;
   /** Ctrl+Alt+← — 이전 자막 시점으로 플레이어 seek */
-  cuePrev: () => void;
+  cuePrev: Fn<void>;
   /** Ctrl+Alt+→ — 다음 자막 시점으로 플레이어 seek */
-  cueNext: () => void;
+  cueNext: Fn<void>;
 }
 
 export interface UseSheetShortkeyParams {
-  getActions: () => SheetShortkeyActions;
+  getActions: Fn<SheetShortkeyActions>;
 }

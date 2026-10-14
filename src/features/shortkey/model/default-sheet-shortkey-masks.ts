@@ -1,5 +1,7 @@
 /** 시트 네비·에딧·선택·CRUD 키 — id · mask · placeholder · type 상수 (S2) */
 
+import type { SheetShortkeyId } from '../types';
+
 export const SHORTKEY_IDS = {
   NEXT_ROW_MOVE: 'nextRowMove',
   PREV_ROW_MOVE: 'prevRowMove',
@@ -41,8 +43,6 @@ export const SHORTKEY_IDS = {
   CUE_PREV: 'cuePrev',
   CUE_NEXT: 'cueNext',
 } as const;
-
-export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
 
 /** defaultKeys mask 문자열 */
 export const SHORTKEY_MASKS = {

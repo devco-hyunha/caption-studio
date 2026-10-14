@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react';
 import type ReactPlayer from 'react-player';
+import type { Fn } from '@/shared/types/fn';
 
 /** react-player config — YT/Vimeo 크로마 숨김 파라미터 (타입 정의에 없는 iframe 파라미터 포함) */
 export type ReactPlayerConfig = NonNullable<ComponentProps<typeof ReactPlayer>['config']>;
@@ -20,16 +21,16 @@ export interface VideoPlayerSource {
 
 export interface VideoPlayerHandle {
   seekTo: (seconds: number) => boolean;
-  toggle: () => void;
-  play: () => void;
-  pause: () => void;
+  toggle: Fn<void>;
+  play: Fn<void>;
+  pause: Fn<void>;
   setVolume: (volume: number) => void;
-  getVolume: () => number;
-  toggleMute: () => void;
-  isMuted: () => boolean;
-  getCurrentTime: () => number;
-  getDuration: () => number;
-  isPlaying: () => boolean;
+  getVolume: Fn<number>;
+  toggleMute: Fn<void>;
+  isMuted: Fn<boolean>;
+  getCurrentTime: Fn<number>;
+  getDuration: Fn<number>;
+  isPlaying: Fn<boolean>;
 }
 
 export interface VideoPlayerProps {
@@ -47,13 +48,13 @@ export interface VideoSourceFormProps {
   onKindChange: (kind: VideoInputKind) => void;
   onUrlDraftChange: (value: string) => void;
   onFileSelected: (file: File | null) => void;
-  onLoad: () => void;
+  onLoad: Fn<void>;
 }
 
 /** timeupdate 시 부모 리렌더 없이 진행 시각만 갱신 */
 export interface VideoControlsHandle {
   setCurrentTime: (seconds: number) => void;
-  getCurrentTime: () => number;
+  getCurrentTime: Fn<number>;
 }
 
 export interface VideoControlsProps {
@@ -62,13 +63,13 @@ export interface VideoControlsProps {
   volume: number;
   muted: boolean;
   disabled?: boolean;
-  onTogglePlay: () => void;
+  onTogglePlay: Fn<void>;
   onSeek: (seconds: number) => void;
   onSeekBy: (deltaSeconds: number) => void;
   onVolumeChange: (volume: number) => void;
-  onToggleMute: () => void;
+  onToggleMute: Fn<void>;
   /** 플레이어 시각 → 포커스 start/end 셀 (`/` selecttime) */
-  onCarveTime?: () => void;
+  onCarveTime?: Fn<void>;
 }
 
 /** overlay move-prev / move-next 버튼 그룹 */

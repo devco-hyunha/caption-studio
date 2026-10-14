@@ -1,8 +1,8 @@
-import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SearchHit, SheetSearchFormat } from '../types';
+import type { SheetTimelineFormat, SheetTimelineItem } from '@/entities/subtitle-sheet';
+import type { SearchHit } from '../types';
 
 /** format별 text/memo editable col (SMI: text=1/memo=2, SRT: text=2/memo=3) */
-const TEXT_MEMO_COLS: Record<SheetSearchFormat, { text: number; memo: number }> = {
+const TEXT_MEMO_COLS: Record<SheetTimelineFormat, { text: number; memo: number }> = {
   smi: { text: 1, memo: 2 },
   srt: { text: 2, memo: 3 },
 };
@@ -14,7 +14,7 @@ const TEXT_MEMO_COLS: Record<SheetSearchFormat, { text: number; memo: number }> 
 const findSearchHits = (
   timelines: readonly SheetTimelineItem[],
   query: string,
-  format: SheetSearchFormat,
+  format: SheetTimelineFormat,
 ): SearchHit[] => {
   if (!query) return [];
 

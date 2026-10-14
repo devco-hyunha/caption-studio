@@ -1,3 +1,5 @@
+import type { Fn } from '@/shared/types/fn';
+
 /** `subtitleSheets` 타임라인 행 */
 export interface SheetTimelineItem {
   start?: number;
@@ -79,7 +81,7 @@ export interface SheetSelectionState {
 /** Zustand 스토어 — 상태 + 액션 */
 export interface SheetStore extends SheetsState {
   selectSheet: (index: number) => void;
-  addSheet: () => void;
+  addSheet: Fn<void>;
   deleteSheet: (index: number) => void;
   renameSheet: (index: number, name: string) => boolean;
   copySheet: (index: number) => void;

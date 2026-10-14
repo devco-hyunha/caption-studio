@@ -1,3 +1,4 @@
+import type { Fn } from '@/shared/types/fn';
 import type {
   MaskObject,
   ShortcutKeyHandler,
@@ -22,7 +23,7 @@ const createShortcuts = (): ShortcutsApi => {
   let isStarted = false;
   let handleKeyDown: ShortcutKeyHandler | null = null;
   let handleKeyUp: ShortcutKeyHandler | null = null;
-  let clearPressed: (() => void) | null = null;
+  let clearPressed: Fn<void> | null = null;
 
   const shortcuts = {} as ShortcutsApi;
   shortcuts.code = createCodeMap();

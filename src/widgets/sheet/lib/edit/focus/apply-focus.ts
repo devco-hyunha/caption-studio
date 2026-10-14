@@ -24,12 +24,7 @@ const computeFocusScroll = (
   const target = resolveTargetByIndex(rows, format, rowIndex, column);
   if (!target) return null;
 
-  const rowScroll = scrollRowIntoView(
-    rows,
-    rowIndex,
-    metrics.scrollTop,
-    metrics.clientHeight,
-  ).scrollTop;
+  const rowScroll = scrollRowIntoView(rows, rowIndex, metrics.scrollTop, metrics.clientHeight);
 
   const stickyLeft = column === 'index' ? 0 : COLUMN_WIDTHS.index;
   const scrollLeft = scrollColIntoView(
@@ -38,7 +33,7 @@ const computeFocusScroll = (
     metrics.scrollLeft,
     metrics.clientWidth,
     stickyLeft,
-  ).scrollLeft;
+  );
 
   return { target, rowScroll, scrollLeft };
 };

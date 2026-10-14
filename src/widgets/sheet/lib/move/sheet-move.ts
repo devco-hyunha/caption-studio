@@ -1,12 +1,10 @@
 import type {
   RowHeightInfo,
-  SheetColScrollIntoViewResult,
   SheetColumnId,
   SheetFormat,
   SheetMoveCursor,
   SheetPageMoveResult,
   SheetPageViewBox,
-  SheetScrollIntoViewResult,
 } from '../../types';
 import { EDITABLE_COLUMNS } from '../columns/columns';
 
@@ -176,21 +174,21 @@ const scrollRowIntoView = (
   rowIndex: number,
   viewTop: number,
   viewHeight: number,
-): SheetScrollIntoViewResult => {
-  if (viewHeight <= 0 || !rowInfo[rowIndex]) return { scrollTop: null };
+): number | null => {
+  if (viewHeight <= 0 || !rowInfo[rowIndex]) return null;
 
   const focusTop = getRowTop(rowInfo, rowIndex);
   const focusBottom = focusTop + (rowInfo[rowIndex]?.height ?? 0);
 
   if (viewTop > focusTop) {
-    return { scrollTop: Math.max(0, focusTop) };
+    return Math.max(0, focusTop);
   }
 
   if (viewTop + viewHeight < focusBottom) {
-    return { scrollTop: Math.max(0, focusBottom - viewHeight) };
+    return Math.max(0, focusBottom - viewHeight);
   }
 
-  return { scrollTop: null };
+  return null;
 };
 
 /**
@@ -205,26 +203,26 @@ const scrollColIntoView = (
   viewLeft: number,
   viewWidth: number,
   stickyLeft = 0,
-): SheetColScrollIntoViewResult => {
-  if (viewWidth <= 0 || focusWidth <= 0) return { scrollLeft: null };
+): number | null => {
+  if (viewWidth <= 0 || focusWidth <= 0) return null;
 
   const focusRight = focusLeft + focusWidth;
   const inset = Math.max(0, stickyLeft);
 
   // sticky 열 자체(또는 그 안쪽)는 항상 보이므로 가로 스크롤 보정 생략
-  if (focusRight <= inset) return { scrollLeft: null };
+  if (focusRight <= inset) return null;
 
   const visibleLeft = viewLeft + inset;
 
   if (visibleLeft > focusLeft) {
-    return { scrollLeft: Math.max(0, focusLeft - inset) };
+    return Math.max(0, focusLeft - inset);
   }
 
   if (viewLeft + viewWidth < focusRight) {
-    return { scrollLeft: Math.max(0, focusRight - viewWidth) };
+    return Math.max(0, focusRight - viewWidth);
   }
 
-  return { scrollLeft: null };
+  return null;
 };
 
 export {
