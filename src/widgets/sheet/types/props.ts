@@ -6,9 +6,12 @@ import type {
   MouseEvent,
   ReactNode,
   RefObject,
+  UIEvent,
 } from 'react';
-import type { SheetSearchPanelProps } from '@/features/sheet-search';
-import type { SheetColumnId, SheetFormat, SheetRowView } from './primitives';
+import type { SearchHit, ErrorRowLike } from '@/features/sheet-search';
+import type { ExportWorkbookTab } from '@/features/subtitle-io';
+import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
+import type { SheetCellRect, SheetColumnId, SheetFormat, SheetRowView } from './primitives';
 
 export interface SheetTabView {
   name: string;
@@ -41,18 +44,81 @@ export interface SheetTabMenuState {
   y: number;
 }
 
-/** 시트 상단 툴바 — 다중 선택 토글, 포커스 행 추가/삭제. search는 툴바가 렌더하는 검색 패널 props */
-export interface SheetBodyToolbarProps {
+/** sheet-body scroll 셸 — refs·scroll 이벤트·children을 받는 presentational 래퍼 */
+export interface SheetScrollContainerProps {
+  scrollRef: RefObject<HTMLDivElement | null>;
+  contentRef: RefObject<HTMLDivElement | null>;
+  onScroll: (event: UIEvent<HTMLDivElement>) => void;
+  children: ReactNode;
+  className?: string;
+}
+
+/** sheet-body 행 렌더 셸 — 윈도 indices·행 높이·재생 highlight·검색 히트·셀 이벤트 소비 */
+export interface SheetBodyRowsProps {
+  format: SheetFormat;
+  rows: SheetRowView[];
+  /** 윈도 포함 행 index (inclusive start ~ exclusive end) */
+  indices: number[];
+  /** 시트 총 높이 — `--sheet-panel-height` */
+  totalHeight: number;
+  /** 윈도 paddingTop — `--sheet-window-padding-top` */
+  paddingTop: number;
+  /** 1줄 기준 행 높이 fallback */
+  estimateRowHeight: number;
+  currentRowIndex: number | null;
+  currentColumn: SheetColumnId | null;
+  /** 검색 히트 셀 키 `"row:columnId"` */
+  searchHitKeys: ReadonlySet<string>;
+  /** 셀 이벤트 번들 */
+  cellEvents: SheetCellEvents;
+  /** 재생 시각 활성 행 index 집합 */
+  playbackSet: ReadonlySet<number>;
+}
+
+/** 시트 상단 툴바 — 다중 선택·행 CRUD·undo/redo. timelines·workbookTabs는 툴바 내부 생성 */
+/** toolbar 소비 필드 번들 — composite action 결과 중 toolbar가 쓰는 부분만 (ISP) */
+export interface SheetBodyToolbarActions {
   multipleActive: boolean;
-  onToggleMultiple: () => void;
-  onInsertRow: () => void;
-  onRemoveRow: () => void;
+  handleToggleMultipleClick: () => void;
+  handleInsertAtFocus: () => void;
+  handleRemoveAtFocus: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onUndo: () => void;
-  onRedo: () => void;
-  search: SheetSearchPanelProps;
+  handleUndo: () => void;
+  handleRedo: () => void;
+  /** 검색 히트 점프 — sheet-body search 훅 */
+  handleSearchJump: (hit: SearchHit) => void;
+}
+
+export interface SheetBodyToolbarProps {
+  format: SheetFormat;
+  rows: SheetRowView[];
+  /** toolbar 소비 필드 번들 — composite action 결과 */
+  actions: SheetBodyToolbarActions;
+  /** import — 활성 탭 timelines 교체 (sheet-body 소유) */
+  onImported: (timelines: SheetTimelineItem[]) => void;
   className?: string;
+}
+
+/** toolbar 버튼 섹션 — 다중 선택·행 CRUD·undo/redo (번들 소비) */
+export interface SheetToolbarButtonsProps {
+  actions: SheetBodyToolbarActions;
+}
+
+/** toolbar 검색 섹션 — timelines는 툴바 생성, 점프는 body 콜백 */
+export interface SheetToolbarSearchProps {
+  format: SheetFormat;
+  timelines: readonly SheetTimelineItem[];
+  rows: readonly ErrorRowLike[];
+  onJump: (hit: SearchHit) => void;
+}
+
+/** toolbar I/O 섹션 — timelines·workbookTabs는 툴바 생성, import는 body 콜백 */
+export interface SheetToolbarIoProps {
+  sheetFormat: SheetFormat;
+  timelines: readonly SheetTimelineItem[];
+  workbookTabs: readonly ExportWorkbookTab[];
+  onImported: (timelines: SheetTimelineItem[]) => void;
 }
 
 export interface SheetFooterProps {
@@ -114,14 +180,8 @@ export interface SheetBodyProps {
   chromePortalEl?: HTMLElement | null;
 }
 
-export interface SheetRowProps {
-  format: SheetFormat;
-  row: SheetRowView;
-  style?: CSSProperties;
-  'data-index'?: number;
-  currentColumn?: SheetColumnId | null;
-  /** 검색 히트 셀 — `"row:columnId"` 키 */
-  searchHitKeys?: ReadonlySet<string>;
+/** 셀 이벤트 번들 — SheetRow·SheetCell이 (event, rowIndex, column)로 호출 */
+export interface SheetCellEvents {
   onCellClick?: (
     event: MouseEvent<HTMLDivElement>,
     rowIndex: number,
@@ -137,6 +197,25 @@ export interface SheetRowProps {
     rowIndex: number,
     column: SheetColumnId,
   ) => void;
+}
+
+/** 에디터 input 이벤트 번들 — SheetCellEditor가 (event)/()로 호출 */
+export interface SheetInputEvents {
+  onInputKeyDown?: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
+  onInputClick?: (event: MouseEvent<HTMLDivElement>) => void;
+  onInputBlur?: () => void;
+}
+
+export interface SheetRowProps {
+  format: SheetFormat;
+  row: SheetRowView;
+  style?: CSSProperties;
+  'data-index'?: number;
+  currentColumn?: SheetColumnId | null;
+  /** 검색 히트 셀 — `"row:columnId"` 키 */
+  searchHitKeys?: ReadonlySet<string>;
+  /** 셀 이벤트 번들 */
+  cellEvents?: SheetCellEvents;
 }
 
 export interface SheetCellProps {
@@ -151,21 +230,8 @@ export interface SheetCellProps {
   isSearchHit?: boolean;
   className?: string;
   tabIndex?: number;
-  onCellClick?: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
-  onCellDoubleClick?: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
-  onCellContextMenu?: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
+  /** 셀 이벤트 번들 */
+  cellEvents?: SheetCellEvents;
 }
 
 /** 셀 에디터 — 비활성 / 포커스(선택) / 편집 */
@@ -173,16 +239,13 @@ export type SheetCellEditorMode = 'hidden' | 'focus' | 'edit';
 
 export interface SheetCellEditorProps {
   mode?: SheetCellEditorMode;
-  left?: number;
-  top?: number;
-  minWidth?: number;
-  minHeight?: number;
+  /** 셀 좌표·min 크기 번들 */
+  rect?: SheetCellRect | null;
   /** time 다중 클립 */
   isMultiClip?: boolean;
   className?: string;
   wrapRef?: RefObject<HTMLDivElement | null>;
   inputRef?: RefObject<HTMLDivElement | null>;
-  onInputKeyDown?: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
-  onInputClick?: (event: MouseEvent<HTMLDivElement>) => void;
-  onInputBlur?: () => void;
+  /** input 이벤트 번들 */
+  inputEvents?: SheetInputEvents;
 }

@@ -6,6 +6,7 @@ import type {
   RefObject,
 } from 'react';
 import type { SearchHit } from '@/features/sheet-search';
+import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import type {
   SheetShortkeyActions,
   SheetShortkeyMoveActions,
@@ -14,12 +15,19 @@ import type {
 } from '@/features/shortkey';
 import type {
   RowHeightInfo,
+  SheetCellRect,
   SheetColumnId,
   SheetFormat,
   SheetMoveCursor,
   SheetRowView,
 } from './primitives';
-import type { SheetCellEditorMode, SheetTabView } from './props';
+import type {
+  SheetBodyToolbarActions,
+  SheetCellEditorMode,
+  SheetCellEvents,
+  SheetInputEvents,
+  SheetTabView,
+} from './props';
 
 export interface UseSheetsResult {
   tabs: SheetTabView[];
@@ -139,14 +147,6 @@ export interface ApplyFocusOptions {
   scrollTop?: number | null;
 }
 
-/** DOM/추정 공통 셀 좌표 — SheetCellEditTarget의 위치 부분 */
-export interface SheetCellRect {
-  left: number;
-  top: number;
-  minWidth: number;
-  minHeight: number;
-}
-
 export interface SheetCellEditTarget extends SheetCellRect {
   rowIndex: number;
   column: SheetColumnId;
@@ -212,24 +212,10 @@ export interface UseSheetCellEditResult {
     column: SheetColumnId,
     options?: { scrollTop?: number | null },
   ) => void;
-  handleCellClick: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
-  handleCellDoubleClick: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
-  handleCellContextMenu: (
-    event: MouseEvent<HTMLDivElement>,
-    rowIndex: number,
-    column: SheetColumnId,
-  ) => void;
-  handleInputKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
-  handleInputClick: (event: MouseEvent<HTMLDivElement>) => void;
-  handleEditorBlur: () => void;
+  /** 셀 이벤트 번들 — SheetRow·SheetCell 소비 */
+  cellEvents: SheetCellEvents;
+  /** input 이벤트 번들 — SheetCellEditor 소비 */
+  inputEvents: SheetInputEvents;
 }
 
 /**
@@ -338,6 +324,77 @@ export interface UseSheetCellEditorResult {
   handleInputClick: (event: MouseEvent<HTMLDivElement>) => void;
   handleEditorBlur: () => void;
 }
+
+/** sheet-body action composite params — cell-edit 결과 + window 값 + 커밋·검색 게이트 */
+export interface UseSheetBodyActionsParams {
+  format: SheetFormat;
+  rows: SheetRowView[];
+  /** useSheetCellEdit 결과 — focus·edit 상태 번들 */
+  cellEdit: UseSheetCellEditResult;
+  /** useSheetWindow scrollRef — move 스크롤 계산 */
+  scrollRef: RefObject<HTMLDivElement | null>;
+  /** 시트 총 높이 — selection·undo pending focus */
+  totalHeight: number;
+  /** useSheetWindow setScrollTop — import 후 스크롤 0 */
+  setScrollTop: (scrollTop: number) => void;
+  onUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
+  /** 서식·클립·선택 직전 검색 패널 닫기 */
+  closeSearchPanel: () => void;
+}
+
+/** sheet-body action composite 결과 — search·selection·clip·time·video·undo·move + shortkey 팩토리 */
+export interface UseSheetBodyActionsResult {
+  searchHitKeys: ReadonlySet<string>;
+  handleSearchJump: (hit: SearchHit) => void;
+  toggleSearch: () => void;
+  multipleActive: boolean;
+  handleAppendRow: (cursor: SheetMoveCursor) => void;
+  handleRowMoved: (row: number, withShift: boolean) => void;
+  handleSpaceToggle: (row: number) => void;
+  handleInsertAtFocus: () => void;
+  handleRemoveAtFocus: () => void;
+  handleToggleMultipleClick: () => void;
+  clip: UseSheetClipActionsResult;
+  time: UseSheetTimeActionsResult;
+  video: UseSheetVideoActionsResult;
+  canUndo: boolean;
+  canRedo: boolean;
+  handleUndo: () => void;
+  handleRedo: () => void;
+  move: UseSheetMoveResult;
+  getShortkeyActions: UseSheetBodyShortkeyActionsResult;
+  /** import — 활성 탭 timelines 교체 + 슬롯 rebuild + history·search 초기화 + 포커스 row 0 */
+  handleImported: (nextTimelines: SheetTimelineItem[]) => void;
+  /** toolbar가 소비하는 필드 번들 — sheet-body destructuring 최소화 */
+  toolbarActions: SheetBodyToolbarActions;
+}
+
+/** sheet-body shortkey actions 조립 params — 훅 결과 + 포커스·선택 콜백 */
+export interface UseSheetBodyShortkeyActionsParams {
+  move: SheetShortkeyMoveActions;
+  clip: UseSheetClipActionsResult;
+  time: UseSheetTimeActionsResult;
+  video: UseSheetVideoActionsResult;
+  isEditing: () => boolean;
+  isTextTarget: () => boolean;
+  isTimeTarget: () => boolean;
+  hasFocus: () => boolean;
+  beginEdit: () => void;
+  cancelEdit: () => void;
+  beginEditFromTyping: SheetShortkeyActions['beginEditFromTyping'];
+  insertEditorLineBreak: () => void;
+  toggleMultiple: () => void;
+  currentRowIndex: number | null;
+  handleSpaceToggle: (row: number) => void;
+  insertRow: () => void;
+  removeRow: () => void;
+  toggleSearch: () => void;
+  undo: () => void;
+  redo: () => void;
+}
+
+/** shortkey에 주입할 actions 팩토리 — 시트 동작 API */
+export type UseSheetBodyShortkeyActionsResult = () => SheetShortkeyActions;
 
 /** shortkey에 주입할 시트 동작 API 조립 params */
 export interface BuildSheetShortkeyActionsParams {

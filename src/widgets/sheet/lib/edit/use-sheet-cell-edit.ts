@@ -131,12 +131,16 @@ const useSheetCellEdit = (params: UseSheetCellEditParams): UseSheetCellEditResul
     beginEditFromTyping,
     insertEditorLineBreak,
     applyFocus,
-    handleCellClick,
-    handleCellDoubleClick,
-    handleCellContextMenu,
-    handleInputKeyDown,
-    handleInputClick,
-    handleEditorBlur,
+    cellEvents: {
+      onCellClick: handleCellClick,
+      onCellDoubleClick: handleCellDoubleClick,
+      onCellContextMenu: handleCellContextMenu,
+    },
+    inputEvents: {
+      onInputKeyDown: handleInputKeyDown,
+      onInputClick: handleInputClick,
+      onInputBlur: handleEditorBlur,
+    },
   };
 };
 

@@ -5,38 +5,33 @@ import type { SheetCellEditorProps } from '../types';
 /** 셀 에디터 오버레이 — focus(투명·IME 유지) / edit(노출)의 contenteditable 입력 */
 const SheetCellEditor = ({
   mode = 'hidden',
-  left,
-  top,
-  minWidth,
-  minHeight,
+  rect,
   isMultiClip = false,
   className,
   wrapRef,
   inputRef,
-  onInputKeyDown,
-  onInputClick,
-  onInputBlur,
+  inputEvents,
 }: SheetCellEditorProps) => {
   const isPositioned = mode === 'edit' || mode === 'focus';
   const isEditing = mode === 'edit';
-  const hasPosition = isPositioned && left != null && top != null;
+  const hasPosition = isPositioned && rect?.left != null && rect?.top != null;
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    onInputKeyDown?.(event);
+    inputEvents?.onInputKeyDown?.(event);
   };
 
   const handleWrapKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     // focus(선택) 상태에서 문자 입력 → 편집 활성화
-    if (mode === 'focus') onInputKeyDown?.(event);
+    if (mode === 'focus') inputEvents?.onInputKeyDown?.(event);
   };
 
   const handleInputClick = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    onInputClick?.(event);
+    inputEvents?.onInputClick?.(event);
   };
 
   const handleInputBlur = () => {
-    onInputBlur?.();
+    inputEvents?.onInputBlur?.();
   };
 
   return (
@@ -58,8 +53,8 @@ const SheetCellEditor = ({
       style={
         hasPosition
           ? ({
-              '--sheet-editor-left': `${left}px`,
-              '--sheet-editor-top': `${top}px`,
+              '--sheet-editor-left': `${rect?.left}px`,
+              '--sheet-editor-top': `${rect?.top}px`,
             } as CSSProperties)
           : undefined
       }
@@ -71,17 +66,17 @@ const SheetCellEditor = ({
         className={cn(
           'sheet-input box-border w-full border border-black bg-white whitespace-nowrap outline-none select-text',
           'p-[var(--sheet-cell-padding,3px)]',
-          minWidth != null && 'min-w-[var(--sheet-editor-min-width)]',
-          minHeight != null && 'min-h-[var(--sheet-editor-min-height)]',
+          rect?.minWidth != null && 'min-w-[var(--sheet-editor-min-width)]',
+          rect?.minHeight != null && 'min-h-[var(--sheet-editor-min-height)]',
           isMultiClip && 'multi-clip !h-5',
         )}
         style={
           {
-            ...(minWidth != null && {
-              '--sheet-editor-min-width': `${minWidth}px`,
+            ...(rect?.minWidth != null && {
+              '--sheet-editor-min-width': `${rect.minWidth}px`,
             }),
-            ...(minHeight != null && {
-              '--sheet-editor-min-height': `${minHeight}px`,
+            ...(rect?.minHeight != null && {
+              '--sheet-editor-min-height': `${rect.minHeight}px`,
             }),
           } as CSSProperties
         }

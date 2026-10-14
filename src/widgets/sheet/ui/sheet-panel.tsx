@@ -8,7 +8,7 @@ import {
   createColumnVars,
 } from '../lib/columns/columns';
 import type { SheetPanelProps, SheetTabView } from '../types';
-import { SheetBody } from './sheet-body';
+import { SheetBody } from './sheet-body/sheet-body';
 import { SheetFooter } from './sheet-footer';
 import { SheetHeader } from './sheet-header';
 

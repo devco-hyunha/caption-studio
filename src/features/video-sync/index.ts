@@ -9,6 +9,8 @@ export type {
 
 export { useVideoSyncStore } from './model/use-video-sync-store';
 
+export { usePlaybackSet } from './lib/use-playback-set';
+
 export {
   rebuildVideoTimeSlotsFromActiveSheet,
   refreshActiveIndicesFromPlayback,

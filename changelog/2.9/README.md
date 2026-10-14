@@ -27,3 +27,4 @@
 | dev.6 | [2.9.0-dev.6.md](./2.9.0-dev.6.md) | 시트 undo/redo — 탭별 비영속 스택 · Ctrl+Z/Y·Ctrl+Shift+Z · toolbar 버튼 · push/clear 지점 |
 | dev.7 | [2.9.0-dev.7.md](./2.9.0-dev.7.md) | Subtitle I/O — SMI/SRT/VTT/JSON/Excel parse·serialize · 가져오기·내보내기 · 인코딩 분리 · 병합·재사용 리팩터링 |
 | dev.8 | [2.9.0-dev.8.md](./2.9.0-dev.8.md) | Video Sync · Video Player · Video Shortkey — react-player · 분 슬롯 싱크 · Ctrl+Space/←→/↑↓/Q/`/Alt+Q/Alt+←→ |
+| dev.9 | [2.9.0-dev.9.md](./2.9.0-dev.9.md) | Sheet Body 리팩터링 — sheet-body 슬림화 · action composite · toolbar 섹션 분리 · ISP props 번들 |

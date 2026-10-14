@@ -27,6 +27,14 @@ export interface RowHeightInfo {
   height: number;
 }
 
+/** 셀 위치·min 크기 — 에디터 오버레이 좌표 */
+export interface SheetCellRect {
+  left: number;
+  top: number;
+  minWidth: number;
+  minHeight: number;
+}
+
 export interface SheetStartRow {
   /** 행 시작 Y (해당 행 높이 누적 전) */
   offset: number;

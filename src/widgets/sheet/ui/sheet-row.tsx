@@ -12,9 +12,7 @@ const SheetRow = ({
   'data-index': dataIndex,
   currentColumn,
   searchHitKeys,
-  onCellClick,
-  onCellDoubleClick,
-  onCellContextMenu,
+  cellEvents,
 }: SheetRowProps) => {
   const columns = getColumns(format);
 
@@ -60,9 +58,7 @@ const SheetRow = ({
               isSearchHit={isSearchHit}
               html={value}
               className={indexStickyClass}
-              onCellClick={onCellClick}
-              onCellDoubleClick={onCellDoubleClick}
-              onCellContextMenu={onCellContextMenu}
+              cellEvents={cellEvents}
             />
           );
         }
@@ -76,9 +72,7 @@ const SheetRow = ({
             isCurrent={isCurrent}
             isSearchHit={isSearchHit}
             className={indexStickyClass}
-            onCellClick={onCellClick}
-            onCellDoubleClick={onCellDoubleClick}
-            onCellContextMenu={onCellContextMenu}
+            cellEvents={cellEvents}
           >
             {value}
           </SheetCell>

@@ -26,22 +26,20 @@ const SheetCell = ({
   isSearchHit = false,
   className,
   tabIndex = -1,
-  onCellClick,
-  onCellDoubleClick,
-  onCellContextMenu,
+  cellEvents,
 }: SheetCellProps) => {
   const shouldRenderHtml = isTextColumn(column) && html != null;
 
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-    onCellClick?.(event, rowIndex, column);
+    cellEvents?.onCellClick?.(event, rowIndex, column);
   };
 
   const handleDoubleClick = (event: MouseEvent<HTMLDivElement>) => {
-    onCellDoubleClick?.(event, rowIndex, column);
+    cellEvents?.onCellDoubleClick?.(event, rowIndex, column);
   };
 
   const handleContextMenu = (event: MouseEvent<HTMLDivElement>) => {
-    onCellContextMenu?.(event, rowIndex, column);
+    cellEvents?.onCellContextMenu?.(event, rowIndex, column);
   };
 
   return (
@@ -72,7 +70,7 @@ const SheetCell = ({
           ? (event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();
-                onCellDoubleClick?.(
+                cellEvents?.onCellDoubleClick?.(
                   event as unknown as MouseEvent<HTMLDivElement>,
                   rowIndex,
                   column,
