@@ -1,11 +1,6 @@
 import type { Fn } from '@/shared/types/fn';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-
-/** 히스토리 포커스 좌표 — editable col index */
-export interface HistoryCursor {
-  row: number;
-  col: number;
-}
 
 export interface HistoryTimelinePatch {
   index: number;
@@ -20,7 +15,7 @@ export interface HistoryEntry {
   id: number | null;
   before: SheetTimelineItem | HistoryTimelinePatch[] | null;
   after: SheetTimelineItem | HistoryTimelinePatch[] | null;
-  current: HistoryCursor;
+  current: SheetCursor;
 }
 
 export interface HistoryStack {
@@ -43,8 +38,8 @@ export interface SheetHistoryStore {
 
   pushHistory: (entry: HistoryEntry) => void;
   /** 성공 시 포커스할 cursor */
-  undo: Fn<HistoryCursor | null>;
-  redo: Fn<HistoryCursor | null>;
+  undo: Fn<SheetCursor | null>;
+  redo: Fn<SheetCursor | null>;
   canUndo: Fn<boolean>;
   canRedo: Fn<boolean>;
 }

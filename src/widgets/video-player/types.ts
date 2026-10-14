@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import type ReactPlayer from 'react-player';
 import type { Fn } from '@/shared/types/fn';
+import type { VideoPlayerControlApi } from '@/features/video-sync';
 
 /** react-player config — YT/Vimeo 크로마 숨김 파라미터 (타입 정의에 없는 iframe 파라미터 포함) */
 export type ReactPlayerConfig = NonNullable<ComponentProps<typeof ReactPlayer>['config']>;
@@ -19,16 +20,12 @@ export interface VideoPlayerSource {
   label?: string;
 }
 
-export interface VideoPlayerHandle {
-  seekTo: (seconds: number) => boolean;
-  toggle: Fn<void>;
+/** VideoPlayer ref 핸들 — 제어 API(ControlApi) + 재생/음성 상세 */
+export interface VideoPlayerHandle extends VideoPlayerControlApi {
   play: Fn<void>;
   pause: Fn<void>;
-  setVolume: (volume: number) => void;
-  getVolume: Fn<number>;
   toggleMute: Fn<void>;
   isMuted: Fn<boolean>;
-  getCurrentTime: Fn<number>;
   getDuration: Fn<number>;
   isPlaying: Fn<boolean>;
 }

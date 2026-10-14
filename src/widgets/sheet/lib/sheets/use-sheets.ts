@@ -11,7 +11,9 @@ import {
   rebuildVideoTimeSlotsFromActiveSheet,
   syncVideoTimeSlotsAfterRowTimeEdit,
 } from '@/features/video-sync';
-import type { SheetColumnId, SheetFormat, UseSheetsResult } from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { UseSheetsResult } from '../../types';
 import { getEditableColIndex } from '../move/sheet-move';
 import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
 
@@ -20,7 +22,7 @@ import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
  * 셀 커밋 시 history push · 탭 CRUD 시 history 스택 동기화.
  * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
  */
-const useSheets = (format: SheetFormat): UseSheetsResult => {
+const useSheets = (format: SubtitleFormat): UseSheetsResult => {
   const active = useSheetStore((state) => state.active);
   const sheets = useSheetStore((state) => state.sheets);
   const selectSheetAction = useSheetStore((state) => state.selectSheet);

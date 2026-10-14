@@ -1,8 +1,10 @@
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
-import type { SearchHit } from '@/features/sheet-search';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SheetColumnId, SheetFormat, SheetMoveCursor, SheetRowView } from '../primitives';
+import type { SheetRowView } from '../primitives';
 import type { SheetBodyToolbarActions } from '../props';
 import type { UseSheetCellEditResult } from './edit';
 import type { UseSheetClipActionsResult } from './clip';
@@ -13,7 +15,7 @@ import type { UseSheetBodyShortkeyActionsResult } from './shortkey';
 
 /** sheet-body action composite params — cell-edit 결과 + window 값 + 커밋·검색 게이트 */
 export interface UseSheetBodyActionsParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** useSheetCellEdit 결과 — focus·edit 상태 번들 */
   cellEdit: UseSheetCellEditResult;
@@ -31,10 +33,10 @@ export interface UseSheetBodyActionsParams {
 /** sheet-body action composite 결과 — search·selection·clip·time·video·undo·move + shortkey 팩토리 */
 export interface UseSheetBodyActionsResult {
   searchHitKeys: ReadonlySet<string>;
-  handleSearchJump: (hit: SearchHit) => void;
+  handleSearchJump: (hit: SheetCursor) => void;
   toggleSearch: Fn<void>;
   multipleActive: boolean;
-  handleAppendRow: (cursor: SheetMoveCursor) => void;
+  handleAppendRow: (cursor: SheetCursor) => void;
   handleRowMoved: (row: number, withShift: boolean) => void;
   handleSpaceToggle: (row: number) => void;
   handleInsertAtFocus: Fn<void>;

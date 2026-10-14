@@ -3,12 +3,12 @@ import { canEditColumnId, isTextColumn } from '../../columns/columns';
 import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import { resolveTarget, resolveTargetByIndex } from './edit-target';
 import { computeFocusScroll } from './apply-focus';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type {
   ApplyFocusOptions,
   FocusBodyMetrics,
   SheetCellEditTarget,
   SheetCellEditorMode,
-  SheetColumnId,
   SheetRowView,
   UseSheetCellFocusParams,
   UseSheetCellFocusResult,

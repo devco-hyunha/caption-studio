@@ -1,6 +1,6 @@
 import { encodeHtml } from '../html/encode-html';
 import { valid } from '../html/valid';
-import type { SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 
 /** SMI 문자열 파싱 — `<sync` 청크별 DOMParser, start>=0 만 유효 */
 const parseSmiString = (data: string): SubtitleTimeline[] => {

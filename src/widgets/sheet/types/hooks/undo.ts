@@ -1,9 +1,11 @@
 import type { Fn } from '@/shared/types/fn';
-import type { ApplyFocusOptions, SheetColumnId, SheetFormat, SheetRowView } from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { ApplyFocusOptions, SheetRowView } from '../primitives';
 
 /** undo/redo 훅 params — 포커스·에딧 판별 */
 export interface UseSheetUndoActionsParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   totalHeight: number;
   isEditing: Fn<boolean>;

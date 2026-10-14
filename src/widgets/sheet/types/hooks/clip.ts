@@ -1,11 +1,12 @@
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SheetTextFormatCommand } from '@/features/shortkey';
-import type { SheetColumnId, SheetFormat } from '../primitives';
 
 /** clip 훅 params — 포커스 셀·편집 판별·에디터 ref·커밋 */
 export interface UseSheetClipActionsParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   currentRowIndex: number | null;
   currentColumn: SheetColumnId | null;
   isEditing: Fn<boolean>;

@@ -1,13 +1,10 @@
 import type { Fn } from '@/shared/types/fn';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 
-/** `subtitleSheets` 타임라인 행 */
-export interface SheetTimelineItem {
-  start?: number;
-  end?: number;
-  sync?: number;
-  text?: string;
-  memo?: string;
-}
+/** `subtitleSheets` 타임라인 행 — canonical Partial + sync */
+export type SheetTimelineItem = Partial<SubtitleTimeline> & { sync?: number };
 
 /** `timeSearch` 결과 — 재생 ms → 행 매핑 (`/` sheet.seek.timeSearch parity) */
 export interface TimeSearchHit {
@@ -27,22 +24,14 @@ export interface TimeSearchAllHit {
   indices: number[];
 }
 
-/** `subtitleSheets.sheets[]` 항목 (런타임) */
-export interface Sheet {
-  name: string;
-  timelines: SheetTimelineItem[];
-  smiName: string;
-  smiLang: string;
+/** `subtitleSheets` 시트 — 영속(SavedSheet) + 선택(SheetSelectionState) + 뷰 잔여 */
+export interface Sheet extends SavedSheet, SheetSelectionState {
   /** 영속 제외 — 탭별 scrollTop */
   scroll: number;
   /** 영속 제외 — 포커스 등 뷰 상태 */
   current: Record<string, unknown>;
-  /** 영속 제외 — multiple 선택 행 */
-  selectedRows: number[];
   /** 영속 제외 — 다중 선택 모드 진입 여부 */
   multipleActive: boolean;
-  /** 영속 제외 — 다중 선택 시작 행 (Shift 확장 앵커) */
-  multipleStart: number | null;
 }
 
 /** in-memory / Zustand 스토어 스키마 */
@@ -65,10 +54,7 @@ export interface SavedState {
   sheets: SavedSheet[];
 }
 
-export type EditableColumn = 'text' | 'memo' | 'starttime' | 'endtime';
-
-/** 행 CRUD에 사용할 시트 포맷 (기본값: smi) */
-export type SheetTimelineFormat = 'smi' | 'srt';
+export type EditableColumn = Extract<SheetColumnId, 'text' | 'memo' | 'starttime' | 'endtime'>;
 
 /** 다중 선택 런타임 상태 */
 export interface SheetSelectionState {
@@ -94,7 +80,7 @@ export interface SheetStore extends SheetsState {
   /** 다중 선택 모드에서 앵커 이동 */
   setMultipleStart: (row: number) => void;
   /** 행 추가 — 추가된 행 인덱스 (다중 선택 모드에서는 null) */
-  insertTimelineAfter: (row: number, format: SheetTimelineFormat) => number | null;
+  insertTimelineAfter: (row: number, format: SubtitleFormat) => number | null;
   /** 행 삭제 — 이동할 포커스 행 인덱스 (다중 선택 모드에서는 null) */
   removeTimelineAt: (row: number) => number | null;
   /** undo/redo 전용 행 삭제 — 다중 선택 모드에서도 동작. 이동할 포커스 행 인덱스 */

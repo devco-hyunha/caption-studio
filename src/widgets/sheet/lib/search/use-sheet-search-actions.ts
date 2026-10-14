@@ -1,4 +1,5 @@
-import { useSheetSearchStore, type SearchHit } from '@/features/sheet-search';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import { useSheetSearchStore } from '@/features/sheet-search';
 import { getEditableColumn } from '../move/sheet-move';
 import type { UseSheetSearchActionsParams, UseSheetSearchActionsResult } from '../../types';
 
@@ -27,7 +28,7 @@ const useSheetSearchActions = ({
   })();
 
   /** 히트 셀로 점프 — 에딧 중이면 커밋 후 포커스 */
-  const handleSearchJump = (hit: SearchHit) => {
+  const handleSearchJump = (hit: SheetCursor) => {
     if (isEditing()) endEdit(true);
     const column = getEditableColumn(format, hit.col);
     if (!column) return;

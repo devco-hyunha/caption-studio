@@ -1,6 +1,5 @@
 export type {
   HistoryCommand,
-  HistoryCursor,
   HistoryEntry,
   HistoryStack,
   HistoryTimelinePatch,

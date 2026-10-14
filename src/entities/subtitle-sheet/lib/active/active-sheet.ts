@@ -1,5 +1,6 @@
 /** 활성 시트 다중 선택 / 행 CRUD / import 래퍼 — SheetsState 변경은 entities 책임 */
-import type { Sheet, SheetTimelineFormat, SheetTimelineItem, SheetsState } from '../../types';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { Sheet, SheetTimelineItem, SheetsState } from '../../types';
 import { cloneTimeline } from '../core/sheet-core';
 import {
   enterMultipleSelection,
@@ -95,7 +96,7 @@ const setActiveMultipleStart = (state: SheetsState, row: number): SheetsState =>
 const insertActiveTimelineAfter = (
   state: SheetsState,
   row: number,
-  format: SheetTimelineFormat,
+  format: SubtitleFormat,
 ): { state: SheetsState; insertIndex: number } | null => {
   const sheet = getActiveSheet(state);
   if (!sheet || sheet.multipleActive) return null;

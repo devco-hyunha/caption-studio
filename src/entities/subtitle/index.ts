@@ -1,5 +1,3 @@
-export type { SubtitleExportFormat, SubtitleFormat, SubtitleTimeline } from './types';
-
 export { valid } from './lib/html/valid';
 export { encodeHtml } from './lib/html/encode-html';
 export { parseSubtitleFile, converters } from './lib/parse/convert';

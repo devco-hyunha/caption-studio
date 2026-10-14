@@ -1,6 +1,7 @@
 import { parseTimecode } from '@/shared/lib/timecode';
 import { valid } from '../html/valid';
-import type { SrtParseDraft, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { SrtParseDraft } from '../../types';
 
 const splitSubtitleLines = (text: string) => {
   if (text.indexOf('\r\n\r\n') >= 0) return text.split('\r\n');

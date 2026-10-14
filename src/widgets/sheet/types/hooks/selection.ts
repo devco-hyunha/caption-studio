@@ -1,15 +1,12 @@
 import type { Fn } from '@/shared/types/fn';
-import type {
-  ApplyFocusOptions,
-  SheetColumnId,
-  SheetFormat,
-  SheetMoveCursor,
-  SheetRowView,
-} from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { ApplyFocusOptions, SheetRowView } from '../primitives';
 
 /** 다중 선택·행 CRUD action params */
 export interface UseSheetSelectionActionsParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** 시트 총 높이 — pending focus 대기 조건 */
   totalHeight: number;
@@ -26,7 +23,7 @@ export interface UseSheetSelectionActionsParams {
 export interface UseSheetSelectionActionsResult {
   multipleActive: boolean;
   /** Tab append: 커서 행 아래 삽입 */
-  handleAppendRow: (cursor: SheetMoveCursor) => void;
+  handleAppendRow: (cursor: SheetCursor) => void;
   /** 행 이동 시 다중 선택 확장 / 앵커 이동 */
   handleRowMoved: (row: number, withShift: boolean) => void;
   /** Space: 다중 선택 중 현재 행 토글 (다중 밖 no-op) */

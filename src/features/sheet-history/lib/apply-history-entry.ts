@@ -1,5 +1,6 @@
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
 import { useSheetStore, type SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { HistoryCursor, HistoryEntry, HistoryTimelinePatch } from '../types';
+import type { HistoryEntry, HistoryTimelinePatch } from '../types';
 
 const isTimelineItem = (value: unknown): value is SheetTimelineItem =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -30,7 +31,7 @@ const patchesMatchSnapshots = (
  * undo — entry before로 복원 + `move.event`에 해당하는 포커스 반환.
  * insert undo → remove 후 clamp된 행.
  */
-const applyHistoryUndo = (entry: HistoryEntry): HistoryCursor | null => {
+const applyHistoryUndo = (entry: HistoryEntry): SheetCursor | null => {
   const store = useSheetStore.getState();
   const col = entry.current.col;
 
@@ -75,7 +76,7 @@ const applyHistoryUndo = (entry: HistoryEntry): HistoryCursor | null => {
  * redo — entry after 재적용 + 포커스.
  * insert redo → 삽입된 행으로 이동.
  */
-const applyHistoryRedo = (entry: HistoryEntry): HistoryCursor | null => {
+const applyHistoryRedo = (entry: HistoryEntry): SheetCursor | null => {
   const store = useSheetStore.getState();
   const col = entry.current.col;
 

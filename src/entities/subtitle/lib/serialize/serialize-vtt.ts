@@ -1,4 +1,5 @@
-import type { SerializeVttOptions, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { SerializeVttOptions } from '../../types';
 import { buildTimedCues } from './timed-cues';
 
 /** VTT 직렬화 — dot decimal */

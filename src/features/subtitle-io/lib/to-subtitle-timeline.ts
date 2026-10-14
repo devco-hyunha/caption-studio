@@ -1,5 +1,5 @@
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type { SubtitleTimeline } from '@/entities/subtitle';
 
 /** SheetTimelineItem → SubtitleTimeline (필드 정규화) — subtitle-io 공유 헬프 */
 const toSubtitleTimeline = (item: SheetTimelineItem): SubtitleTimeline => ({

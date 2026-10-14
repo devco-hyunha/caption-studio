@@ -1,9 +1,6 @@
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
-
-export type SheetFormat = 'smi' | 'srt';
-
-export type SheetColumnId = 'index' | 'starttime' | 'endtime' | 'dur' | 'text' | 'memo';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
 
 export interface SheetRowView {
   index: number;
@@ -42,12 +39,6 @@ export interface SheetStartRow {
   offset: number;
   height: number;
   index: number;
-}
-
-export interface SheetMoveCursor {
-  row: number;
-  /** editable 열 인덱스 (`EDITABLE_COLUMNS[format]`) */
-  col: number;
 }
 
 export interface SheetPageViewBox {

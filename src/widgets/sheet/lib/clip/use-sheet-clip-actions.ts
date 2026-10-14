@@ -2,11 +2,8 @@ import type { SheetTextFormatCommand } from '@/features/shortkey';
 import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore, type HistoryTimelinePatch } from '@/features/sheet-history';
-import type {
-  SheetColumnId,
-  UseSheetClipActionsParams,
-  UseSheetClipActionsResult,
-} from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { UseSheetClipActionsParams, UseSheetClipActionsResult } from '../../types';
 import { applyTextFormatCommand } from '../format/apply-text-format';
 import { isMultipleActive } from '../selection/is-multiple-active';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';

@@ -1,3 +1,5 @@
+import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import {
   buildExcel,
   DEFAULT_ENCODING,
@@ -7,9 +9,6 @@ import {
   serializeSmi,
   serializeSrt,
   serializeVtt,
-  type SubtitleExportFormat,
-  type SubtitleFormat,
-  type SubtitleTimeline,
 } from '@/entities/subtitle';
 import { downloadBytes } from './download-bytes';
 import { toSubtitleTimelines } from './to-subtitle-timeline';

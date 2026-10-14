@@ -1,4 +1,6 @@
-import type { SheetColumnDef, SheetColumnId, SheetFormat } from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SheetColumnDef } from '../../types';
 
 /** `columns.js` COLUMN_WIDTH_RATE: width = ceil(fontSize * rate) */
 const COLUMN_WIDTH_RATE = {
@@ -43,12 +45,12 @@ const DEFAULT_ESTIMATE_ROW_HEIGHT = rowContentHeight(1, DEFAULT_CELL_STYLE);
 const FORMAT_COLUMNS = {
   smi: ['index', 'starttime', 'dur', 'text', 'memo'],
   srt: ['index', 'starttime', 'endtime', 'dur', 'text', 'memo'],
-} as const satisfies Record<SheetFormat, readonly SheetColumnId[]>;
+} as const satisfies Record<SubtitleFormat, readonly SheetColumnId[]>;
 
 const EDITABLE_COLUMNS = {
   smi: ['starttime', 'text', 'memo'],
   srt: ['starttime', 'endtime', 'text', 'memo'],
-} as const satisfies Record<SheetFormat, readonly SheetColumnId[]>;
+} as const satisfies Record<SubtitleFormat, readonly SheetColumnId[]>;
 
 /** input(IME) 편집 대상 열 — 그 외 편집 열은 wrap 포커스 */
 const TEXT_COLUMNS: SheetColumnId[] = ['text', 'memo'];
@@ -90,7 +92,7 @@ const COLUMN_WIDTHS = createColumnWidths();
 const createContainMinWidth = (fontSize = DEFAULT_FONT_SIZE) => {
   const widths = createColumnWidths(fontSize);
 
-  const sumUntilMemo = (format: SheetFormat) => {
+  const sumUntilMemo = (format: SubtitleFormat) => {
     let total = 0;
     for (const id of FORMAT_COLUMNS[format]) {
       total += widths[id];
@@ -108,12 +110,12 @@ const createContainMinWidth = (fontSize = DEFAULT_FONT_SIZE) => {
 const CONTAIN_MIN_WIDTH = createContainMinWidth();
 
 /** format에서 해당 열이 편집 가능한지 (entities의 값 가드 `isEditableColumn`과 구분) */
-const canEditColumnId = (format: SheetFormat, id: SheetColumnId): boolean =>
+const canEditColumnId = (format: SubtitleFormat, id: SheetColumnId): boolean =>
   (EDITABLE_COLUMNS[format] as readonly SheetColumnId[]).includes(id);
 
 /** format 열 순서 기준 셀 left (memo 이전 누적) */
 const getColumnLeft = (
-  format: SheetFormat,
+  format: SubtitleFormat,
   column: SheetColumnId,
   fontSize = DEFAULT_FONT_SIZE,
 ): number => {
@@ -127,7 +129,7 @@ const getColumnLeft = (
 };
 
 /** format별 열 정의 (label + editable) */
-const getColumns = (format: SheetFormat): SheetColumnDef[] =>
+const getColumns = (format: SubtitleFormat): SheetColumnDef[] =>
   FORMAT_COLUMNS[format].map((id) => ({
     id,
     label: COLUMN_LABELS[id],
@@ -136,7 +138,7 @@ const getColumns = (format: SheetFormat): SheetColumnDef[] =>
 
 /** 루트에 주입할 열 CSS 변수 (`--sheet-col-*`, `--sheet-contain-min`) */
 const createColumnVars = (
-  format: SheetFormat,
+  format: SubtitleFormat,
   fontSize = DEFAULT_FONT_SIZE,
 ): Record<`--sheet-col-${SheetColumnId}` | '--sheet-contain-min', string> => {
   const widths = createColumnWidths(fontSize);

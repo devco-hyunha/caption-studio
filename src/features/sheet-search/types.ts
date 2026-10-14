@@ -1,11 +1,7 @@
 import type { Fn } from '@/shared/types/fn';
-import type { SheetTimelineItem, SheetTimelineFormat } from '@/entities/subtitle-sheet';
-
-/** 검색 히트 — editable 열 인덱스 (`EDITABLE_COLUMNS[format]`) */
-export interface SearchHit {
-  row: number;
-  col: number;
-}
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
 /**
  * error-search가 필요로 하는 최소 행 구조.
@@ -18,16 +14,16 @@ export interface ErrorRowLike {
 
 /** 시트 검색 패널 props — format·timelines·rows·점프 콜백 */
 export interface SheetSearchPanelProps {
-  format: SheetTimelineFormat;
+  format: SubtitleFormat;
   timelines: readonly SheetTimelineItem[];
   rows: readonly ErrorRowLike[];
-  onJump: (hit: SearchHit) => void;
+  onJump: (hit: SheetCursor) => void;
 }
 
 /** 시트 검색 스토어 — 패널·쿼리·hits·error-search 상태와 동작 */
 export interface SheetSearchStore {
   searchPanelOpen: boolean;
-  searchHits: SearchHit[];
+  searchHits: SheetCursor[];
   searchCurrent: number;
   /** 검색 input 포커스 중 에딧 차단 */
   searchInputFocused: boolean;
@@ -44,12 +40,12 @@ export interface SheetSearchStore {
   runSearch: (
     query: string,
     timelines: readonly SheetTimelineItem[],
-    format: SheetTimelineFormat,
-  ) => SearchHit | null;
+    format: SubtitleFormat,
+  ) => SheetCursor | null;
   /** error-search — 체크 시 errorRows hits, 해제 시 빈 hits */
-  toggleErrorSearch: (rows: readonly ErrorRowLike[]) => SearchHit | null;
+  toggleErrorSearch: (rows: readonly ErrorRowLike[]) => SheetCursor | null;
   /** prev/next 이동 후 점프할 hit (경계·hits 없으면 null) */
-  searchStep: (direction: 'next' | 'prev') => SearchHit | null;
+  searchStep: (direction: 'next' | 'prev') => SheetCursor | null;
   canSearchPrev: Fn<boolean>;
   canSearchNext: Fn<boolean>;
 }

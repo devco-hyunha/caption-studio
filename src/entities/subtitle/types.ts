@@ -1,18 +1,5 @@
-/** 시트/변환용 타임라인 행 */
-export interface SubtitleTimeline {
-  start: number;
-  end?: number;
-  starttime?: string;
-  endtime?: string;
-  text: string;
-  memo: string;
-}
-
-/** 시트 저장 포맷 */
-export type SubtitleFormat = 'smi' | 'srt';
-
-/** 내보내기 파일 포맷 */
-export type SubtitleExportFormat = 'smi' | 'srt' | 'vtt' | 'json' | 'excel';
+import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 
 /** parse / convert 결과 */
 export interface SubtitleSheetData {

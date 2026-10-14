@@ -1,4 +1,5 @@
-import { converters, type SubtitleFormat } from '@/entities/subtitle';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import { converters } from '@/entities/subtitle';
 import { cloneTimeline, type SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { toSubtitleTimeline } from './to-subtitle-timeline';
 

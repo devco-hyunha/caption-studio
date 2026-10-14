@@ -1,23 +1,19 @@
-import type {
-  RowHeightInfo,
-  SheetColumnId,
-  SheetFormat,
-  SheetMoveCursor,
-  SheetPageMoveResult,
-  SheetPageViewBox,
-} from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { RowHeightInfo, SheetPageMoveResult, SheetPageViewBox } from '../../types';
 import { EDITABLE_COLUMNS } from '../columns/columns';
 
 /** 포맷별 편집 가능 열 (index 제외) */
-const getEditableColumns = (format: SheetFormat): readonly SheetColumnId[] =>
+const getEditableColumns = (format: SubtitleFormat): readonly SheetColumnId[] =>
   EDITABLE_COLUMNS[format];
 
 /** 열 id → editable 열 인덱스 (없으면 -1) */
-const getEditableColIndex = (format: SheetFormat, column: SheetColumnId): number =>
+const getEditableColIndex = (format: SubtitleFormat, column: SheetColumnId): number =>
   getEditableColumns(format).indexOf(column);
 
 /** editable 열 인덱스 → 열 id (범위 밖이면 null) */
-const getEditableColumn = (format: SheetFormat, col: number): SheetColumnId | null =>
+const getEditableColumn = (format: SubtitleFormat, col: number): SheetColumnId | null =>
   getEditableColumns(format)[col] ?? null;
 
 /** 마지막 행 인덱스 (빈 시트면 0) */
@@ -55,7 +51,7 @@ const findRowContaining = (
 };
 
 /** 위쪽 행 이동. 첫 행이면 null */
-const moveRowPrev = (cursor: SheetMoveCursor): SheetMoveCursor | null => {
+const moveRowPrev = (cursor: SheetCursor): SheetCursor | null => {
   if (cursor.row <= 0) return null;
   return { row: cursor.row - 1, col: cursor.col };
 };
@@ -64,10 +60,10 @@ const moveRowPrev = (cursor: SheetMoveCursor): SheetMoveCursor | null => {
  * @param append - Tab 이동 시 true. 마지막 행이면 append 요청(행 추가) — 호출측에서 처리.
  */
 const moveRowNext = (
-  cursor: SheetMoveCursor,
+  cursor: SheetCursor,
   lastIndex: number,
   append: boolean,
-): SheetMoveCursor | 'append' | null => {
+): SheetCursor | 'append' | null => {
   if (cursor.row !== lastIndex) {
     return { row: cursor.row + 1, col: cursor.col };
   }
@@ -76,7 +72,7 @@ const moveRowNext = (
 };
 
 /** 왼쪽 열 이동. 첫 열이면 이전 행의 마지막 열로 */
-const moveColPrev = (format: SheetFormat, cursor: SheetMoveCursor): SheetMoveCursor | null => {
+const moveColPrev = (format: SubtitleFormat, cursor: SheetCursor): SheetCursor | null => {
   if (cursor.col > 0) {
     return { row: cursor.row, col: cursor.col - 1 };
   }
@@ -88,10 +84,10 @@ const moveColPrev = (format: SheetFormat, cursor: SheetMoveCursor): SheetMoveCur
 
 /** 오른쪽 열 이동. 마지막 열이면 다음 행의 첫 열로 */
 const moveColNext = (
-  format: SheetFormat,
-  cursor: SheetMoveCursor,
+  format: SubtitleFormat,
+  cursor: SheetCursor,
   lastIndex: number,
-): SheetMoveCursor | null => {
+): SheetCursor | null => {
   const maxCol = getEditableColumns(format).length - 1;
   if (cursor.col < maxCol) {
     return { row: cursor.row, col: cursor.col + 1 };

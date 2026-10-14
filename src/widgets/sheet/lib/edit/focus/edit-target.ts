@@ -1,10 +1,6 @@
-import type {
-  SheetCellEditTarget,
-  SheetCellRect,
-  SheetColumnId,
-  SheetFormat,
-  SheetRowView,
-} from '../../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SheetCellEditTarget, SheetCellRect, SheetRowView } from '../../../types';
 import { COLUMN_WIDTHS, getColumnLeft } from '../../columns/columns';
 import { getCellValue } from '../../cell/get-cell-value';
 import { getRowTop } from '../../move/sheet-move';
@@ -24,7 +20,7 @@ const measureCellPosition = (cell: HTMLElement, scrollContent: HTMLElement): She
 /** DOM 없이 행 누적 높이·열 left로 즉시 좌표 산출 (키 반복 동기화) */
 const resolveTargetByIndex = (
   rows: readonly SheetRowView[],
-  format: SheetFormat,
+  format: SubtitleFormat,
   rowIndex: number,
   column: SheetColumnId,
 ): SheetCellEditTarget | null => {
@@ -45,7 +41,7 @@ const resolveTargetByIndex = (
 /** DOM 실측 좌표로 타깃 산출. 실측값이 0이면 열 너비·행 높이로 보정 */
 const resolveTarget = (
   rows: readonly SheetRowView[],
-  format: SheetFormat,
+  format: SubtitleFormat,
   rowIndex: number,
   column: SheetColumnId,
   cell: HTMLElement,

@@ -1,25 +1,21 @@
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
-import type {
-  ApplyFocusOptions,
-  RowHeightInfo,
-  SheetColumnId,
-  SheetFormat,
-  SheetMoveCursor,
-  SheetRowView,
-} from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { ApplyFocusOptions, RowHeightInfo, SheetRowView } from '../primitives';
 
 /** 이동 계산 결과 — applyFocus 대상 커서 + 선택적 스크롤 */
 export interface MoveTarget {
-  cursor: SheetMoveCursor;
+  cursor: SheetCursor;
   scrollTop?: number | null;
 }
 
-export type MoveCalc = (cursor: SheetMoveCursor) => MoveTarget | 'append' | null;
+export type MoveCalc = (cursor: SheetCursor) => MoveTarget | 'append' | null;
 
 export interface UseSheetMoveParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** shortkey용 — `mode === 'edit'` 동기 판별 */
   isEditing: Fn<boolean>;
@@ -29,7 +25,7 @@ export interface UseSheetMoveParams {
   endEdit: (commit?: boolean) => void;
   applyFocus: (rowIndex: number, column: SheetColumnId, options?: ApplyFocusOptions) => void;
   /** Tab으로 마지막 행 아래 이동 시 행 추가 */
-  onAppendRow?: (cursor: SheetMoveCursor) => void;
+  onAppendRow?: (cursor: SheetCursor) => void;
   /** 행 이동 시 다중 선택 확장 (Shift+Arrow) */
   onRowMoved?: (row: number, withShift: boolean) => void;
 }

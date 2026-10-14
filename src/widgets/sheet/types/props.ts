@@ -9,20 +9,16 @@ import type {
   UIEvent,
 } from 'react';
 import type { Fn } from '@/shared/types/fn';
-import type { SearchHit, ErrorRowLike } from '@/features/sheet-search';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { ErrorRowLike } from '@/features/sheet-search';
 import type { ExportWorkbookTab } from '@/features/subtitle-io';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import type {
-  SheetCellEditorMode,
-  SheetCellRect,
-  SheetColumnId,
-  SheetFormat,
-  SheetRowView,
-  SheetTabView,
-} from './primitives';
+import type { SheetCellEditorMode, SheetCellRect, SheetRowView, SheetTabView } from './primitives';
 
 export interface SheetPanelProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   estimateRowHeight?: number;
   /** 시트 탭 (미지정 시 sheet1 단일 탭) */
@@ -59,7 +55,7 @@ export interface SheetScrollContainerProps {
 
 /** sheet-body 행 렌더 셸 — 윈도 indices·행 높이·재생 highlight·검색 히트·셀 이벤트 소비 */
 export interface SheetBodyRowsProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** 윈도 포함 행 index (inclusive start ~ exclusive end) */
   indices: number[];
@@ -91,11 +87,11 @@ export interface SheetBodyToolbarActions {
   handleUndo: Fn<void>;
   handleRedo: Fn<void>;
   /** 검색 히트 점프 — sheet-body search 훅 */
-  handleSearchJump: (hit: SearchHit) => void;
+  handleSearchJump: (hit: SheetCursor) => void;
 }
 
 export interface SheetBodyToolbarProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** toolbar 소비 필드 번들 — composite action 결과 */
   actions: SheetBodyToolbarActions;
@@ -111,15 +107,15 @@ export interface SheetToolbarButtonsProps {
 
 /** toolbar 검색 섹션 — timelines는 툴바 생성, 점프는 body 콜백 */
 export interface SheetToolbarSearchProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   timelines: readonly SheetTimelineItem[];
   rows: readonly ErrorRowLike[];
-  onJump: (hit: SearchHit) => void;
+  onJump: (hit: SheetCursor) => void;
 }
 
 /** toolbar I/O 섹션 — timelines·workbookTabs는 툴바 생성, import는 body 콜백 */
 export interface SheetToolbarIoProps {
-  sheetFormat: SheetFormat;
+  sheetFormat: SubtitleFormat;
   timelines: readonly SheetTimelineItem[];
   workbookTabs: readonly ExportWorkbookTab[];
   onImported: (timelines: SheetTimelineItem[]) => void;
@@ -163,12 +159,12 @@ export interface SheetTabMenuProps {
 }
 
 export interface SheetHeaderProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   className?: string;
 }
 
 export interface SheetBodyProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   estimateRowHeight: number;
   className?: string;
@@ -211,7 +207,7 @@ export interface SheetInputEvents {
 }
 
 export interface SheetRowProps {
-  format: SheetFormat;
+  format: SubtitleFormat;
   row: SheetRowView;
   style?: CSSProperties;
   'data-index'?: number;

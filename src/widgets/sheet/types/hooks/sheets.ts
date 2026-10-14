@@ -5,7 +5,8 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
 } from 'react';
-import type { SheetColumnId, SheetRowView, SheetTabView } from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SheetRowView, SheetTabView } from '../primitives';
 
 export interface UseSheetsResult {
   tabs: SheetTabView[];

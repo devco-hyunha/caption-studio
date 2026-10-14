@@ -1,9 +1,9 @@
 import { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type {
   SheetCellEditTarget,
   SheetCellEditorMode,
-  SheetColumnId,
   UseSheetCellEditorParams,
   UseSheetCellEditorResult,
 } from '../../../types';

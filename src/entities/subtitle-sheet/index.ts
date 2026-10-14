@@ -3,7 +3,6 @@ export type {
   SavedState,
   Sheet,
   SheetStore,
-  SheetTimelineFormat,
   SheetSelectionState,
   SheetTimelineItem,
   TimeSearchAllHit,

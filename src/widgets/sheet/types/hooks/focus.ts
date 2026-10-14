@@ -1,17 +1,17 @@
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type {
   ApplyFocusOptions,
   SheetCellEditTarget,
   SheetCellEditorMode,
-  SheetColumnId,
-  SheetFormat,
   SheetRowView,
 } from '../primitives';
 
 /** 포커스/스크롤 hook — 셀 포커스와 스크롤 이동만 담당 */
 export interface UseSheetCellFocusParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   scrollRef: RefObject<HTMLDivElement | null>;
   scrollContentRef: RefObject<HTMLDivElement | null>;
@@ -50,7 +50,7 @@ export interface UseSheetCellFocusResult {
 
 /** pending focus 훅 params — 렌더 반영 후 포커스 적용 (selection·undo 공유) */
 export interface UsePendingFocusParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   /** 시트 총 높이 — pending focus 대기 조건 */
   totalHeight: number;

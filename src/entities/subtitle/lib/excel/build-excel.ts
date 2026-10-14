@@ -1,6 +1,8 @@
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import { formatExportData } from '../export/format-export-data';
 import { zipStore } from './zip-store';
-import type { BuildExcelOptions, SubtitleFormat, SubtitleTimeline } from '../../types';
+import type { BuildExcelOptions } from '../../types';
 
 const SMI_HEADER = ['INDEX', 'START', 'START TIME', 'TEXT', 'MEMO'];
 const SRT_HEADER = ['INDEX', 'START', 'START TIME', 'END', 'END TIME', 'TEXT', 'MEMO'];

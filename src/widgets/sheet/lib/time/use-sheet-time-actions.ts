@@ -7,11 +7,8 @@ import {
   syncVideoTimeSlotsAfterRowTimeEdit,
 } from '@/features/video-sync';
 import { formatTime, secondsToMs } from '@/shared/lib/timecode';
-import type {
-  SheetColumnId,
-  UseSheetTimeActionsParams,
-  UseSheetTimeActionsResult,
-} from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { UseSheetTimeActionsParams, UseSheetTimeActionsResult } from '../../types';
 import { isMultipleActive } from '../selection/is-multiple-active';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { nudgeTimelineByStep, nudgeTimelineColumn, readTimeJumpMs } from './time-jump';

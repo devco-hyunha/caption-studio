@@ -1,19 +1,19 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent, RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type {
   ApplyFocusOptions,
   SheetCellEditTarget,
   SheetCellEditorMode,
-  SheetColumnId,
-  SheetFormat,
   SheetRowView,
 } from '../primitives';
 import type { SheetCellEvents, SheetInputEvents } from '../props';
 import type { UseSheetCellFocusResult } from './focus';
 
 export interface UseSheetCellEditParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   rows: SheetRowView[];
   scrollRef: RefObject<HTMLDivElement | null>;
   scrollContentRef: RefObject<HTMLDivElement | null>;
@@ -75,7 +75,7 @@ export interface UseEditInputSyncParams {
 
 /** 편집 라이프사이클 hook — 편집 진입/커밋/취소 및 키 입력 진입 담당 */
 export interface UseSheetCellEditorParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   focus: UseSheetCellFocusResult;
   onCommitCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
   /** 에딧 진입 직전 검색 패널 닫기 */

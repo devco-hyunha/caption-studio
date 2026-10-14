@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { getEditableColumn } from '../move/sheet-move';
-import type { SheetColumnId, UsePendingFocusParams } from '../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { UsePendingFocusParams } from '../../types';
 
 /**
  * 렌더 반영 후 포커스 대상 등록 — pendingFocus + layoutEffect(rows·totalHeight 가드).

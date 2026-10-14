@@ -1,5 +1,6 @@
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
 import { create } from 'zustand';
-import type { HistoryCursor, HistoryEntry, SheetHistoryStore } from '../types';
+import type { HistoryEntry, SheetHistoryStore } from '../types';
 import {
   addStack,
   canRedo,
@@ -63,7 +64,7 @@ const useSheetHistoryStore = create<SheetHistoryStore>((set, get) => ({
     });
   },
 
-  undo: (): HistoryCursor | null => {
+  undo: (): SheetCursor | null => {
     const state = get();
     const active = getActiveStack(state.stacks, state.activeSheetIndex);
     const result = prevEntry(active);
@@ -76,7 +77,7 @@ const useSheetHistoryStore = create<SheetHistoryStore>((set, get) => ({
     return focus;
   },
 
-  redo: (): HistoryCursor | null => {
+  redo: (): SheetCursor | null => {
     const state = get();
     const active = getActiveStack(state.stacks, state.activeSheetIndex);
     const result = nextEntry(active);

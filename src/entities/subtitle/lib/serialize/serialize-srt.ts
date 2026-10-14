@@ -1,4 +1,5 @@
-import type { SerializeSrtOptions, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { SerializeSrtOptions } from '../../types';
 import { buildTimedCues } from './timed-cues';
 
 /** SRT 직렬화 */

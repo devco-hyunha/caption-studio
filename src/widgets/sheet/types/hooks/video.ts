@@ -1,5 +1,5 @@
 import type { Fn } from '@/shared/types/fn';
-import type { SheetColumnId } from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
 
 /** video shortkey 훅 params — 포커스·편집·포커스 적용 */
 export interface UseSheetVideoActionsParams {

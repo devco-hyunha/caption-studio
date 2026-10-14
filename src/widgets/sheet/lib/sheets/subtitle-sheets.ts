@@ -1,7 +1,8 @@
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SheetTimelineItem, SheetsState } from '@/entities/subtitle-sheet';
 import { formatTime } from '@/shared/lib/timecode';
 import { asHtmlString } from '@/shared/lib/utils';
-import type { SheetFormat, SheetRowView, SheetTabView } from '../../types';
+import type { SheetRowView, SheetTabView } from '../../types';
 import { calcRowHeight } from '../columns/row-height';
 
 /** dur 열 — (end - start) 초 */
@@ -23,7 +24,7 @@ const resolveStart = (timeline: SheetTimelineItem) => {
  */
 const mapTimelinesToRows = (
   timelines: SheetTimelineItem[],
-  format: SheetFormat,
+  format: SubtitleFormat,
   selectedRows: readonly number[] = [],
 ): SheetRowView[] => {
   const selectedSet = new Set(selectedRows);
@@ -69,7 +70,7 @@ const mapTimelinesToRows = (
 };
 
 /** 활성 시트의 행 뷰 (다중 선택 반영) */
-const getActiveSheetRows = (state: SheetsState, format: SheetFormat): SheetRowView[] => {
+const getActiveSheetRows = (state: SheetsState, format: SubtitleFormat): SheetRowView[] => {
   const sheet = state.sheets[state.active] ?? state.sheets[0];
   if (!sheet) return mapTimelinesToRows([], format);
   return mapTimelinesToRows(sheet.timelines, format, sheet.selectedRows);

@@ -5,8 +5,6 @@ export type {
   SheetCellEditorProps,
   SheetCellProps,
   SheetColumnDef,
-  SheetColumnId,
-  SheetFormat,
   SheetFooterProps,
   SheetHeaderProps,
   SheetPanelProps,

@@ -1,9 +1,10 @@
 import type { Fn } from '@/shared/types/fn';
-import type { SheetColumnId, SheetFormat } from '../primitives';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 
 /** time 훅 params — 포커스 time 셀·다중 선택·time 타깃 판별 */
 export interface UseSheetTimeActionsParams {
-  format: SheetFormat;
+  format: SubtitleFormat;
   currentRowIndex: number | null;
   currentColumn: SheetColumnId | null;
   isTimeTarget: Fn<boolean>;

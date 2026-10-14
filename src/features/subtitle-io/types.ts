@@ -1,4 +1,4 @@
-import type { SubtitleExportFormat, SubtitleFormat } from '@/entities/subtitle';
+import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
 export interface ImportSubtitleResult {

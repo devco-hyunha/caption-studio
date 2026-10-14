@@ -1,11 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
-import type {
-  MoveCalc,
-  SheetMoveCursor,
-  UseSheetMoveParams,
-  UseSheetMoveResult,
-} from '../../types';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { MoveCalc, UseSheetMoveParams, UseSheetMoveResult } from '../../types';
 import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import {
   getEditableColIndex,
@@ -52,7 +48,7 @@ const useSheetMove = ({
   onAppendRow,
   onRowMoved,
 }: UseSheetMoveParams): UseSheetMoveResult => {
-  const cursorRef = useRef<SheetMoveCursor | null>(null);
+  const cursorRef = useRef<SheetCursor | null>(null);
   const rowsRef = useLatestRef(rows);
   const formatRef = useLatestRef(format);
   const isEditingRef = useLatestRef(isEditing);
@@ -83,10 +79,9 @@ const useSheetMove = ({
       return performance.now() - lastMoveAtRef.current < MOVE_REPEAT_INTERVAL_MS;
     };
 
-    const resolveColumn = (cursor: SheetMoveCursor) =>
-      getEditableColumn(formatRef.current, cursor.col);
+    const resolveColumn = (cursor: SheetCursor) => getEditableColumn(formatRef.current, cursor.col);
 
-    const applyCursor = (cursor: SheetMoveCursor, scrollTop?: number | null) => {
+    const applyCursor = (cursor: SheetCursor, scrollTop?: number | null) => {
       const column = resolveColumn(cursor);
       if (!column) return;
       cursorRef.current = cursor;

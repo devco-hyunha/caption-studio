@@ -7,11 +7,8 @@ import {
 } from '@/features/video-sync';
 import { resolveFocusCursor } from '../focus/resolve-focus-cursor';
 import { usePendingFocus } from '../focus/use-pending-focus';
-import type {
-  SheetMoveCursor,
-  UseSheetSelectionActionsParams,
-  UseSheetSelectionActionsResult,
-} from '../../types';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { UseSheetSelectionActionsParams, UseSheetSelectionActionsResult } from '../../types';
 
 /** 다중 선택 상태 + 행 CRUD 조립(스토어 셀렉터, pending focus, history push) */
 const useSheetSelectionActions = ({
@@ -53,7 +50,7 @@ const useSheetSelectionActions = ({
   };
 
   /** Tab이 마지막 행 아래로 나간 경우: 커서 행 뒤에 행 삽입 */
-  const handleAppendRow = (cursor: SheetMoveCursor) => {
+  const handleAppendRow = (cursor: SheetCursor) => {
     closeSearchPanel();
     const insertIndex = insertTimelineAfterAction(cursor.row, format);
     if (insertIndex == null) return;

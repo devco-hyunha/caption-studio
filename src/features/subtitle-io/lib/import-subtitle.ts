@@ -1,4 +1,5 @@
-import { parseSubtitleFile, type SubtitleFormat } from '@/entities/subtitle';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import { parseSubtitleFile } from '@/entities/subtitle';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { readFileText } from './read-file';
 import type { ImportSubtitleResult } from '../types';

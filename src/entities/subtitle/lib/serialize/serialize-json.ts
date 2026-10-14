@@ -1,4 +1,5 @@
-import type { SubtitleJsonWorkbook, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { SubtitleJsonWorkbook } from '../../types';
 
 /** 단일 탭 timelines (호환·단일 export) */
 const serializeJson = (data: readonly SubtitleTimeline[]): string =>

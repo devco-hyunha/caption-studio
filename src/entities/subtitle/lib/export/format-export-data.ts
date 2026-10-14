@@ -1,11 +1,8 @@
+import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import { formatTime } from '@/shared/lib/timecode';
 import { converters } from '../parse/convert';
-import type {
-  FormatExportDataOptions,
-  SubtitleExportFormat,
-  SubtitleFormat,
-  SubtitleTimeline,
-} from '../../types';
+import type { FormatExportDataOptions } from '../../types';
 
 /** export 포맷 → 변환 목표 시트 포맷 */
 const resolveConvertTarget = (

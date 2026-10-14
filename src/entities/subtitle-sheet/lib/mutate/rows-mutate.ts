@@ -1,6 +1,7 @@
 /** 행 CRUD 순수 로직 — 탭 CRUD(`sheet-mutate`)와 분리 */
 import { cloneTimeline } from '../core/sheet-core';
-import type { SheetTimelineFormat, SheetTimelineItem } from '../../types';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SheetTimelineItem } from '../../types';
 
 const createEmptyTimeline = (): SheetTimelineItem => cloneTimeline();
 
@@ -10,7 +11,7 @@ const createEmptyTimeline = (): SheetTimelineItem => cloneTimeline();
 const fillDefaultTimes = (
   data: SheetTimelineItem,
   neighbor: SheetTimelineItem | null,
-  format: SheetTimelineFormat,
+  format: SubtitleFormat,
 ): SheetTimelineItem => {
   if (!neighbor) return data;
 
@@ -31,7 +32,7 @@ const insertTimelineAt = (
   timelines: readonly SheetTimelineItem[],
   insertIndex: number,
   data: SheetTimelineItem,
-  format: SheetTimelineFormat,
+  format: SubtitleFormat,
 ): SheetTimelineItem[] => {
   const clamped = Math.max(0, Math.min(insertIndex, timelines.length));
   const lastIndexBefore = Math.max(0, timelines.length - 1);
@@ -52,7 +53,7 @@ const insertTimelineAt = (
 const insertTimelineAfter = (
   timelines: readonly SheetTimelineItem[],
   row: number,
-  format: SheetTimelineFormat,
+  format: SubtitleFormat,
 ): { timelines: SheetTimelineItem[]; insertIndex: number } => {
   const insertIndex = Math.max(0, row + 1);
   return {

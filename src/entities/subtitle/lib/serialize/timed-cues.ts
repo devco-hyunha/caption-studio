@@ -1,4 +1,5 @@
-import type { BuildTimedCuesOptions, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { BuildTimedCuesOptions } from '../../types';
 
 const stripTagsKeepBr = (html: string) => String(html ?? '').replace(/<(?!\/?br\b)[^>]*>/gi, '');
 

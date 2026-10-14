@@ -1,10 +1,9 @@
 import { useRef, useState, type ChangeEvent } from 'react';
+import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
 import {
   DEFAULT_ENCODING,
   DEFAULT_EXPORT_ENCODING_SMI,
   SUBTITLE_ENCODINGS,
-  type SubtitleExportFormat,
-  type SubtitleFormat,
 } from '@/entities/subtitle';
 import { Button } from '@/shared/ui/button';
 import { exportSubtitleFile } from '../lib/export-subtitle';

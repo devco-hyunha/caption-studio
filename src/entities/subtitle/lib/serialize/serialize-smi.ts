@@ -1,4 +1,5 @@
-import type { SerializeSmiOptions, SubtitleTimeline } from '../../types';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
+import type { SerializeSmiOptions } from '../../types';
 
 const SMI_ENTITY_REPLACEMENTS: readonly [string, string][] = [
   ['&amp;', '&'],

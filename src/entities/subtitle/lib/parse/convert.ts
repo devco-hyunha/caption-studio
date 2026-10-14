@@ -1,11 +1,8 @@
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import { parseSmiString, smiFromPlainString, smiFromSrtArray } from './parse-smi';
 import { parseSrtString, srtFromPlainString, srtFromSmiArray } from './parse-srt';
-import type {
-  ConvertInputFormat,
-  SubtitleFormat,
-  SubtitleSheetData,
-  SubtitleTimeline,
-} from '../../types';
+import type { ConvertInputFormat, SubtitleSheetData } from '../../types';
 
 /** 입력을 SRT 시트 데이터로 변환 */
 const toSrt = (

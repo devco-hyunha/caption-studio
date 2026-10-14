@@ -1,10 +1,6 @@
-import type {
-  FocusBodyMetrics,
-  FocusScrollResult,
-  SheetColumnId,
-  SheetFormat,
-  SheetRowView,
-} from '../../../types';
+import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import type { FocusBodyMetrics, FocusScrollResult, SheetRowView } from '../../../types';
 import { COLUMN_WIDTHS } from '../../columns/columns';
 import { scrollColIntoView, scrollRowIntoView } from '../../move/sheet-move';
 import { resolveTargetByIndex } from './edit-target';
@@ -16,7 +12,7 @@ import { resolveTargetByIndex } from './edit-target';
  */
 const computeFocusScroll = (
   rows: readonly SheetRowView[],
-  format: SheetFormat,
+  format: SubtitleFormat,
   rowIndex: number,
   column: SheetColumnId,
   metrics: FocusBodyMetrics,

@@ -1,7 +1,8 @@
-import type { ErrorRowLike, SearchHit } from '../types';
+import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { ErrorRowLike } from '../types';
 
 /** error-search 히트 — col 0 (첫 editable 열). `/` errorRows.map({row, col:0}) parity */
-const findErrorHits = (rows: readonly ErrorRowLike[]): SearchHit[] =>
+const findErrorHits = (rows: readonly ErrorRowLike[]): SheetCursor[] =>
   rows
     .filter((row) => row.isError === true)
     .map((row) => ({ row: row.index, col: 0 }))
