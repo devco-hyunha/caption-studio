@@ -10,6 +10,7 @@ const resetStore = () => {
     searchCurrent: -1,
     searchInputFocused: false,
     errorSearchActive: false,
+    searchFocusSignal: 0,
   });
 };
 
@@ -34,6 +35,21 @@ describe('useSheetSearchStore', () => {
     expect(state.searchPanelOpen).toBe(false);
     expect(state.searchHits).toEqual([]);
     expect(state.searchCurrent).toBe(-1);
+  });
+
+  it('focusSearchPanel — 닫힘 시 열기(포커스), 열림 시 focusSignal 증가·hits 유지(닫지 않음)', () => {
+    // 닫힘 → 열기
+    useSheetSearchStore.getState().focusSearchPanel();
+    expect(useSheetSearchStore.getState().searchPanelOpen).toBe(true);
+
+    // 열림 → 재포커스 신호, hits 유지
+    useSheetSearchStore.setState({ searchHits: [{ row: 0, col: 1 }], searchCurrent: 0 });
+    useSheetSearchStore.getState().focusSearchPanel();
+
+    const state = useSheetSearchStore.getState();
+    expect(state.searchPanelOpen).toBe(true);
+    expect(state.searchFocusSignal).toBe(1);
+    expect(state.searchHits).toEqual([{ row: 0, col: 1 }]);
   });
 
   it('closeSearchPanel — 열려 있을 때만 닫고 hits·current 초기화. 닫히면 무변화', () => {

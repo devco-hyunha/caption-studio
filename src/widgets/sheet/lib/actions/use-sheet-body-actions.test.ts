@@ -97,6 +97,7 @@ const renderActions = (
   }
   const cellEdit = makeCellEdit(cellEditOverrides);
   const closeSearchPanel = vi.fn();
+  const isSearchPanelOpen = vi.fn(() => false);
   const onUpdateCell = vi.fn(() => true);
   const setScrollTop = vi.fn();
   const hook = renderHook(
@@ -111,10 +112,11 @@ const renderActions = (
         setScrollTop,
         onUpdateCell,
         closeSearchPanel,
+        isSearchPanelOpen,
       },
     },
   );
-  return { hook, cellEdit, closeSearchPanel, onUpdateCell, setScrollTop };
+  return { hook, cellEdit, closeSearchPanel, isSearchPanelOpen, onUpdateCell, setScrollTop };
 };
 
 describe('useSheetBodyActions', () => {

@@ -29,8 +29,12 @@ export interface SheetSearchStore {
   searchInputFocused: boolean;
   /** error-search 체크박스 — 체크 시 검색 input 비우기·hits를 errorRows로 대체 */
   errorSearchActive: boolean;
+  /** `Ctrl+/` refocus 신호 — 열려 있을 때 input 재포커스 트리거 */
+  searchFocusSignal: number;
 
   toggleSearchPanel: Fn<void>;
+  /** `Ctrl+/` — 닫히면 열기(포커스), 열림이면 input 재포커스(닫지 않음) */
+  focusSearchPanel: Fn<void>;
   /** 열려 있을 때만 닫고 hits/query 초기화 */
   closeSearchPanel: Fn<void>;
   /** 탭 전환 시 hits만 비움 */

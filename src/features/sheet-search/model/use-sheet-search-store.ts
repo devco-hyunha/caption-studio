@@ -9,6 +9,7 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
   searchCurrent: -1,
   searchInputFocused: false,
   errorSearchActive: false,
+  searchFocusSignal: 0,
 
   toggleSearchPanel: () => {
     set((state) => {
@@ -24,6 +25,14 @@ const useSheetSearchStore = create<SheetSearchStore>((set, get) => ({
       }
       return { searchPanelOpen: true };
     });
+  },
+
+  focusSearchPanel: () => {
+    if (!get().searchPanelOpen) {
+      set({ searchPanelOpen: true });
+      return;
+    }
+    set((state) => ({ searchFocusSignal: state.searchFocusSignal + 1 }));
   },
 
   closeSearchPanel: () => {

@@ -29,7 +29,9 @@ const useSheetBodyShortkeyActions =
     handleSpaceToggle,
     insertRow,
     removeRow,
-    toggleSearch,
+    focusSearch,
+    closeSearchPanel,
+    isSearchPanelOpen,
     undo,
     redo,
   }: UseSheetBodyShortkeyActionsParams): UseSheetBodyShortkeyActionsResult =>
@@ -69,7 +71,9 @@ const useSheetBodyShortkeyActions =
       volumeDown: video.volumeDown,
       cuePrev: video.cuePrev,
       cueNext: video.cueNext,
-      toggleSearch,
+      focusSearch,
+      closeSearchPanel,
+      isSearchPanelOpen,
       undo,
       redo,
     });

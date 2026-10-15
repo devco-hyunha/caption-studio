@@ -74,8 +74,12 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
   timePlus: Fn<void>;
   /** Ctrl+Minus — 다중: 선택 행 start/end 일괄 −jump · single: time 셀 −jump */
   timeMinus: Fn<void>;
-  /** `/` — 검색 패널 토글 */
-  toggleSearch: Fn<void>;
+  /** `Ctrl+/` — 검색 패널 focus(닫히면 열기, 열림이면 input 재포커스) */
+  focusSearch: Fn<void>;
+  /** Esc — 검색 패널 열림 시 닫기 (에딧·다중선택보다 우선) */
+  closeSearchPanel: Fn<void>;
+  /** 검색 패널 열림 여부 — Esc 우선순위 판별 */
+  isSearchPanelOpen: Fn<boolean>;
   /** Ctrl+Z — 에딧 중이 아닐 때만 */
   undo: Fn<void>;
   /** Ctrl+Y */

@@ -28,13 +28,15 @@ export interface UseSheetBodyActionsParams {
   onUpdateCell: (rowIndex: number, column: SheetColumnId, value: string) => boolean;
   /** 서식·클립·선택 직전 검색 패널 닫기 */
   closeSearchPanel: Fn<void>;
+  /** Esc 우선순위 — 검색 패널 열림 여부 */
+  isSearchPanelOpen: Fn<boolean>;
 }
 
 /** sheet-body action composite 결과 — search·selection·clip·time·video·undo·move + shortkey 팩토리 */
 export interface UseSheetBodyActionsResult {
   searchHitKeys: ReadonlySet<string>;
   handleSearchJump: (hit: SheetCursor) => void;
-  toggleSearch: Fn<void>;
+  focusSearch: Fn<void>;
   multipleActive: boolean;
   handleAppendRow: (cursor: SheetCursor) => void;
   handleRowMoved: (row: number, withShift: boolean) => void;

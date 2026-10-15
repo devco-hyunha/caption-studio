@@ -43,7 +43,9 @@ const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortk
   volumeDown: vi.fn(),
   cuePrev: vi.fn(),
   cueNext: vi.fn(),
-  toggleSearch: vi.fn(),
+  focusSearch: vi.fn(),
+  closeSearchPanel: vi.fn(),
+  isSearchPanelOpen: () => false,
   undo: vi.fn(),
   redo: vi.fn(),
   ...overrides,
@@ -70,27 +72,39 @@ const runSearchKeys = (
 };
 
 describe('registerSheetSearchKeys + printable-edit (Slash)', () => {
-  it('비에딧 text 셀에서 `/` — toggleSearch 호출, beginEditFromTyping 미호출 (에딧 창 안 열림)', () => {
-    const toggleSearch = vi.fn();
+  it('비에딧 text 셀에서 `/` 단독 — printable 에딧 오픈(parity), focusSearch 미호출', () => {
+    const focusSearch = vi.fn();
     const beginEditFromTyping = vi.fn();
-    const actions = baseActions({ toggleSearch, beginEditFromTyping, isEditing: () => false });
+    const actions = baseActions({ focusSearch, beginEditFromTyping, isEditing: () => false });
 
     runSearchKeys(actions, () => {
-      const event = dispatch({ code: 'Slash', key: '/' });
-      expect(toggleSearch).toHaveBeenCalledTimes(1);
+      dispatch({ code: 'Slash', key: '/' });
+      expect(beginEditFromTyping).toHaveBeenCalledTimes(1);
+      expect(focusSearch).not.toHaveBeenCalled();
+    });
+  });
+
+  it('`Ctrl+/` — focusSearch 호출, beginEditFromTyping 미호출 (ctrlKey라 printable 미발화)', () => {
+    const focusSearch = vi.fn();
+    const beginEditFromTyping = vi.fn();
+    const actions = baseActions({ focusSearch, beginEditFromTyping, isEditing: () => false });
+
+    runSearchKeys(actions, () => {
+      const event = dispatch({ code: 'Slash', key: '/', ctrlKey: true });
+      expect(focusSearch).toHaveBeenCalledTimes(1);
       expect(beginEditFromTyping).not.toHaveBeenCalled();
       expect(event.defaultPrevented).toBe(true);
     });
   });
 
-  it('에딧 중 `/` — toggleSearch 미호출 (검색창 동작 차단), beginEditFromTyping 미호출', () => {
-    const toggleSearch = vi.fn();
+  it('에딧 중 `Ctrl+/` — focusSearch 미호출 (검색창 동작 차단)', () => {
+    const focusSearch = vi.fn();
     const beginEditFromTyping = vi.fn();
-    const actions = baseActions({ toggleSearch, beginEditFromTyping, isEditing: () => true });
+    const actions = baseActions({ focusSearch, beginEditFromTyping, isEditing: () => true });
 
     runSearchKeys(actions, () => {
-      dispatch({ code: 'Slash', key: '/' });
-      expect(toggleSearch).not.toHaveBeenCalled();
+      dispatch({ code: 'Slash', key: '/', ctrlKey: true });
+      expect(focusSearch).not.toHaveBeenCalled();
       expect(beginEditFromTyping).not.toHaveBeenCalled();
     });
   });
@@ -107,13 +121,13 @@ describe('registerSheetSearchKeys + printable-edit (Slash)', () => {
 
   it('일반 printable(KeyA)는 타입 투 리플레이스 유지', () => {
     const beginEditFromTyping = vi.fn();
-    const toggleSearch = vi.fn();
-    const actions = baseActions({ beginEditFromTyping, toggleSearch, isEditing: () => false });
+    const focusSearch = vi.fn();
+    const actions = baseActions({ beginEditFromTyping, focusSearch, isEditing: () => false });
 
     runSearchKeys(actions, () => {
       dispatch({ code: 'KeyA', key: 'a' });
       expect(beginEditFromTyping).toHaveBeenCalledTimes(1);
-      expect(toggleSearch).not.toHaveBeenCalled();
+      expect(focusSearch).not.toHaveBeenCalled();
     });
   });
 });

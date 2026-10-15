@@ -16,12 +16,18 @@ const isImeKeyEvent = (event: KeyboardEvent) =>
 const defineSheetKey = (
   id: SheetShortkeyId,
   handler: ShortcutKeyHandler,
-  options: { placeholder?: string; type?: ShortcutType; preventDefault?: boolean } = {},
+  options: {
+    placeholder?: string;
+    type?: ShortcutType;
+    preventDefault?: boolean;
+    enableInInput?: boolean;
+  } = {},
 ): ShortcutParams => ({
   placeholder: options.placeholder,
   mask: useShortkeyStore.getState().masks[id],
   type: options.type ?? SHORTKEY_TYPES.HOLD,
   preventDefault: options.preventDefault,
+  enableInInput: options.enableInInput,
   handler: (event) => {
     if (isImeKeyEvent(event)) return;
     handler(event);

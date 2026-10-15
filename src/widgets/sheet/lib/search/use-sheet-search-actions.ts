@@ -35,12 +35,12 @@ const useSheetSearchActions = ({
     applyFocus(hit.row, column);
   };
 
-  /** `/` — 검색 패널 토글 */
-  const toggleSearch = () => {
-    useSheetSearchStore.getState().toggleSearchPanel();
+  /** `Ctrl+/` — 검색 패널 focus(닫히면 열기, 열림이면 input 재포커스) */
+  const focusSearch = () => {
+    useSheetSearchStore.getState().focusSearchPanel();
   };
 
-  return { searchHitKeys, handleSearchJump, toggleSearch };
+  return { searchHitKeys, handleSearchJump, focusSearch };
 };
 
 export { useSheetSearchActions };

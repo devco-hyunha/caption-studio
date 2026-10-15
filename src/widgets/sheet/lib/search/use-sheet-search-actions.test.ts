@@ -94,10 +94,20 @@ describe('useSheetSearchActions', () => {
     expect(applyFocus).not.toHaveBeenCalled();
   });
 
-  it('toggleSearch — 스토어 패널 토글', () => {
+  it('focusSearch — 열림 시 panel 유지·focusSignal 증가 (닫지 않음)', () => {
     const { hook } = renderSearch([]);
 
-    act(() => hook.result.current.toggleSearch());
-    expect(useSheetSearchStore.getState().searchPanelOpen).toBe(false);
+    act(() => hook.result.current.focusSearch());
+    const state = useSheetSearchStore.getState();
+    expect(state.searchPanelOpen).toBe(true);
+    expect(state.searchFocusSignal).toBe(1);
+  });
+
+  it('focusSearch — 닫힘 시 panel 열기', () => {
+    const { hook } = renderSearch([]);
+    useSheetSearchStore.setState({ searchPanelOpen: false });
+
+    act(() => hook.result.current.focusSearch());
+    expect(useSheetSearchStore.getState().searchPanelOpen).toBe(true);
   });
 });

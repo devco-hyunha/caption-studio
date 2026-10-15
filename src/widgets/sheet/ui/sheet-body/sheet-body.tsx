@@ -47,6 +47,7 @@ const SheetBody = ({
     () => useSheetSearchStore.getState().searchInputFocused,
     [],
   );
+  const isSearchPanelOpen = useCallback(() => useSheetSearchStore.getState().searchPanelOpen, []);
 
   const cellEdit = useSheetCellEdit({
     format,
@@ -79,6 +80,7 @@ const SheetBody = ({
       setScrollTop,
       onUpdateCell: (rowIndex, column, value) => onUpdateCell?.(rowIndex, column, value) ?? false,
       closeSearchPanel,
+      isSearchPanelOpen,
     });
 
   /** 「시간 입력」 버튼 · Ctrl+` 공용 — 시트 핸들러 등록 */

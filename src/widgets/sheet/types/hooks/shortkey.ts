@@ -27,7 +27,9 @@ export interface UseSheetBodyShortkeyActionsParams {
   handleSpaceToggle: (row: number) => void;
   insertRow: Fn<void>;
   removeRow: Fn<void>;
-  toggleSearch: Fn<void>;
+  focusSearch: Fn<void>;
+  closeSearchPanel: Fn<void>;
+  isSearchPanelOpen: Fn<boolean>;
   undo: Fn<void>;
   redo: Fn<void>;
 }
@@ -68,7 +70,9 @@ export interface BuildSheetShortkeyActionsParams {
   volumeDown: Fn<void>;
   cuePrev: Fn<void>;
   cueNext: Fn<void>;
-  toggleSearch: Fn<void>;
+  focusSearch: Fn<void>;
+  closeSearchPanel: Fn<void>;
+  isSearchPanelOpen: Fn<boolean>;
   undo: Fn<void>;
   redo: Fn<void>;
 }

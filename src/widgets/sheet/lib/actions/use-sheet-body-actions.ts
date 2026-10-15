@@ -27,6 +27,7 @@ const useSheetBodyActions = ({
   setScrollTop,
   onUpdateCell,
   closeSearchPanel,
+  isSearchPanelOpen,
 }: UseSheetBodyActionsParams): UseSheetBodyActionsResult => {
   const {
     isEditing,
@@ -57,7 +58,7 @@ const useSheetBodyActions = ({
     applyFocus(0, 'text');
   };
 
-  const { searchHitKeys, handleSearchJump, toggleSearch } = useSheetSearchActions({
+  const { searchHitKeys, handleSearchJump, focusSearch } = useSheetSearchActions({
     format,
     rows,
     isEditing,
@@ -153,7 +154,9 @@ const useSheetBodyActions = ({
     handleSpaceToggle,
     insertRow: handleInsertAtFocus,
     removeRow: handleRemoveAtFocus,
-    toggleSearch,
+    focusSearch,
+    closeSearchPanel,
+    isSearchPanelOpen,
     undo: handleUndo,
     redo: handleRedo,
   });
@@ -173,7 +176,7 @@ const useSheetBodyActions = ({
   return {
     searchHitKeys,
     handleSearchJump,
-    toggleSearch,
+    focusSearch,
     multipleActive,
     handleAppendRow,
     handleRowMoved,

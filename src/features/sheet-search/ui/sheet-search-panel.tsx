@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import type { FormEvent, KeyboardEvent } from 'react';
 import { useEffect, useRef } from 'react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -13,12 +13,14 @@ import type { SheetSearchPanelProps } from '../types';
 const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const open = useSheetSearchStore((state) => state.searchPanelOpen);
+  const searchFocusSignal = useSheetSearchStore((state) => state.searchFocusSignal);
   const searchCurrent = useSheetSearchStore((state) => state.searchCurrent);
   const searchHits = useSheetSearchStore((state) => state.searchHits);
   const errorSearchActive = useSheetSearchStore((state) => state.errorSearchActive);
   const runSearch = useSheetSearchStore((state) => state.runSearch);
   const searchStep = useSheetSearchStore((state) => state.searchStep);
   const toggleSearchPanel = useSheetSearchStore((state) => state.toggleSearchPanel);
+  const closeSearchPanel = useSheetSearchStore((state) => state.closeSearchPanel);
   const toggleErrorSearch = useSheetSearchStore((state) => state.toggleErrorSearch);
   const setSearchInputFocused = useSheetSearchStore((state) => state.setSearchInputFocused);
   const canPrev = useSheetSearchStore((state) => state.canSearchPrev());
@@ -26,10 +28,15 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
 
   const errorCount = countErrorRows(rows);
 
-  // 열릴 때 input focus — 버튼·`/` 단축키 공용
+  // 열릴 때 input focus — 버튼·`Ctrl+/` 단축키 공용
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
+
+  // 열려 있는 상태에서 `Ctrl+/` 재압 — input 재포커스 (신호 증가 시)
+  useEffect(() => {
+    if (searchFocusSignal > 0) inputRef.current?.focus();
+  }, [searchFocusSignal]);
 
   const handleToggle = () => {
     toggleSearchPanel();
@@ -42,6 +49,13 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
 
   const handleSearchBlur = () => {
     setSearchInputFocused(false);
+  };
+
+  // 검색 input 포커스 중 Esc — 패널 닫기 (전역 Esc는 input 밖에서만 발화)
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    closeSearchPanel();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -100,6 +114,7 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
             disabled={errorSearchActive}
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
+            onKeyDown={handleSearchKeyDown}
           />
           <Button
             type="submit"

@@ -20,6 +20,6 @@ export interface UseSheetSearchActionsResult {
   searchHitKeys: ReadonlySet<string>;
   /** 히트 셀로 점프 — 에딧 커밋 후 포커스 */
   handleSearchJump: (hit: SheetCursor) => void;
-  /** `/` — 검색 패널 토글 */
-  toggleSearch: Fn<void>;
+  /** `Ctrl+/` — 검색 패널 focus(닫히면 열기, 열림이면 input 재포커스) */
+  focusSearch: Fn<void>;
 }

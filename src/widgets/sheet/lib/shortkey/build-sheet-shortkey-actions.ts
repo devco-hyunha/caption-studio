@@ -34,7 +34,9 @@ const buildSheetShortkeyActions = ({
   volumeDown,
   cuePrev,
   cueNext,
-  toggleSearch,
+  focusSearch,
+  closeSearchPanel,
+  isSearchPanelOpen,
   undo,
   redo,
 }: BuildSheetShortkeyActionsParams): SheetShortkeyActions => ({
@@ -69,7 +71,9 @@ const buildSheetShortkeyActions = ({
   volumeDown,
   cuePrev,
   cueNext,
-  toggleSearch,
+  focusSearch,
+  closeSearchPanel,
+  isSearchPanelOpen,
   undo,
   redo,
 });

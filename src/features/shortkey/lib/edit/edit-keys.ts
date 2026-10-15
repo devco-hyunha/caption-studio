@@ -21,6 +21,12 @@ const registerSheetEditKeys = (shortcuts: ShortcutsApi, getActions: () => SheetS
       SHORTKEY_IDS.SHEET_EDIT_OFF,
       (event) => {
         const actions = getActions();
+        // Esc 우선순위: 검색 패널 → 다중 선택 → 에딧 (작업 1: 검색 닫기까지)
+        if (actions.isSearchPanelOpen()) {
+          event.preventDefault();
+          actions.closeSearchPanel();
+          return;
+        }
         if (actions.isMultiple()) {
           event.preventDefault();
           actions.toggleMultiple();
