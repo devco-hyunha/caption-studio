@@ -1,6 +1,12 @@
 import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import { useSheetHistoryStore, type HistoryTimelinePatch } from '@/features/sheet-history';
+import {
+  useSheetHistoryStore,
+  buildCurrents,
+  buildMultiEntry,
+  buildUpdateEntry,
+  type HistoryTimelinePatch,
+} from '@/features/sheet-history';
 import {
   getVideoPlayerControlApi,
   rebuildVideoTimeSlotsFromActiveSheet,
@@ -51,20 +57,19 @@ const useSheetTimeActions = ({
     if (!ok) return;
 
     const afterSheet = useSheetStore.getState().sheets[store.active];
-    const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
-      const timeline = afterSheet?.timelines[index];
-      if (!timeline) return [];
-      return [{ index, data: cloneTimeline(timeline) }];
-    });
+    const currents = buildCurrents(backups, afterSheet?.timelines ?? []);
     if (currents.length === 0) return;
 
-    useSheetHistoryStore.getState().pushHistory({
-      command: `multi.${direction}`,
-      id: null,
-      before: backups,
-      after: currents,
-      current: resolveFocusCursor(format, currentRowIndex, currentColumn),
-    });
+    useSheetHistoryStore
+      .getState()
+      .pushHistory(
+        buildMultiEntry(
+          `multi.${direction}`,
+          backups,
+          currents,
+          resolveFocusCursor(format, currentRowIndex, currentColumn),
+        ),
+      );
     rebuildVideoTimeSlotsFromActiveSheet();
   };
 
@@ -78,7 +83,6 @@ const useSheetTimeActions = ({
     if (!timeline) return;
 
     const step = readTimeJumpMs();
-    const beforeSnap = cloneTimeline(timeline);
     const next = nudgeTimelineColumn(timeline, currentColumn, step, direction);
     if (next.start === timeline.start && next.end === timeline.end) return;
 
@@ -87,13 +91,9 @@ const useSheetTimeActions = ({
 
     const after = useSheetStore.getState().sheets[store.active]?.timelines[currentRowIndex] ?? next;
     const focus = resolveFocusCursor(format, currentRowIndex, currentColumn);
-    useSheetHistoryStore.getState().pushHistory({
-      command: 'update',
-      id: currentRowIndex,
-      before: beforeSnap,
-      after: cloneTimeline(after),
-      current: focus,
-    });
+    useSheetHistoryStore
+      .getState()
+      .pushHistory(buildUpdateEntry(currentRowIndex, timeline, after, focus));
     syncVideoTimeSlotsAfterRowTimeEdit(currentRowIndex);
   };
 

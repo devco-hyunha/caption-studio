@@ -1,11 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
-import {
-  cloneTimeline,
-  getActiveScroll,
-  isEditableColumn,
-  useSheetStore,
-} from '@/entities/subtitle-sheet';
-import { useSheetHistoryStore } from '@/features/sheet-history';
+import { getActiveScroll, isEditableColumn, useSheetStore } from '@/entities/subtitle-sheet';
+import { useSheetHistoryStore, buildUpdateEntry } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
 import {
   rebuildVideoTimeSlotsFromActiveSheet,
@@ -118,7 +113,6 @@ const useSheets = (format: SubtitleFormat): UseSheetsResult => {
     // update 커밋 — mutate 전 검색 패널 닫기
     useSheetSearchStore.getState().closeSearchPanel();
 
-    const beforeSnap = cloneTimeline(before);
     const ok = updateActiveCellAction(rowIndex, column, value);
     if (!ok) return false;
 
@@ -126,13 +120,11 @@ const useSheets = (format: SubtitleFormat): UseSheetsResult => {
     if (!after) return true;
 
     const col = getEditableColIndex(format, column);
-    useSheetHistoryStore.getState().pushHistory({
-      command: 'update',
-      id: rowIndex,
-      before: beforeSnap,
-      after: cloneTimeline(after),
-      current: { row: rowIndex, col: col >= 0 ? col : 0 },
-    });
+    useSheetHistoryStore
+      .getState()
+      .pushHistory(
+        buildUpdateEntry(rowIndex, before, after, { row: rowIndex, col: col >= 0 ? col : 0 }),
+      );
     if (column === 'starttime' || column === 'endtime') {
       syncVideoTimeSlotsAfterRowTimeEdit(rowIndex);
     }

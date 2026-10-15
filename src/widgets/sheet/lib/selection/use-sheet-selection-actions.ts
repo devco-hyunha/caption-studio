@@ -1,5 +1,5 @@
 import { cloneTimeline, createEmptyTimeline, useSheetStore } from '@/entities/subtitle-sheet';
-import { useSheetHistoryStore } from '@/features/sheet-history';
+import { useSheetHistoryStore, buildUpdateEntry } from '@/features/sheet-history';
 import {
   rebuildVideoTimeSlotsFromActiveSheet,
   syncVideoTimeSlotsAfterInsert,
@@ -101,7 +101,6 @@ const useSheetSelectionActions = ({
     const sheet = store.sheets[store.active];
     const before = sheet?.timelines[row];
     if (!before) return;
-    const beforeSnap = cloneTimeline(before);
     const wasLast = (sheet?.timelines.length ?? 0) <= 1;
 
     const focusRow = removeTimelineAtAction(row);
@@ -110,19 +109,15 @@ const useSheetSelectionActions = ({
     // U5: lastIndex===0이면 update(EMPTY)로 대체 (행 유지)
     if (wasLast) {
       rebuildVideoTimeSlotsFromActiveSheet();
-      useSheetHistoryStore.getState().pushHistory({
-        command: 'update',
-        id: row,
-        before: beforeSnap,
-        after: createEmptyTimeline(),
-        current: { row, col },
-      });
+      useSheetHistoryStore
+        .getState()
+        .pushHistory(buildUpdateEntry(row, before, createEmptyTimeline(), { row, col }));
     } else {
       syncVideoTimeSlotsAfterRemove(row);
       useSheetHistoryStore.getState().pushHistory({
         command: 'remove',
         id: row,
-        before: beforeSnap,
+        before: cloneTimeline(before),
         after: null,
         current: { row, col },
       });

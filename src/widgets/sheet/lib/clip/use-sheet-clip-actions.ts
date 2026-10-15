@@ -1,7 +1,12 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
 import { cloneTimeline, useSheetStore } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
-import { useSheetHistoryStore, type HistoryTimelinePatch } from '@/features/sheet-history';
+import {
+  useSheetHistoryStore,
+  buildCurrents,
+  buildMultiEntry,
+  type HistoryTimelinePatch,
+} from '@/features/sheet-history';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { UseSheetClipActionsParams, UseSheetClipActionsResult } from '../../types';
 import { applyTextFormatCommand } from '../format/apply-text-format';
@@ -81,21 +86,13 @@ const useSheetClipActions = ({
       if (!ok) return;
 
       const afterSheet = useSheetStore.getState().sheets[store.active];
-      const currents: HistoryTimelinePatch[] = backups.flatMap(({ index }) => {
-        const timeline = afterSheet?.timelines[index];
-        if (!timeline) return [];
-        return [{ index, data: cloneTimeline(timeline) }];
-      });
+      const currents = buildCurrents(backups, afterSheet?.timelines ?? []);
       if (currents.length === 0) return;
 
       const focus = resolveFocusCursor(format, currentRowIndex, currentColumn);
-      useSheetHistoryStore.getState().pushHistory({
-        command: `multi.${command}`,
-        id: null,
-        before: backups,
-        after: currents,
-        current: focus,
-      });
+      useSheetHistoryStore
+        .getState()
+        .pushHistory(buildMultiEntry(`multi.${command}`, backups, currents, focus));
       return;
     }
 
