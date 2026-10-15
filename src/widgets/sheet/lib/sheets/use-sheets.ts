@@ -6,6 +6,7 @@ import {
   rebuildVideoTimeSlotsFromActiveSheet,
   syncVideoTimeSlotsAfterRowTimeEdit,
 } from '@/features/video-sync';
+import type { Fn } from '@/shared/types/fn';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { UseSheetsResult } from '../../types';
@@ -16,8 +17,9 @@ import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
  * 탭 전환·CRUD 직전에 현재 body scrollTop을 활성 시트에 기록.
  * 셀 커밋 시 history push · 탭 CRUD 시 history 스택 동기화.
  * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
+ * @param closeSearchPanel 검색 패널 닫기 래퍼 (canonical prop)
  */
-const useSheets = (format: SubtitleFormat): UseSheetsResult => {
+const useSheets = (format: SubtitleFormat, closeSearchPanel: Fn<void>): UseSheetsResult => {
   const active = useSheetStore((state) => state.active);
   const sheets = useSheetStore((state) => state.sheets);
   const selectSheetAction = useSheetStore((state) => state.selectSheet);
@@ -111,7 +113,7 @@ const useSheets = (format: SubtitleFormat): UseSheetsResult => {
     if (!before) return false;
 
     // update 커밋 — mutate 전 검색 패널 닫기
-    useSheetSearchStore.getState().closeSearchPanel();
+    closeSearchPanel();
 
     const ok = updateActiveCellAction(rowIndex, column, value);
     if (!ok) return false;

@@ -32,6 +32,8 @@ const resetSearch = () => {
   });
 };
 
+const closeSearchPanel = () => useSheetSearchStore.getState().closeSearchPanel();
+
 describe('useSheets clearSearchHits', () => {
   beforeEach(() => {
     resetSheets(2);
@@ -39,7 +41,7 @@ describe('useSheets clearSearchHits', () => {
   });
 
   it('탭 전환 — hits·current clear, panel은 유지', () => {
-    const { result } = renderHook(() => useSheets('smi'));
+    const { result } = renderHook(() => useSheets('smi', closeSearchPanel));
 
     act(() => result.current.handleSelectTab(1));
     const state = useSheetSearchStore.getState();
@@ -49,7 +51,7 @@ describe('useSheets clearSearchHits', () => {
   });
 
   it('탭 추가·복사·삭제 — hits clear', () => {
-    const { result } = renderHook(() => useSheets('smi'));
+    const { result } = renderHook(() => useSheets('smi', closeSearchPanel));
 
     act(() => result.current.handleAddTab());
     expect(useSheetSearchStore.getState().searchHits).toEqual([]);
@@ -64,7 +66,7 @@ describe('useSheets clearSearchHits', () => {
   });
 
   it('같은 탭 재선택 — hits 유지', () => {
-    const { result } = renderHook(() => useSheets('smi'));
+    const { result } = renderHook(() => useSheets('smi', closeSearchPanel));
 
     act(() => result.current.handleSelectTab(0));
     expect(useSheetSearchStore.getState().searchHits).toEqual([{ row: 0, col: 1 }]);
@@ -72,7 +74,7 @@ describe('useSheets clearSearchHits', () => {
 
   it('handleUpdateCell push shape — command update·before/after 스냅샷·current col', () => {
     useSheetHistoryStore.getState().resetForSheets(2, 0);
-    const { result } = renderHook(() => useSheets('smi'));
+    const { result } = renderHook(() => useSheets('smi', closeSearchPanel));
 
     act(() => result.current.handleUpdateCell(0, 'text', 'X'));
     const stack = useSheetHistoryStore.getState().stacks[0];
@@ -82,5 +84,14 @@ describe('useSheets clearSearchHits', () => {
     expect(last?.before).toEqual({ start: 0, end: 1000, text: 'A', memo: '' });
     expect(last?.after).toEqual({ start: 0, end: 1000, text: 'X', memo: '' });
     expect(last?.current).toEqual({ row: 0, col: 1 });
+  });
+
+  it('handleUpdateCell — mutate 전 검색 패널 close', () => {
+    useSheetHistoryStore.getState().resetForSheets(2, 0);
+    resetSearch();
+    const { result } = renderHook(() => useSheets('smi', closeSearchPanel));
+
+    act(() => result.current.handleUpdateCell(0, 'text', 'X'));
+    expect(useSheetSearchStore.getState().searchPanelOpen).toBe(false);
   });
 });

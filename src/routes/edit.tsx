@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useCallback } from 'react';
 import { useSheetFormatStore } from '@/features/sheet-format';
 import { useSheetHistoryStore } from '@/features/sheet-history';
+import { useSheetSearchStore } from '@/features/sheet-search';
 import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
 import { Button } from '@/shared/ui/button';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT, SheetPanel, useSheets } from '@/widgets/sheet';
@@ -9,6 +11,7 @@ import { VideoPlayer } from '@/widgets/video-player';
 const EditPage = () => {
   const format = useSheetFormatStore((state) => state.format);
   const setFormat = useSheetFormatStore((state) => state.setFormat);
+  const closeSearchPanel = useCallback(() => useSheetSearchStore.getState().closeSearchPanel(), []);
   const {
     tabs,
     activeTabIndex,
@@ -21,7 +24,7 @@ const EditPage = () => {
     handleRenameTab,
     handleCopyTab,
     handleUpdateCell,
-  } = useSheets(format);
+  } = useSheets(format, closeSearchPanel);
 
   const handleFormatSmi = () => {
     if (format === 'smi') return;

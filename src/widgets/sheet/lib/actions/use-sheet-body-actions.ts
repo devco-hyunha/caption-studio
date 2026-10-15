@@ -121,6 +121,7 @@ const useSheetBodyActions = ({
     totalHeight,
     isEditing,
     applyFocus,
+    closeSearchPanel,
   });
 
   const move = useSheetMove({

@@ -10,6 +10,7 @@ export interface UseSheetUndoActionsParams {
   totalHeight: number;
   isEditing: Fn<boolean>;
   applyFocus: (rowIndex: number, column: SheetColumnId, options?: ApplyFocusOptions) => void;
+  closeSearchPanel: Fn<void>;
 }
 
 export interface UseSheetUndoActionsResult {

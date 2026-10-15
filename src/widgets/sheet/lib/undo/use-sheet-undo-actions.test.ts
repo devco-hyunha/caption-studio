@@ -52,12 +52,14 @@ const renderUndo = (
   useSheetHistoryStore.getState().resetForSheets(1, 0);
   const applyFocus = vi.fn();
   const isEditing = vi.fn(() => false);
+  const closeSearchPanel = vi.fn(() => useSheetSearchStore.getState().closeSearchPanel());
   const initialProps = {
     format: 'smi' as const,
     rows: makeRows(rowCount),
     totalHeight: rowCount * ROW_HEIGHT,
     isEditing,
     applyFocus,
+    closeSearchPanel,
     ...overrides,
   };
   const hook = renderHook(
@@ -71,8 +73,9 @@ const renderUndo = (
       totalHeight,
       isEditing,
       applyFocus,
+      closeSearchPanel,
     });
-  return { hook, applyFocus, isEditing, rerender };
+  return { hook, applyFocus, isEditing, closeSearchPanel, rerender };
 };
 
 describe('useSheetUndoActions', () => {

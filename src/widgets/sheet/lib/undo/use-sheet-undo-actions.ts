@@ -3,7 +3,6 @@ import {
   canUndo as canUndoStack,
   useSheetHistoryStore,
 } from '@/features/sheet-history';
-import { useSheetSearchStore } from '@/features/sheet-search';
 import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
 import { usePendingFocus } from '../focus/use-pending-focus';
 import type { UseSheetUndoActionsParams, UseSheetUndoActionsResult } from '../../types';
@@ -18,6 +17,7 @@ const useSheetUndoActions = ({
   totalHeight,
   isEditing,
   applyFocus,
+  closeSearchPanel,
 }: UseSheetUndoActionsParams): UseSheetUndoActionsResult => {
   const canUndo = useSheetHistoryStore((state) => {
     const stack = state.stacks[state.activeSheetIndex];
@@ -32,7 +32,7 @@ const useSheetUndoActions = ({
 
   const handleUndo = () => {
     if (isEditing()) return;
-    useSheetSearchStore.getState().closeSearchPanel();
+    closeSearchPanel();
     const focus = useSheetHistoryStore.getState().undo();
     if (!focus) return;
     rebuildVideoTimeSlotsFromActiveSheet();
@@ -41,7 +41,7 @@ const useSheetUndoActions = ({
 
   const handleRedo = () => {
     if (isEditing()) return;
-    useSheetSearchStore.getState().closeSearchPanel();
+    closeSearchPanel();
     const focus = useSheetHistoryStore.getState().redo();
     if (!focus) return;
     rebuildVideoTimeSlotsFromActiveSheet();
