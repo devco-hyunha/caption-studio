@@ -36,7 +36,8 @@ const useSheetSelectionActions = ({
   /** 포커스 기준 커서 — 셀 포커스가 없으면 첫 행·첫 열 */
   const resolveFocus = () => resolveFocusCursor(format, currentRowIndex, currentColumn);
 
-  const pushInsertHistory = (insertIndex: number, focusRow: number, focusCol: number) => {
+  // current.row = 삽입된 행(insertIndex) — undo/redo 포커스 스냅샷이 삽입 위치와 일치
+  const pushInsertHistory = (insertIndex: number, focusCol: number) => {
     const store = useSheetStore.getState();
     const after = store.sheets[store.active]?.timelines[insertIndex];
     if (!after) return;
@@ -45,7 +46,7 @@ const useSheetSelectionActions = ({
       id: insertIndex,
       before: null,
       after: cloneTimeline(after),
-      current: { row: focusRow, col: focusCol },
+      current: { row: insertIndex, col: focusCol },
     });
   };
 
@@ -55,7 +56,7 @@ const useSheetSelectionActions = ({
     const insertIndex = insertTimelineAfterAction(cursor.row, format);
     if (insertIndex == null) return;
     syncVideoTimeSlotsAfterInsert(insertIndex);
-    pushInsertHistory(insertIndex, cursor.row, cursor.col);
+    pushInsertHistory(insertIndex, cursor.col);
     focusAfter(insertIndex, cursor.col);
   };
 
@@ -87,7 +88,7 @@ const useSheetSelectionActions = ({
     const insertIndex = insertTimelineAfterAction(row, format);
     if (insertIndex == null) return;
     syncVideoTimeSlotsAfterInsert(insertIndex);
-    pushInsertHistory(insertIndex, row, col);
+    pushInsertHistory(insertIndex, col);
     focusAfter(insertIndex, col);
   };
 

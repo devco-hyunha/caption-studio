@@ -222,7 +222,7 @@ describe('useSheetSelectionActions', () => {
     expect(closeSearchPanel).toHaveBeenCalledTimes(3);
   });
 
-  it('insert push shape — command insert·id=insertIndex·before null·after 스냅샷·current col', () => {
+  it('insert push shape — command insert·id=insertIndex·before null·after 스냅샷·current.row=insertIndex', () => {
     const { hook } = renderActions(3);
 
     act(() => hook.result.current.handleInsertAtFocus());
@@ -232,7 +232,8 @@ describe('useSheetSelectionActions', () => {
     expect(last?.id).toBe(2);
     expect(last?.before).toBeNull();
     expect(last?.after).toEqual({ start: 0, end: 0, text: '', memo: '' });
-    expect(last?.current).toEqual({ row: 1, col: 1 });
+    // current.row = 삽입된 행(insertIndex=2) — undo/redo 포커스 스냅샷이 삽입 위치와 일치
+    expect(last?.current).toEqual({ row: 2, col: 1 });
   });
 
   it('remove push shape — 다중 행이면 command remove·before 스냅샷·after null', () => {
