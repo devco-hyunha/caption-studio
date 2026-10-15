@@ -28,3 +28,4 @@
 | dev.7 | [2.9.0-dev.7.md](./2.9.0-dev.7.md) | Subtitle I/O — SMI/SRT/VTT/JSON/Excel parse·serialize · 가져오기·내보내기 · 인코딩 분리 · 병합·재사용 리팩터링 |
 | dev.8 | [2.9.0-dev.8.md](./2.9.0-dev.8.md) | Video Sync · Video Player · Video Shortkey — react-player · 분 슬롯 싱크 · Ctrl+Space/←→/↑↓/Q/`/Alt+Q/Alt+←→ |
 | dev.9 | [2.9.0-dev.9.md](./2.9.0-dev.9.md) | Sheet Body 리팩터링 — sheet-body 슬림화 · action composite · toolbar 섹션 분리 · ISP props 번들 |
+| dev.10 | [2.9.0-dev.10.md](./2.9.0-dev.10.md) | i18n 코어 — 자체 로케일 스토어 · 사전 new-keys · useT 시임 · 언어 전환 UI · 전 UI 라벨·aria·status locale 키 통일 |
