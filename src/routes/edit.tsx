@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import type { SubtitleFormat } from '@/shared/types/subtitle-format';
+import { useSheetFormatStore } from '@/features/sheet-format';
 import { useSheetHistoryStore } from '@/features/sheet-history';
 import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
 import { Button } from '@/shared/ui/button';
@@ -8,7 +7,8 @@ import { DEFAULT_ESTIMATE_ROW_HEIGHT, SheetPanel, useSheets } from '@/widgets/sh
 import { VideoPlayer } from '@/widgets/video-player';
 
 const EditPage = () => {
-  const [format, setFormat] = useState<SubtitleFormat>('srt');
+  const format = useSheetFormatStore((state) => state.format);
+  const setFormat = useSheetFormatStore((state) => state.setFormat);
   const {
     tabs,
     activeTabIndex,
