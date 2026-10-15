@@ -25,7 +25,7 @@ describe('SheetSearchPanel — Esc', () => {
   it('검색 input 포커스 중 Esc — 패널 닫힘 (closeSearchPanel)', () => {
     render(<SheetSearchPanel format="smi" timelines={TIMELINES} rows={[]} onJump={() => {}} />);
 
-    const input = screen.getByRole('searchbox', { name: '검색어' });
+    const input = screen.getByRole('searchbox', { name: '검색어 입력' });
     fireEvent.keyDown(input, { key: 'Escape' });
 
     expect(useSheetSearchStore.getState().searchPanelOpen).toBe(false);

@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { useSheetTabRename } from '../lib/sheets/use-sheet-tab-rename';
@@ -20,6 +21,8 @@ const SheetFooter = ({
   onCopyTab,
 }: SheetFooterProps) => {
   const [tabMenu, setTabMenu] = useState<SheetTabMenuState | null>(null);
+  const addTab = useT('sheet.tab.add');
+  const tabsAria = useT('sheet.tabsAria');
   const {
     renamingIndex,
     draftName,
@@ -66,7 +69,7 @@ const SheetFooter = ({
     <footer
       data-slot="sheet-footer"
       role="navigation"
-      aria-label="sheet tabs"
+      aria-label={tabsAria}
       className={cn(
         'flex min-h-8 shrink-0 items-center overflow-hidden border-t border-neutral-300 bg-neutral-100 p-0.5',
         className,
@@ -104,8 +107,8 @@ const SheetFooter = ({
           variant="ghost"
           size="icon-sm"
           className="shrink-0"
-          aria-label="시트 추가"
-          title="시트 추가"
+          aria-label={addTab}
+          title={addTab}
           onClick={handleAddTab}
         >
           <Plus aria-hidden />

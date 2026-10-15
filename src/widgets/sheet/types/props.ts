@@ -163,6 +163,11 @@ export interface SheetHeaderProps {
   className?: string;
 }
 
+export interface SheetHeaderCellProps {
+  id: SheetColumnId;
+  format: SubtitleFormat;
+}
+
 export interface SheetBodyProps {
   format: SubtitleFormat;
   rows: SheetRowView[];

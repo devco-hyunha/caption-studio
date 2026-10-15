@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { EMPTY_TIMELINES, useSheetStore } from '@/entities/subtitle-sheet';
+import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import type { SheetBodyToolbarProps } from '../../../types';
 import { ToolbarButtons } from './toolbar-buttons';
@@ -17,6 +18,7 @@ const SheetBodyToolbar = ({
   onImported,
   className,
 }: SheetBodyToolbarProps) => {
+  const toolbarAria = useT('toolbar.aria');
   const timelines = useSheetStore(
     (state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
   );
@@ -30,7 +32,7 @@ const SheetBodyToolbar = ({
     <div
       data-slot="sheet-body-toolbar"
       role="toolbar"
-      aria-label="확인용 툴바"
+      aria-label={toolbarAria}
       className={cn(
         'flex shrink-0 flex-wrap items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-2 py-1.5',
         className,

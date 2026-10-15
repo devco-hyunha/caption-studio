@@ -1,7 +1,7 @@
 import { cn } from '@/shared/lib/utils';
-import { getColumns } from '../lib/columns/columns';
-import type { SheetHeaderProps } from '../types';
-import { SheetCell } from './sheet-cell';
+import { getColumns } from '../../lib/columns/columns';
+import type { SheetHeaderProps } from '../../types';
+import { SheetHeaderCell } from './sheet-header-cell';
 
 /** 시트 헤더 — 포맷의 열 라벨을 고정 폭으로 렌더 */
 const SheetHeader = ({ format, className }: SheetHeaderProps) => {
@@ -17,17 +17,7 @@ const SheetHeader = ({ format, className }: SheetHeaderProps) => {
       )}
     >
       {columns.map((column) => (
-        <SheetCell
-          key={column.id}
-          column={column.id}
-          className={cn(
-            'border-transparent border-b-neutral-300 pb-px text-center',
-            column.id === 'index' && 'sticky left-0 z-20 justify-end text-right',
-            column.id === 'memo' && 'border-r-neutral-300',
-          )}
-        >
-          {column.label}
-        </SheetCell>
+        <SheetHeaderCell key={column.id} id={column.id} format={format} />
       ))}
     </div>
   );

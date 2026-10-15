@@ -1,8 +1,14 @@
 import { useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
+import { useT } from '@/shared/lib/i18n';
 import { Button } from '@/shared/ui/button';
 
 export const NotFound = () => {
+  const title = useT('notFound.title');
+  const desc = useT('notFound.desc');
+  const home = useT('notFound.home');
+  const homeAria = useT('notFound.homeAria');
+
   useEffect(() => {
     document.title = '404 — Caption Studio';
   }, []);
@@ -30,13 +36,11 @@ export const NotFound = () => {
           id="not-found-title"
           className="font-heading text-foreground text-2xl font-semibold tracking-tight"
         >
-          페이지를 찾을 수 없습니다
+          {title}
         </h1>
-        <p className="text-muted-foreground text-base">
-          요청하신 주소가 없거나 이동되었을 수 있습니다.
-        </p>
-        <Button asChild size="lg" aria-label="홈으로 돌아가기">
-          <Link to="/">홈으로 돌아가기</Link>
+        <p className="text-muted-foreground text-base">{desc}</p>
+        <Button asChild size="lg" aria-label={homeAria}>
+          <Link to="/">{home}</Link>
         </Button>
       </div>
     </main>

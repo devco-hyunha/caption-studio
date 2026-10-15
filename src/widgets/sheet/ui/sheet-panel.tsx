@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { useRef, useState } from 'react';
+import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import {
   DEFAULT_CELL_STYLE,
@@ -8,9 +9,9 @@ import {
   createColumnVars,
 } from '../lib/columns/columns';
 import type { SheetPanelProps, SheetTabView } from '../types';
-import { SheetBody } from './sheet-body/sheet-body';
+import { SheetBody } from './body/sheet-body';
 import { SheetFooter } from './sheet-footer';
-import { SheetHeader } from './sheet-header';
+import { SheetHeader } from './header/sheet-header';
 
 const DEFAULT_TABS: SheetTabView[] = [{ name: 'sheet1' }, { name: 'sheet2' }, { name: 'sheet3' }];
 
@@ -30,8 +31,9 @@ const SheetPanel = ({
   onCopyTab,
   onUpdateCell,
   className,
-  'aria-label': ariaLabel = 'Caption sheet',
+  'aria-label': ariaLabel,
 }: SheetPanelProps) => {
+  const panelAria = useT('sheet.panelAria');
   const columnVars = createColumnVars(format, DEFAULT_FONT_SIZE);
   const headPanelRef = useRef<HTMLDivElement>(null);
   const [chromePortalEl, setChromePortalEl] = useState<HTMLDivElement | null>(null);
@@ -55,7 +57,7 @@ const SheetPanel = ({
     <section
       data-slot="sheet-panel"
       data-format={format}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? panelAria}
       className={cn(
         'flex h-full min-h-0 flex-col overflow-hidden border border-neutral-300 bg-white text-neutral-900',
         className,

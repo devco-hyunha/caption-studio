@@ -27,6 +27,7 @@ export type {
   SheetCellProps,
   SheetInputEvents,
   SheetFooterProps,
+  SheetHeaderCellProps,
   SheetHeaderProps,
   SheetPanelProps,
   SheetRowProps,

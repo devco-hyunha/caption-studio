@@ -1,15 +1,11 @@
 import type { ChangeEvent } from 'react';
+import { useT } from '@/shared/lib/i18n';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/utils';
 import type { VideoInputKind, VideoSourceFormProps } from '../types';
 
-const SOURCE_KINDS: { kind: VideoInputKind; label: string }[] = [
-  { kind: 'file', label: 'File' },
-  { kind: 'url', label: 'URL' },
-];
-
-const URL_PLACEHOLDER = '직접 URL · YouTube · Vimeo';
+const SOURCE_KINDS: VideoInputKind[] = ['file', 'url'];
 
 const VideoSourceForm = ({
   activeKind,
@@ -21,6 +17,21 @@ const VideoSourceForm = ({
   onFileSelected,
   onLoad,
 }: VideoSourceFormProps) => {
+  const fileLabelText = useT('video.file');
+  const urlLabelText = useT('video.url');
+  const urlPlaceholder = useT('video.urlPlaceholder');
+  const filePlaceholder = useT('video.filePlaceholder');
+  const fileAria = useT('video.fileAria');
+  const urlAria = useT('video.urlAria');
+  const loadLabel = useT('video.load');
+  const urlHint = useT('video.urlHint');
+  const sourceAria = useT('video.sourceAria');
+
+  const kindLabels: Record<VideoInputKind, string> = {
+    file: fileLabelText,
+    url: urlLabelText,
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     onFileSelected(file);
@@ -28,8 +39,8 @@ const VideoSourceForm = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-1" role="tablist" aria-label="비디오 소스">
-        {SOURCE_KINDS.map(({ kind, label }) => (
+      <div className="flex flex-wrap gap-1" role="tablist" aria-label={sourceAria}>
+        {SOURCE_KINDS.map((kind) => (
           <Button
             key={kind}
             type="button"
@@ -40,7 +51,7 @@ const VideoSourceForm = ({
             disabled={disabled}
             onClick={() => onKindChange(kind)}
           >
-            {label}
+            {kindLabels[kind]}
           </Button>
         ))}
       </div>
@@ -52,16 +63,14 @@ const VideoSourceForm = ({
               disabled && 'pointer-events-none opacity-50',
             )}
           >
-            <span className="text-muted-foreground truncate">
-              {fileLabel ?? '비디오 파일 선택 (mp4 / webm / ogg)'}
-            </span>
+            <span className="text-muted-foreground truncate">{fileLabel ?? filePlaceholder}</span>
             <input
               type="file"
               accept="video/mp4,video/webm,video/ogg,video/*"
               className="sr-only"
               disabled={disabled}
               onChange={handleFileChange}
-              aria-label="비디오 파일"
+              aria-label={fileAria}
             />
           </label>
         ) : (
@@ -69,8 +78,8 @@ const VideoSourceForm = ({
             type="url"
             value={urlDraft}
             disabled={disabled}
-            placeholder={URL_PLACEHOLDER}
-            aria-label="비디오 URL (직접 링크, YouTube, Vimeo)"
+            placeholder={urlPlaceholder}
+            aria-label={urlAria}
             className="min-w-0 flex-1"
             onChange={(event) => onUrlDraftChange(event.target.value)}
             onKeyDown={(event) => {
@@ -83,15 +92,10 @@ const VideoSourceForm = ({
           />
         )}
         <Button type="button" size="sm" disabled={disabled} onClick={onLoad}>
-          Load
+          {loadLabel}
         </Button>
       </div>
-      {activeKind === 'url' ? (
-        <p className="text-muted-foreground text-xs">
-          직접 재생 가능한 동영상 URL, YouTube, Vimeo 주소를 넣을 수 있습니다. 종류는 주소에서 자동
-          인식합니다.
-        </p>
-      ) : null}
+      {activeKind === 'url' ? <p className="text-muted-foreground text-xs">{urlHint}</p> : null}
     </div>
   );
 };

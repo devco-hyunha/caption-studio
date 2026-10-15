@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useT } from '@/shared/lib/i18n';
 import { formatTime, secondsToMs } from '@/shared/lib/timecode';
 import { Button } from '@/shared/ui/button';
 import type { VideoControlsHandle, VideoControlsProps } from '../types';
@@ -24,6 +25,23 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
     const [currentTime, setCurrentTime] = useState(0);
     const currentTimeRef = useRef(0);
 
+    const playStop = useT('video.playStop');
+    const playLabel = useT('video.play');
+    const pauseLabel = useT('video.pause');
+    const videoPrev = useT('video.prev');
+    const videoNext = useT('video.next');
+    const timeCarve = useT('video.carve');
+    const controlsAria = useT('video.controlsAria');
+    const seekLabel = useT('video.seekLabel');
+    const seekAria = useT('video.seekAria');
+    const volumeLabel = useT('video.volumeLabel');
+    const volumeAria = useT('video.volumeAria');
+    const muteLabel = useT('video.mute');
+    const unmuteLabel = useT('video.unmute');
+    const muteAria = useT('video.muteAria');
+    const unmuteAria = useT('video.unmuteAria');
+    const muteAriaLabel = muted ? unmuteAria : muteAria;
+
     useImperativeHandle(
       ref,
       () => ({
@@ -46,7 +64,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
       <div
         className="bg-muted/40 flex flex-col gap-2 rounded-lg border p-2"
         role="group"
-        aria-label="비디오 컨트롤"
+        aria-label={controlsAria}
       >
         <div className="flex flex-wrap items-center gap-2">
           <Button
@@ -54,30 +72,30 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             size="sm"
             variant="outline"
             disabled={disabled}
-            aria-label={playing ? '일시정지' : '재생'}
+            aria-label={playStop}
             onClick={onTogglePlay}
           >
-            {playing ? 'Pause' : 'Play'}
+            {playing ? pauseLabel : playLabel}
           </Button>
           <Button
             type="button"
             size="sm"
             variant="outline"
             disabled={disabled}
-            aria-label="10초 뒤로"
+            aria-label={videoPrev}
             onClick={() => onSeekBy(-10)}
           >
-            -10s
+            {videoPrev}
           </Button>
           <Button
             type="button"
             size="sm"
             variant="outline"
             disabled={disabled}
-            aria-label="10초 앞으로"
+            aria-label={videoNext}
             onClick={() => onSeekBy(10)}
           >
-            +10s
+            {videoNext}
           </Button>
           {onCarveTime ? (
             <Button
@@ -85,10 +103,10 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
               size="sm"
               variant="outline"
               disabled={disabled}
-              aria-label="자막 시간 입력"
+              aria-label={timeCarve}
               onClick={onCarveTime}
             >
-              시간 입력
+              {timeCarve}
             </Button>
           ) : null}
           <span className="text-muted-foreground text-xs tabular-nums">
@@ -97,7 +115,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
           </span>
         </div>
         <label className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground shrink-0">Seek</span>
+          <span className="text-muted-foreground shrink-0">{seekLabel}</span>
           <input
             type="range"
             min={0}
@@ -105,7 +123,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             step={0.1}
             value={Math.min(currentTime, progressMax)}
             disabled={disabled || safeDuration <= 0}
-            aria-label="재생 위치"
+            aria-label={seekAria}
             className="accent-primary h-2 w-full"
             onChange={(event) => onSeek(Number(event.target.value))}
           />
@@ -116,14 +134,14 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             size="sm"
             variant="outline"
             disabled={disabled}
-            aria-label={muted ? '음소거 해제' : '음소거'}
+            aria-label={muteAriaLabel}
             aria-pressed={muted}
             onClick={onToggleMute}
           >
-            {muted || volume === 0 ? 'Unmute' : 'Mute'}
+            {muted || volume === 0 ? unmuteLabel : muteLabel}
           </Button>
           <label className="flex min-w-0 flex-1 items-center gap-2">
-            <span className="text-muted-foreground shrink-0">Vol</span>
+            <span className="text-muted-foreground shrink-0">{volumeLabel}</span>
             <input
               type="range"
               min={0}
@@ -131,7 +149,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
               step={0.05}
               value={sliderVolume}
               disabled={disabled}
-              aria-label="볼륨"
+              aria-label={volumeAria}
               className="accent-primary h-2 w-40 max-w-full"
               onChange={(event) => onVolumeChange(Number(event.target.value))}
             />

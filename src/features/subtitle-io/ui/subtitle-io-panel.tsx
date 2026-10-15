@@ -5,6 +5,7 @@ import {
   DEFAULT_EXPORT_ENCODING_SMI,
   SUBTITLE_ENCODINGS,
 } from '@/entities/subtitle';
+import { useT } from '@/shared/lib/i18n';
 import { Button } from '@/shared/ui/button';
 import { exportSubtitleFile } from '../lib/export-subtitle';
 import { importSubtitleFile } from '../lib/import-subtitle';
@@ -50,6 +51,30 @@ const SubtitleIoPanel = ({
   const [status, setStatus] = useState('');
   const [isBusy, setIsBusy] = useState(false);
 
+  const importLabel = useT('io.import');
+  const exportLabel = useT('io.export');
+  const filenameLabel = useT('io.filename');
+  const removeStyleLabel = useT('io.removeStyle');
+  const importEncodingLabel = useT('io.importEncoding');
+  const exportFormatLabel = useT('io.exportFormat');
+  const dataFormatLabel = useT('io.dataFormat');
+  const smiEncodingLabel = useT('io.smiEncoding');
+  const panelAria = useT('io.aria');
+  const importEncodingAria = useT('io.importEncodingAria');
+  const importAria = useT('io.importAria');
+  const exportFormatAria = useT('io.exportFormatAria');
+  const dataFormatAria = useT('io.dataFormatAria');
+  const smiEncodingAria = useT('io.smiEncodingAria');
+  const filenameAria = useT('io.filenameAria');
+  const removeStyleAria = useT('io.removeStyleAria');
+  const exportAria = useT('io.exportAria');
+  const statusImportSuccess = useT('io.statusImportSuccess');
+  const statusRows = useT('io.statusRows');
+  const statusImportFormatFail = useT('io.statusImportFormatFail');
+  const statusImportFail = useT('io.statusImportFail');
+  const statusExportSuccess = useT('io.statusExportSuccess');
+  const statusExportFail = useT('io.statusExportFail');
+
   const showsSmiEncoding = exportFormat === 'smi';
   const showsRemoveStyle = exportFormat === 'srt' || exportFormat === 'vtt';
 
@@ -93,12 +118,10 @@ const SubtitleIoPanel = ({
     try {
       const result = await importSubtitleFile(file, sheetFormat, importEncoding);
       onImported(result.timelines);
-      setStatus(`가져오기 완료 (${result.timelines.length}행)`);
+      setStatus(`${statusImportSuccess} (${result.timelines.length}${statusRows})`);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'import-failed';
-      setStatus(
-        message === 'not-support-file-format' ? '지원하지 않는 파일 형식' : '가져오기 실패',
-      );
+      setStatus(message === 'not-support-file-format' ? statusImportFormatFail : statusImportFail);
     } finally {
       setIsBusy(false);
     }
@@ -117,23 +140,23 @@ const SubtitleIoPanel = ({
         removeStyle: showsRemoveStyle ? removeStyle : false,
         dataFormat: showsDataFormat ? dataFormat : undefined,
       });
-      setStatus('내보내기 완료');
+      setStatus(statusExportSuccess);
     } catch {
-      setStatus('내보내기 실패');
+      setStatus(statusExportFail);
     }
   };
 
   return (
     <div
       role="toolbar"
-      aria-label="Subtitle import export"
+      aria-label={panelAria}
       className="flex shrink-0 flex-wrap items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-2 py-1.5"
     >
       <span className="text-muted-foreground text-xs">I/O</span>
       <label className="flex items-center gap-1 text-xs">
-        <span className="text-muted-foreground">가져오기 인코딩</span>
+        <span className="text-muted-foreground">{importEncodingLabel}</span>
         <select
-          aria-label="Import encoding"
+          aria-label={importEncodingAria}
           className="border-input bg-background h-8 rounded-md border px-2 text-xs"
           value={importEncoding}
           onChange={handleImportEncodingChange}
@@ -158,17 +181,17 @@ const SubtitleIoPanel = ({
         type="button"
         size="sm"
         variant="outline"
-        aria-label="Import subtitle file"
+        aria-label={importAria}
         disabled={isBusy}
         onClick={handlePickFile}
       >
-        가져오기
+        {importLabel}
       </Button>
       <span className="bg-border mx-1 h-4 w-px" aria-hidden />
       <label className="flex items-center gap-1 text-xs">
-        <span className="text-muted-foreground">형식</span>
+        <span className="text-muted-foreground">{exportFormatLabel}</span>
         <select
-          aria-label="Export format"
+          aria-label={exportFormatAria}
           className="border-input bg-background h-8 rounded-md border px-2 text-xs"
           value={exportFormat}
           onChange={handleExportFormatChange}
@@ -182,9 +205,9 @@ const SubtitleIoPanel = ({
       </label>
       {showsDataFormat ? (
         <label className="flex items-center gap-1 text-xs">
-          <span className="text-muted-foreground">데이터 형태</span>
+          <span className="text-muted-foreground">{dataFormatLabel}</span>
           <select
-            aria-label="Workbook data format"
+            aria-label={dataFormatAria}
             className="border-input bg-background h-8 rounded-md border px-2 text-xs"
             value={dataFormat}
             onChange={handleDataFormatChange}
@@ -196,9 +219,9 @@ const SubtitleIoPanel = ({
       ) : null}
       {showsSmiEncoding ? (
         <label className="flex items-center gap-1 text-xs">
-          <span className="text-muted-foreground">SMI 인코딩</span>
+          <span className="text-muted-foreground">{smiEncodingLabel}</span>
           <select
-            aria-label="SMI export encoding"
+            aria-label={smiEncodingAria}
             className="border-input bg-background h-8 rounded-md border px-2 text-xs"
             value={smiExportEncoding}
             onChange={handleSmiExportEncodingChange}
@@ -212,10 +235,10 @@ const SubtitleIoPanel = ({
         </label>
       ) : null}
       <label className="flex items-center gap-1 text-xs">
-        <span className="text-muted-foreground">파일명</span>
+        <span className="text-muted-foreground">{filenameLabel}</span>
         <input
           type="text"
-          aria-label="Export filename"
+          aria-label={filenameAria}
           className="border-input bg-background h-8 w-28 rounded-md border px-2 text-xs"
           value={filename}
           onChange={handleFilenameChange}
@@ -225,21 +248,21 @@ const SubtitleIoPanel = ({
         <label className="flex items-center gap-1 text-xs">
           <input
             type="checkbox"
-            aria-label="Remove style on export"
+            aria-label={removeStyleAria}
             checked={removeStyle}
             onChange={handleRemoveStyleChange}
           />
-          <span className="text-muted-foreground">스타일 제거</span>
+          <span className="text-muted-foreground">{removeStyleLabel}</span>
         </label>
       ) : null}
       <Button
         type="button"
         size="sm"
         variant="outline"
-        aria-label="Export subtitle file"
+        aria-label={exportAria}
         onClick={handleExport}
       >
-        내보내기
+        {exportLabel}
       </Button>
       {status ? (
         <span className="text-muted-foreground text-xs" role="status">

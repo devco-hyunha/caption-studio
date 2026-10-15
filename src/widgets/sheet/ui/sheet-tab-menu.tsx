@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import {
   DropdownMenu,
@@ -19,6 +20,12 @@ const SheetTabMenu = ({
   onCopy,
   onDelete,
 }: SheetTabMenuProps) => {
+  const copyLabel = useT('sheet.tab.copy');
+  const deleteLabel = useT('sheet.tab.delete');
+  const renameLabel = useT('sheet.tab.rename');
+  const menuAria = useT('sheet.tab.menuAria');
+  const menuSuffix = useT('sheet.tab.menuSuffix');
+
   const handleCloseAutoFocus = (event: Event) => {
     // 트리거(숨은 앵커)로 포커스 복귀 방지 → rename input이 포커스 유지
     event.preventDefault();
@@ -45,7 +52,7 @@ const SheetTabMenu = ({
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        aria-label={tabName ? `${tabName} 메뉴` : '시트 탭 메뉴'}
+        aria-label={tabName ? `${tabName} ${menuSuffix}` : menuAria}
         side="top"
         align="start"
         sideOffset={4}
@@ -54,15 +61,15 @@ const SheetTabMenu = ({
       >
         {menu != null && (
           <>
-            <DropdownMenuItem onSelect={() => onRename(menu.index)}>이름 바꾸기</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => onCopy(menu.index)}>복사</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onRename(menu.index)}>{renameLabel}</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => onCopy(menu.index)}>{copyLabel}</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
               disabled={!canDelete}
               onSelect={() => onDelete(menu.index)}
             >
-              삭제
+              {deleteLabel}
             </DropdownMenuItem>
           </>
         )}

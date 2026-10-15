@@ -1,5 +1,6 @@
 import type { FormEvent, KeyboardEvent } from 'react';
 import { useEffect, useRef } from 'react';
+import { useT } from '@/shared/lib/i18n';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { countErrorRows } from '../lib/error-hits';
@@ -25,6 +26,17 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
   const setSearchInputFocused = useSheetSearchStore((state) => state.setSearchInputFocused);
   const canPrev = useSheetSearchStore((state) => state.canSearchPrev());
   const canNext = useSheetSearchStore((state) => state.canSearchNext());
+
+  const searchLabel = useT('search.label');
+  const searchInput = useT('search.input');
+  const prevLabel = useT('search.prev');
+  const nextLabel = useT('search.next');
+  const errorLabel = useT('search.error');
+  const findLabel = useT('search.find');
+  const formAria = useT('search.formAria');
+  const findAria = useT('search.findAria');
+  const errorCountLabel = useT('search.errorCount');
+  const noErrorLabel = useT('search.noError');
 
   const errorCount = countErrorRows(rows);
 
@@ -92,15 +104,15 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
         size="sm"
         variant={open ? 'default' : 'outline'}
         aria-pressed={open}
-        aria-label="자막 검색"
+        aria-label={searchLabel}
         onClick={handleToggle}
       >
-        검색
+        {searchLabel}
       </Button>
       {open ? (
         <form
           className="flex flex-wrap items-center gap-2"
-          aria-label="시트 검색"
+          aria-label={formAria}
           autoComplete="off"
           onSubmit={handleSubmit}
         >
@@ -108,8 +120,8 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
             ref={inputRef}
             type="search"
             name="sheet-search"
-            aria-label="검색어"
-            placeholder="검색어"
+            aria-label={searchInput}
+            placeholder={searchInput}
             className="h-8 w-52"
             disabled={errorSearchActive}
             onFocus={handleSearchFocus}
@@ -120,42 +132,42 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
             type="submit"
             size="sm"
             variant="outline"
-            aria-label="찾기"
+            aria-label={findAria}
             disabled={errorSearchActive}
           >
-            찾기
+            {findLabel}
           </Button>
           <label className="flex items-center gap-1 text-sm" htmlFor="sheet-error-search">
             <input
               id="sheet-error-search"
               type="checkbox"
-              aria-label="오류 찾기"
+              aria-label={errorLabel}
               checked={errorSearchActive}
               onChange={handleErrorSearchChange}
             />
             <span aria-live="polite">
-              {errorCount > 0 ? `${errorCount}건의 오류` : '오류 없음'}
+              {errorCount > 0 ? `${errorCount}${errorCountLabel}` : noErrorLabel}
             </span>
           </label>
           <Button
             type="button"
             size="sm"
             variant="outline"
-            aria-label="이전 매치"
+            aria-label={prevLabel}
             disabled={!canPrev}
             onClick={handlePrev}
           >
-            이전
+            {prevLabel}
           </Button>
           <Button
             type="button"
             size="sm"
             variant="outline"
-            aria-label="다음 매치"
+            aria-label={nextLabel}
             disabled={!canNext}
             onClick={handleNext}
           >
-            다음
+            {nextLabel}
           </Button>
           <span className="text-muted-foreground text-xs" aria-live="polite">
             {resultLabel}

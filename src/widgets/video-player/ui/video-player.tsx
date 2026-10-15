@@ -13,6 +13,7 @@ import {
   syncPlaybackFromPlayerTime,
   useVideoSyncStore,
 } from '@/features/video-sync';
+import { useT, useLocaleStore } from '@/shared/lib/i18n';
 import { clamp } from '@/shared/lib/number';
 import { useLatestRef } from '@/shared/lib/react/use-latest-ref';
 import { cn } from '@/shared/lib/utils';
@@ -51,6 +52,10 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     const volumeBeforeMuteRef = useRef(0.8);
     const [duration, setDuration] = useState(0);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const playerAria = useT('video.playerAria');
+    const emptyLabel = useT('video.empty');
+    const t = (key: string) => useLocaleStore.getState().t(key);
 
     const revokeObjectUrl = () => {
       if (!objectUrlRef.current) return;
@@ -184,7 +189,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
       if (!canAcceptVideoFile(file)) {
         pendingFileRef.current = null;
         setFileLabel(null);
-        setErrorMessage('지원하지 않는 파일 형식입니다.');
+        setErrorMessage(t('video.errorUnsupported'));
         return;
       }
       pendingFileRef.current = file;
@@ -206,7 +211,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
       if (inputKind === 'file') {
         const file = pendingFileRef.current;
         if (!file) {
-          setErrorMessage('비디오 파일을 선택하세요.');
+          setErrorMessage(t('video.errorNoFile'));
           return;
         }
         revokeObjectUrl();
@@ -217,7 +222,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
       }
 
       if (!raw) {
-        setErrorMessage('URL을 입력하세요.');
+        setErrorMessage(t('video.errorNoUrl'));
         return;
       }
 
@@ -243,7 +248,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     };
 
     const handleError = () => {
-      setErrorMessage('재생할 수 없는 소스입니다.');
+      setErrorMessage(t('video.errorSource'));
       applyPlaying(false);
     };
 
@@ -252,7 +257,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     return (
       <section
         className={cn('bg-card flex min-h-0 flex-col gap-3 rounded-xl border p-3', className)}
-        aria-label="비디오 플레이어"
+        aria-label={playerAria}
       >
         <VideoSourceForm
           activeKind={inputKind}
@@ -290,7 +295,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
             />
           ) : (
             <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-              소스를 Load 하면 재생됩니다
+              {emptyLabel}
             </div>
           )}
           {hasSource ? (

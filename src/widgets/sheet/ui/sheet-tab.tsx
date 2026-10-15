@@ -1,3 +1,4 @@
+import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -24,6 +25,8 @@ const SheetTab = ({
   onDraftKeyDown,
   onDraftBlur,
 }: SheetTabProps) => {
+  const renameAria = useT('sheet.tab.renameAria');
+
   if (isRenaming) {
     return (
       <Input
@@ -31,7 +34,7 @@ const SheetTab = ({
         type="text"
         data-slot="sheet-tab-rename"
         data-index={index}
-        aria-label={`${name} 이름 바꾸기`}
+        aria-label={`${name} ${renameAria}`}
         aria-invalid={isDraftInvalid || undefined}
         spellCheck={false}
         size={renameInputSize}

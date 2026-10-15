@@ -28,9 +28,9 @@ export {
 export { getActiveSheetRows, mapTimelinesToRows, toSheetTabs } from './lib/sheets/subtitle-sheets';
 export { useSheets } from './lib/sheets/use-sheets';
 export { SheetPanel } from './ui/sheet-panel';
-export { SheetHeader } from './ui/sheet-header';
-export { SheetBody } from './ui/sheet-body/sheet-body';
-export { SheetBodyToolbar } from './ui/sheet-body/toolbar';
+export { SheetHeader } from './ui/header/sheet-header';
+export { SheetBody } from './ui/body/sheet-body';
+export { SheetBodyToolbar } from './ui/body/toolbar';
 export { SheetFooter } from './ui/sheet-footer';
 export { SheetRow } from './ui/sheet-row';
 export { SheetCell } from './ui/sheet-cell';
