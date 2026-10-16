@@ -62,7 +62,6 @@ const SheetFooter = ({
     if (!open) setTabMenu(null);
   };
 
-  const canDeleteTab = tabs.length > 1;
   const menuTabName = tabMenu ? (tabs[tabMenu.index]?.name ?? null) : null;
 
   return (
@@ -118,7 +117,6 @@ const SheetFooter = ({
       <SheetTabMenu
         menu={tabMenu}
         tabName={menuTabName}
-        canDelete={canDeleteTab}
         onOpenChange={handleTabMenuOpenChange}
         onRename={handleBeginRename}
         onCopy={handleCopyTab}

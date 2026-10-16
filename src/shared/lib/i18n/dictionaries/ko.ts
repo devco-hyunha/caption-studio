@@ -110,6 +110,18 @@ const ko: LocaleDictionary = {
   'lang.ko': '한국어',
   'lang.en': 'English',
   'lang.ja': '日本語',
+
+  'shell.yes': '예',
+  'shell.no': '아니오',
+  'shell.confirm.newTitle': '새로 만들기',
+  'shell.confirm.newContent':
+    '작업 중이던 내용은 지워집니다. <br />새로운 자막 편집을 시작하시겠습니까?',
+  'shell.confirm.deleteTitle': '시트 삭제',
+  'shell.confirm.deleteContent': '이 시트를 삭제하시겠습니까? 시트 내용은 복구할 수 없습니다.',
+  'shell.confirm.lastTitle': '시트 삭제',
+  'shell.confirm.lastContent': '시트가 초기화 됩니다.<br />계속하시겠습니까?',
+  'shell.confirm.formatTitle': '자막 형식 변환',
+  'shell.confirm.formatContent': '히스토리가 초기화 됩니다.<br />자막 형식을 변경하시겠습니까?',
 };
 
 export { ko };

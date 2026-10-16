@@ -14,7 +14,6 @@ import type { SheetTabMenuProps } from '../types';
 const SheetTabMenu = ({
   menu,
   tabName,
-  canDelete,
   onOpenChange,
   onRename,
   onCopy,
@@ -64,11 +63,7 @@ const SheetTabMenu = ({
             <DropdownMenuItem onSelect={() => onRename(menu.index)}>{renameLabel}</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => onCopy(menu.index)}>{copyLabel}</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              disabled={!canDelete}
-              onSelect={() => onDelete(menu.index)}
-            >
+            <DropdownMenuItem variant="destructive" onSelect={() => onDelete(menu.index)}>
               {deleteLabel}
             </DropdownMenuItem>
           </>

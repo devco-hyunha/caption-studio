@@ -110,6 +110,17 @@ const ja: LocaleDictionary = {
   'lang.ko': '한국어',
   'lang.en': 'English',
   'lang.ja': '日本語',
+
+  'shell.yes': 'はい',
+  'shell.no': 'いいえ',
+  'shell.confirm.newTitle': '新規作成',
+  'shell.confirm.newContent': '内容が消去されます. <br />新しい字幕を作りますか？',
+  'shell.confirm.deleteTitle': 'シート削除',
+  'shell.confirm.deleteContent': 'このシートを削除しますか？内容は復元できません。',
+  'shell.confirm.lastTitle': 'シート削除',
+  'shell.confirm.lastContent': 'シートが初期化されます。<br />続行しますか？',
+  'shell.confirm.formatTitle': '字幕形式を変換',
+  'shell.confirm.formatContent': 'ヒストリが削除されます。<br />字幕形式を変換しますか？',
 };
 
 export { ja };

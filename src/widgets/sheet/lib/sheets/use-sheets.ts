@@ -6,7 +6,9 @@ import {
   rebuildVideoTimeSlotsFromActiveSheet,
   syncVideoTimeSlotsAfterRowTimeEdit,
 } from '@/features/video-sync';
+import { useLocaleStore } from '@/shared/lib/i18n';
 import type { Fn } from '@/shared/types/fn';
+import type { ConfirmOptions } from '@/shared/types/confirm';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { UseSheetsResult } from '../../types';
@@ -18,8 +20,13 @@ import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
  * 셀 커밋 시 history push · 탭 CRUD 시 history 스택 동기화.
  * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
  * @param closeSearchPanel 검색 패널 닫기 래퍼 (canonical prop)
+ * @param confirm confirm 셸 진입점 — 삭제는 confirm 게이트 후 mutate (`/` tabs.js removeAt parity)
  */
-const useSheets = (format: SubtitleFormat, closeSearchPanel: Fn<void>): UseSheetsResult => {
+const useSheets = (
+  format: SubtitleFormat,
+  closeSearchPanel: Fn<void>,
+  confirm: (options: ConfirmOptions) => void,
+): UseSheetsResult => {
   const active = useSheetStore((state) => state.active);
   const sheets = useSheetStore((state) => state.sheets);
   const selectSheetAction = useSheetStore((state) => state.selectSheet);
@@ -77,17 +84,42 @@ const useSheets = (format: SubtitleFormat, closeSearchPanel: Fn<void>): UseSheet
     bodyScrollTopRef.current = 0;
   };
 
-  const handleDeleteTab = (index: number) => {
-    persistActiveScroll();
-    const beforeCount = useSheetStore.getState().sheets.length;
-    deleteSheetAction(index);
-    const afterCount = useSheetStore.getState().sheets.length;
-    if (afterCount < beforeCount) {
-      useSheetHistoryStore.getState().removeHistoryStackAt(index);
-    }
+  /** 마지막 탭 삭제 — 활성 시트 초기화 (`/` tabs.js `clearActive` parity) */
+  const clearActiveSheet = () => {
+    useSheetStore.getState().setActiveTimelines([]);
+    useSheetHistoryStore.getState().resetActiveStack();
     clearSearchHits();
     rebuildVideoTimeSlotsFromActiveSheet();
-    bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
+    bodyScrollTopRef.current = 0;
+  };
+
+  /** 탭 삭제 — confirm 게이트 후 mutate. 마지막 탭이면 초기화 확인 (`/` tabs.js removeAt parity) */
+  const handleDeleteTab = (index: number) => {
+    const t = (key: string) => useLocaleStore.getState().t(key);
+
+    if (useSheetStore.getState().sheets.length <= 1) {
+      confirm({
+        title: t('shell.confirm.lastTitle'),
+        content: t('shell.confirm.lastContent'),
+        bgDismiss: true,
+        success: clearActiveSheet,
+      });
+      return;
+    }
+
+    confirm({
+      title: t('shell.confirm.deleteTitle'),
+      content: t('shell.confirm.deleteContent'),
+      bgDismiss: true,
+      success: () => {
+        persistActiveScroll();
+        deleteSheetAction(index);
+        useSheetHistoryStore.getState().removeHistoryStackAt(index);
+        clearSearchHits();
+        rebuildVideoTimeSlotsFromActiveSheet();
+        bodyScrollTopRef.current = getActiveScroll(useSheetStore.getState());
+      },
+    });
   };
 
   const handleRenameTab = (index: number, name: string) => renameSheetAction(index, name);

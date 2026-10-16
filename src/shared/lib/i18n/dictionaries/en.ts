@@ -111,6 +111,19 @@ const en: LocaleDictionary = {
   'lang.ko': '한국어',
   'lang.en': 'English',
   'lang.ja': '日本語',
+
+  'shell.yes': 'Yes',
+  'shell.no': 'No',
+  'shell.confirm.newTitle': 'New',
+  'shell.confirm.newContent':
+    'Your work will be erased. <br /> Do you want to start editing new subtitles?',
+  'shell.confirm.deleteTitle': 'Delete sheet',
+  'shell.confirm.deleteContent': 'Delete this sheet? Its contents cannot be recovered.',
+  'shell.confirm.lastTitle': 'Delete sheet',
+  'shell.confirm.lastContent': 'The sheet will be reset.<br />Do you want to continue?',
+  'shell.confirm.formatTitle': 'Subtitle Format Conversion',
+  'shell.confirm.formatContent':
+    'The history will be initialized. <br /> Are you sure you want to change the subtitle format?',
 };
 
 export { en };

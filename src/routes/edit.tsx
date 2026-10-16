@@ -4,9 +4,13 @@ import { useSheetFormatStore } from '@/features/sheet-format';
 import { useSheetHistoryStore } from '@/features/sheet-history';
 import { useSheetSearchStore } from '@/features/sheet-search';
 import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
+import { useConfirm } from '@/shared/lib/confirm/use-confirm';
 import { useT, useLocaleStore } from '@/shared/lib/i18n';
 import type { Locale } from '@/shared/types/locale';
+import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { Toaster } from '@/shared/ui/toaster';
 import { DEFAULT_ESTIMATE_ROW_HEIGHT, SheetPanel, useSheets } from '@/widgets/sheet';
 import { VideoPlayer } from '@/widgets/video-player';
 
@@ -22,6 +26,7 @@ const EditPage = () => {
   const langKo = useT('lang.ko');
   const langEn = useT('lang.en');
   const langJa = useT('lang.ja');
+  const { open, options, confirm, handleOpenChange, prevFocusRef } = useConfirm();
   const closeSearchPanel = useCallback(() => useSheetSearchStore.getState().closeSearchPanel(), []);
   const {
     tabs,
@@ -35,22 +40,29 @@ const EditPage = () => {
     handleRenameTab,
     handleCopyTab,
     handleUpdateCell,
-  } = useSheets(format, closeSearchPanel);
+  } = useSheets(format, closeSearchPanel, confirm);
 
-  const handleFormatSmi = () => {
-    if (format === 'smi') return;
-    setFormat('smi');
+  /** 포맷 전환 — confirm 게이트 후 적용 (`/` settings/format.js parity) */
+  const applyFormat = (next: SubtitleFormat) => {
+    setFormat(next);
     // 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (`/` settings/format.js · 리뷰 H1)
     useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
     rebuildVideoTimeSlotsFromActiveSheet();
   };
 
-  const handleFormatSrt = () => {
-    if (format === 'srt') return;
-    setFormat('srt');
-    useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
-    rebuildVideoTimeSlotsFromActiveSheet();
+  const handleFormat = (next: SubtitleFormat) => {
+    if (format === next) return;
+    const t = (key: string) => useLocaleStore.getState().t(key);
+    confirm({
+      title: t('shell.confirm.formatTitle'),
+      content: t('shell.confirm.formatContent'),
+      bgDismiss: true,
+      success: () => applyFormat(next),
+    });
   };
+
+  const handleFormatSmi = () => handleFormat('smi');
+  const handleFormatSrt = () => handleFormat('srt');
 
   return (
     <main className="bg-background text-foreground flex h-dvh flex-col gap-4 overflow-hidden p-6 font-sans">
@@ -115,6 +127,13 @@ const EditPage = () => {
           />
         </div>
       </div>
+      <Toaster />
+      <ConfirmDialog
+        open={open}
+        onOpenChange={handleOpenChange}
+        options={options}
+        prevFocusRef={prevFocusRef}
+      />
     </main>
   );
 };

@@ -118,6 +118,17 @@ const DICTIONARY_KEYS = [
   'lang.ko',
   'lang.en',
   'lang.ja',
+  // shell — confirm/toast 셸 (예/아니오·confirm title/content)
+  'shell.yes',
+  'shell.no',
+  'shell.confirm.newTitle',
+  'shell.confirm.newContent',
+  'shell.confirm.deleteTitle',
+  'shell.confirm.deleteContent',
+  'shell.confirm.lastTitle',
+  'shell.confirm.lastContent',
+  'shell.confirm.formatTitle',
+  'shell.confirm.formatContent',
 ] as const;
 
 export type DictionaryKey = (typeof DICTIONARY_KEYS)[number];

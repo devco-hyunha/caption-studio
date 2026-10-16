@@ -151,7 +151,6 @@ export interface SheetTabProps {
 export interface SheetTabMenuProps {
   menu: SheetTabMenuState | null;
   tabName: string | null;
-  canDelete: boolean;
   onOpenChange: (open: boolean) => void;
   onRename: (index: number) => void;
   onCopy: (index: number) => void;
