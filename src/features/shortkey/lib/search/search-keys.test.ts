@@ -72,7 +72,7 @@ const runSearchKeys = (
 };
 
 describe('registerSheetSearchKeys + printable-edit (Slash)', () => {
-  it('비에딧 text 셀에서 `/` 단독 — printable 에딧 오픈(parity), focusSearch 미호출', () => {
+  it('비에딧 text 셀에서 `/` 단독 — printable 에딧 오픈, focusSearch 미호출', () => {
     const focusSearch = vi.fn();
     const beginEditFromTyping = vi.fn();
     const actions = baseActions({ focusSearch, beginEditFromTyping, isEditing: () => false });

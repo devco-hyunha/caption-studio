@@ -1,6 +1,6 @@
 import type { SheetTimelineItem } from '../../types';
 
-/** `/` seek.js — end 없을 때 쓰는 열린 구간 상한 */
+/** end 없을 때 쓰는 열린 구간 상한 */
 const OPEN_END_MS = 999_999;
 
 /** 행 시작 ms. start → sync → 0. 행 없으면 null */

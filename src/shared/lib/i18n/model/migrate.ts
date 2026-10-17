@@ -1,6 +1,6 @@
 import type { Locale } from '@/shared/types/locale';
 
-/** 레거시 UI 언어 키 → 신 로케일 코드. `/` `migrateLanguage.js` parity */
+/** 구 UI 언어 키(KRCC/ENCC/JPCC) → 로케일 코드 */
 const LEGACY_LANGUAGE_MAP: Record<string, Locale> = {
   KRCC: 'ko',
   ENCC: 'en',
@@ -16,7 +16,7 @@ const LOCALE_TO_SMI_LANG: Record<Locale, string> = {
   ja: 'ja-JP',
 };
 
-/** UI 로케일 영속 키 (신). 레거시 `language`는 읽기 전용 승격 소스 */
+/** UI 로케일 영속 키. `language`는 읽기 전용 승격 소스 */
 const STORAGE_KEY_LOCALE = 'locale';
 const STORAGE_KEY_LEGACY_LANGUAGE = 'language';
 

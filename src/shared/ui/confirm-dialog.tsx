@@ -3,7 +3,7 @@ import { useT } from '@/shared/lib/i18n';
 import type { ConfirmDialogProps } from '@/shared/types/confirm';
 import { Button } from './button';
 
-/** confirm 셸 — 레거시 `feedback.js` `cf-box` parity (title·content·예/아니오 버튼) */
+/** confirm 셸 — title·content·예/아니오 버튼 */
 const ConfirmDialog = ({ open, onOpenChange, options, prevFocusRef }: ConfirmDialogProps) => {
   const yesLabel = useT('shell.yes');
   const noLabel = useT('shell.no');
@@ -14,7 +14,7 @@ const ConfirmDialog = ({ open, onOpenChange, options, prevFocusRef }: ConfirmDia
   const successLabel = options?.successLabel === false ? null : (options?.successLabel ?? yesLabel);
   const cancelLabel = options?.cancelLabel === false ? null : (options?.cancelLabel ?? noLabel);
 
-  // 닫힘 후 에딧창 포커스 복원 — 레거시 switchFocus(true) parity
+  // 닫힘 후 에딧창 포커스 복원
   const handleCloseAutoFocus = (event: Event) => {
     event.preventDefault();
     prevFocusRef.current?.focus();
@@ -33,7 +33,7 @@ const ConfirmDialog = ({ open, onOpenChange, options, prevFocusRef }: ConfirmDia
   return (
     <DialogPrimitive.Root
       open={open}
-      // bgDismiss=false(레거시 기본)이면 overlay·Esc로 닫히지 않음. bgDismiss는 close만 (콜백 없음)
+      // bgDismiss=false(기본)이면 overlay·Esc로 닫히지 않음. bgDismiss는 close만 (콜백 없음)
       onOpenChange={(next) => {
         if (next || !bgDismiss) return;
         onOpenChange(false);
@@ -49,7 +49,7 @@ const ConfirmDialog = ({ open, onOpenChange, options, prevFocusRef }: ConfirmDia
           onCloseAutoFocus={handleCloseAutoFocus}
           className="bg-background fixed top-12 left-1/2 z-999 w-75 -translate-x-1/2 shadow-lg"
         >
-          {/* Radix a11y 필수 Title — 레거시 title:false는 sr-only로 유지 */}
+          {/* Radix a11y 필수 Title — title:false는 sr-only로 유지 */}
           <DialogPrimitive.Title
             data-slot="confirm-title"
             className={
@@ -59,7 +59,7 @@ const ConfirmDialog = ({ open, onOpenChange, options, prevFocusRef }: ConfirmDia
             {title ?? yesLabel}
           </DialogPrimitive.Title>
           {content ? (
-            // 시트 데이터 서식 예외 — 레거시 content `<br/>` 인라인 HTML 허용
+            // 시트 데이터 서식 예외 — content `<br/>` 인라인 HTML 허용
             <div
               data-slot="confirm-content"
               className="text-foreground px-5 py-5 text-sm leading-5"

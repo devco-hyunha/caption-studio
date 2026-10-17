@@ -1,6 +1,6 @@
 import { Toaster as SonnerToaster } from 'sonner';
 
-/** toast 셸 — 레거시 `toast.js` parity: 상단 중앙·2000ms 자동 소멸·클릭 dismiss·타입별 색상 */
+/** toast 셸 — 상단 중앙·2000ms 자동 소멸·클릭 dismiss·타입별 색상 */
 const Toaster = () => {
   return (
     <SonnerToaster
@@ -8,7 +8,7 @@ const Toaster = () => {
       duration={2000}
       closeButton={false}
       toastOptions={{
-        // 레거시 `.toast`: 흰색 중앙 정렬·300px·word-break
+        // 흰색 중앙 정렬·300px·word-break
         classNames: {
           toast: 'toast w-75 text-center text-white [word-break:keep-all] border-black/20 rounded',
           title: 'toast-title font-bold',

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { STORAGE_KEY_FORMAT } from './format-storage';
 import { useSheetFormatStore } from './use-sheet-format-store';
 
-/** `/`가 남긴 `format` 키 — JSON 문자열(`"smi"`)로 저장 */
-const writeLegacyFormat = (format: string) => {
+/** 영속 `format` 키 — JSON 문자열(`"smi"`)로 저장 */
+const writeStoredFormat = (format: string) => {
   localStorage.setItem(STORAGE_KEY_FORMAT, JSON.stringify(format));
 };
 
@@ -13,18 +13,18 @@ describe('useSheetFormatStore', () => {
     useSheetFormatStore.setState({ format: 'smi' });
   });
 
-  it('defaults to smi when storage is empty (`/` set.js parity)', () => {
+  it('storage가 비면 기본 smi', () => {
     useSheetFormatStore.persist.rehydrate();
     expect(useSheetFormatStore.getState().format).toBe('smi');
   });
 
-  it('promotes legacy `format` key written by `/`', () => {
-    writeLegacyFormat('srt');
+  it('영속 `format` 키를 승격', () => {
+    writeStoredFormat('srt');
     useSheetFormatStore.persist.rehydrate();
     expect(useSheetFormatStore.getState().format).toBe('srt');
   });
 
-  it('setFormat persists as `/`-compatible JSON string', () => {
+  it('setFormat는 JSON 문자열로 영속', () => {
     useSheetFormatStore.getState().setFormat('srt');
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY_FORMAT) ?? 'null')).toBe('srt');
   });

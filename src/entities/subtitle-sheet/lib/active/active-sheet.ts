@@ -211,7 +211,7 @@ const replaceTimelinePatches = (
 
 /**
  * undo/redo용 — `index`에 타임라인 삽입 (기본 시각 채움 없음).
- * `/` `history.js` parity: undo는 선택 상태를 건드리지 않는다 (M2).
+ * undo는 선택 상태를 건드리지 않는다 (M2).
  */
 const spliceActiveTimelineAt = (
   state: SheetsState,

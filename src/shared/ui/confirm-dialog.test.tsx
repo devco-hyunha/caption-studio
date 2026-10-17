@@ -78,7 +78,7 @@ describe('ConfirmDialog — 콜백 분기', () => {
     expect(onOpenChange).not.toHaveBeenCalled();
   });
 
-  it('content는 인라인 HTML(<br/>) 렌더 — 레거시 서식 parity', () => {
+  it('content는 인라인 HTML(<br/>) 렌더 — 시트 서식 허용', () => {
     const prevFocusRef: RefObject<HTMLElement | null> = { current: null };
     render(
       <ConfirmDialog

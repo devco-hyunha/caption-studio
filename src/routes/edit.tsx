@@ -42,10 +42,10 @@ const EditPage = () => {
     handleUpdateCell,
   } = useSheets(format, closeSearchPanel, confirm);
 
-  /** 포맷 전환 — confirm 게이트 후 적용 (`/` settings/format.js parity) */
+  /** 포맷 전환 — confirm 게이트 후 적용 */
   const applyFormat = (next: SubtitleFormat) => {
     setFormat(next);
-    // 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (`/` settings/format.js · 리뷰 H1)
+    // 포맷 전환은 전 탭 timelines 변환 → 전 탭 history reset (리뷰 H1)
     useSheetHistoryStore.getState().resetForSheets(tabs.length, activeTabIndex);
     rebuildVideoTimeSlotsFromActiveSheet();
   };

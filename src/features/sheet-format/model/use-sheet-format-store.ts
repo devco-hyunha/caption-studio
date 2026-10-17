@@ -10,7 +10,7 @@ import {
   toSaveValue,
 } from './format-storage';
 
-/** `/`(`storage.js`)와 공유하는 `format` 키 — persist payload를 `/` 호환 JSON 문자열로 변환 */
+/** `format` 키 — persist payload를 JSON 문자열로 변환 */
 const createFormatStorage = () => ({
   getItem: () => {
     const format = loadFormat();
@@ -37,7 +37,7 @@ const createFormatStorage = () => ({
   },
 });
 
-/** 시트 포맷 스토어 — localStorage `format` 키 영속 (`/` settings/format.js parity) */
+/** 시트 포맷 스토어 — localStorage `format` 키 영속 */
 const useSheetFormatStore = create<SheetFormatStore>()(
   persist(
     (set) => ({

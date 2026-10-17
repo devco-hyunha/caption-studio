@@ -4,7 +4,7 @@ import { normalizeMask } from '@/shared/lib/shortcuts';
 
 const STORAGE_KEY_SHORTKEY = 'shortkeyMasks';
 
-/** `/` legacy `customkey-<storageId>` → 시트 mask id (값은 JSON 문자열) */
+/** 구 `customkey-<storageId>` → 시트 mask id (값은 JSON 문자열) */
 const LEGACY_SHORTKEY_STORAGE_IDS: Record<string, SheetShortkeyId> = {
   'sheet-insert': SHORTKEY_IDS.SHEET_INSERT,
   'sheet-remove': SHORTKEY_IDS.SHEET_REMOVE,
@@ -12,7 +12,7 @@ const LEGACY_SHORTKEY_STORAGE_IDS: Record<string, SheetShortkeyId> = {
   minus: SHORTKEY_IDS.TIME_MINUS,
 };
 
-/** `/` legacy `customkey-*` → mask 맵 승격 */
+/** localStorage `customkey-*` → mask 맵 승격 */
 const readLegacyMasks = (): ShortkeyMasks => {
   if (typeof window === 'undefined') return {};
   const legacy: ShortkeyMasks = {};
@@ -24,14 +24,14 @@ const readLegacyMasks = (): ShortkeyMasks => {
       const mask = normalizeMask(String(JSON.parse(raw)));
       if (mask) legacy[id] = mask;
     } catch {
-      // corrupt legacy payload — skip
+      // corrupt payload — skip
     }
   });
 
   return legacy;
 };
 
-/** persist 병합 — default → legacy 승격 → 저장 masks 순으로 덮어씀 */
+/** persist 병합 — default → 구 승격 → 저장 masks 순으로 덮어씀 */
 const mergeMasks = (persisted: unknown, current: Record<SheetShortkeyId, string>) => {
   const merged = { ...current, ...readLegacyMasks() };
 

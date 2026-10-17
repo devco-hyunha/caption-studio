@@ -13,7 +13,7 @@ const registerSheetSelectionKeys = (
       const actions = getActions();
       if (actions.isEditing()) return;
       if (!actions.hasFocus()) return;
-      // 포커스 중 Space는 기본 동작 차단 (multiple 밖에서도 삼킴 — `/` parity)
+      // 포커스 중 Space는 기본 동작 차단 (multiple 밖에서도 삼킴)
       event.preventDefault();
       if (!actions.isMultiple()) return;
       actions.toggleRowSelect();

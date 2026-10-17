@@ -65,7 +65,7 @@ export interface VideoControlsProps {
   onSeekBy: (deltaSeconds: number) => void;
   onVolumeChange: (volume: number) => void;
   onToggleMute: Fn<void>;
-  /** 플레이어 시각 → 포커스 start/end 셀 (`/` selecttime) */
+  /** 플레이어 시각 → 포커스 start/end 셀 */
   onCarveTime?: Fn<void>;
 }
 

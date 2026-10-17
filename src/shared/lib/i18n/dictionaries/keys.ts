@@ -1,14 +1,14 @@
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 
-/** 시트 열 헤더 키 — starttime은 포맷별, endtime은 srt 전용. `/` `set.js` `t(`${name}-${format}`)` parity */
+/** 시트 열 헤더 키 — starttime은 포맷별, endtime은 srt 전용 */
 const sheetColumnKey = (id: SheetColumnId, format: SubtitleFormat): string => {
   if (id === 'starttime') return `sheet.col.starttime.${format}`;
   if (id === 'endtime') return 'sheet.col.endtime.srt';
   return `sheet.col.${id}`;
 };
 
-/** 신규 FE 라벨 기준 사전 키 정본 — 레거시 `kr.js` 키 체계와 무관. 3개 사전은 이 키를 구현한다. */
+/** 라벨 기준 사전 키 정본 — 3개 사전은 이 키를 구현한다. */
 const DICTIONARY_KEYS = [
   // sheet — 열 헤더 라벨 (포맷별)
   'sheet.col.index',
@@ -129,6 +129,7 @@ const DICTIONARY_KEYS = [
   'shell.confirm.lastContent',
   'shell.confirm.formatTitle',
   'shell.confirm.formatContent',
+  'shell.dialogClose',
 ] as const;
 
 export type DictionaryKey = (typeof DICTIONARY_KEYS)[number];

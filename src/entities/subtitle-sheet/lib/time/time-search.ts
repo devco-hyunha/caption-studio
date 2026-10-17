@@ -9,10 +9,10 @@ import { OPEN_END_MS, isActiveAt, resolveEndMs } from './time-range';
 import { candidateRowIndicesAt } from './time-slot-index';
 
 /**
- * 재생 시각(ms)으로 자막 행을 찾는다. (`/` `sheet.timeSearch` parity · 첫 행만)
+ * 재생 시각(ms)으로 자막 행을 찾는다. (첫 행만)
  *
  * @param timelines - 활성 시트 timelines
- * @param ms - 플레이어 시각(밀리초). `/`는 `parseInt(sec * 1000)` 후 전달
+ * @param ms - 플레이어 시각(밀리초)
  */
 const timeSearch = (timelines: readonly SheetTimelineItem[], ms: number): TimeSearchHit => {
   let index = timelines.findIndex((row, rowIndex) => isActiveAt(row, rowIndex, timelines, ms));

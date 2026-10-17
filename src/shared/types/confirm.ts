@@ -1,13 +1,13 @@
 import type { RefObject } from 'react';
 import type { Fn } from './fn';
 
-/** confirm 셸 옵션 — 레거시 `feedback.js` ConfirmOptions parity */
+/** confirm 셸 옵션 */
 export interface ConfirmOptions {
   title?: string | false;
   content?: string | false;
   successLabel?: string | false;
   cancelLabel?: string | false;
-  /** 레거시 기본 false — true일 때만 overlay/Esc로 닫힘 */
+  /** 기본 false — true일 때만 overlay/Esc로 닫힘 */
   bgDismiss?: boolean;
   success?: Fn<void> | null;
   cancel?: Fn<void> | null;

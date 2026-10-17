@@ -4,11 +4,11 @@ import { STORAGE_KEY_LEGACY_LANGUAGE, STORAGE_KEY_LOCALE, migrateLanguage } from
 
 const DEFAULT_LOCALE: Locale = 'ko';
 
-/** 로케일 문자열 여부 — `/` storage.get('locale') 원본 검증 */
+/** 로케일 문자열 여부 */
 const isLocale = (value: unknown): value is Locale =>
   value === 'ko' || value === 'en' || value === 'ja';
 
-/** localStorage `locale` 읽기 — 없으면 레거시 `language`에서 승격. `/` loadLocale parity */
+/** localStorage `locale` 읽기 — 없으면 `language` 키에서 승격 */
 const loadLocale = (): Locale => {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
 
@@ -30,7 +30,7 @@ const loadLocale = (): Locale => {
   return locale;
 };
 
-/** Zustand persist `{ state }` 래퍼 → `/` 호환 JSON 문자열로 저장 */
+/** Zustand persist `{ state }` 래퍼 → JSON 문자열로 저장 */
 const toSaveValue = (state: { locale?: Locale } | null): string | null => {
   if (!state || !isLocale(state.locale)) return null;
   return JSON.stringify(state.locale);

@@ -16,7 +16,7 @@ describe('readTimeJumpMs', () => {
     expect(DEFAULT_JUMP_MS).toBe(30);
   });
 
-  it('`/` storage.set은 JSON 문자열 — parse 후 parseInt', () => {
+  it('storage.set은 JSON 문자열 — parse 후 parseInt', () => {
     localStorage.setItem('jump_val', JSON.stringify('50'));
     expect(readTimeJumpMs()).toBe(50);
 
@@ -50,7 +50,7 @@ describe('nudgeTimelineByStep (다중 선택 — start/end 둘 다)', () => {
     expect(next.end).toBe(0);
   });
 
-  it('end가 없으면(0 falsy) end는 건드리지 않음 (`/` multiClip parity)', () => {
+  it('end가 없으면(0 falsy) end는 건드리지 않음', () => {
     const next = nudgeTimelineByStep({ start: 100, text: 'a' }, 30, 'plus');
     expect(next.start).toBe(130);
     expect(next.end).toBeUndefined();
@@ -81,7 +81,7 @@ describe('nudgeTimelineColumn (단건 — 포커스 열만)', () => {
     expect(next.end).toBe(0);
   });
 
-  it('minus는 값이 0이면 변화 없음 (`/` timeMinus parity)', () => {
+  it('minus는 값이 0이면 변화 없음', () => {
     const next = nudgeTimelineColumn({ start: 0, end: 0, text: 'a' }, 'starttime', 30, 'minus');
     expect(next.start).toBe(0);
   });

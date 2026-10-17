@@ -14,7 +14,7 @@ import { en, ja, ko } from '../dictionaries/dictionaries';
 
 const locales: Record<Locale, Record<string, string>> = { ko, en, ja };
 
-/** `/`(`storage.js`)와 공유하는 `locale` 키 — persist payload를 `/` 호환 JSON 문자열로 변환 */
+/** `locale` 키 — persist payload를 JSON 문자열로 변환 */
 const createLocaleStorage = () => ({
   getItem: () => {
     const locale = loadLocale();
@@ -41,7 +41,7 @@ const createLocaleStorage = () => ({
   },
 });
 
-/** 로케일 스토어 — localStorage `locale` 영속 (`/` settings/language.js parity) */
+/** 로케일 스토어 — localStorage `locale` 영속 */
 const useLocaleStore = create<LocaleStore>()(
   persist(
     (set, get) => ({

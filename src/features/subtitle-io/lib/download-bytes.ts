@@ -1,4 +1,4 @@
-/** Blob 다운로드 — `/` parity: body append 후 지연 revoke (Firefox/Safari 취소 방지) */
+/** Blob 다운로드 — body append 후 지연 revoke (Firefox/Safari 취소 방지) */
 const downloadBytes = (filename: string, bytes: Uint8Array) => {
   const copy = new Uint8Array(bytes.byteLength);
   copy.set(bytes);

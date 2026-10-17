@@ -1,6 +1,6 @@
 import type { LocaleDictionary } from '@/shared/types/locale';
 
-/** 신규 FE 라벨 기준 `en` 사전 — 레거시 `en.js` 복제 아님 */
+/** 라벨 기준 `en` 사전 */
 const en: LocaleDictionary = {
   'sheet.col.index': '#',
   'sheet.col.starttime.smi': 'Sync',
@@ -124,6 +124,7 @@ const en: LocaleDictionary = {
   'shell.confirm.formatTitle': 'Subtitle Format Conversion',
   'shell.confirm.formatContent':
     'The history will be initialized. <br /> Are you sure you want to change the subtitle format?',
+  'shell.dialogClose': 'Close',
 };
 
 export { en };

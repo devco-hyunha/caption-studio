@@ -34,7 +34,7 @@ describe('useT — locale 변경 시 리렌더', () => {
     expect(screen.queryByRole('button', { name: '실행취소' })).not.toBeInTheDocument();
   });
 
-  it('레거시 ENCC 승격 — en 라벨로 자동 리렌더', () => {
+  it('ENCC 승격 — en 라벨로 자동 리렌더', () => {
     render(<Label k="toolbar.redo" />);
     expect(screen.getByRole('button', { name: '재실행' })).toBeInTheDocument();
 

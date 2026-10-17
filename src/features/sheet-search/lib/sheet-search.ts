@@ -10,7 +10,7 @@ const TEXT_MEMO_COLS: Record<SubtitleFormat, { text: number; memo: number }> = {
 
 /**
  * query(소문자)로 text/memo 매치. 빈 query면 빈 hits.
- * `/` search.loop parity — `toLowerCase().search(query)`.
+ * `toLowerCase().search(query)`.
  */
 const findSearchHits = (
   timelines: readonly SheetTimelineItem[],

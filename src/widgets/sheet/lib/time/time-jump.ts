@@ -1,11 +1,11 @@
 import { cloneTimeline } from '@/entities/subtitle-sheet';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 
-/** time ±jump — `/` `config.js` 기본값 30ms. localStorage `jump_val`과 하이브리드 공유 */
+/** time ±jump — 기본값 30ms. localStorage `jump_val`과 하이브리드 공유 */
 const DEFAULT_JUMP_MS = 30;
 const STORAGE_KEY_JUMP = 'jump_val';
 
-/** `/` `storage.get('jump_val')`는 JSON.parse — 문자열/숫자 모두 parseInt. corrupt는 기본값 */
+/** `jump_val`은 JSON.parse — 문자열/숫자 모두 parseInt. corrupt는 기본값 */
 const readTimeJumpMs = (): number => {
   if (typeof window === 'undefined') return DEFAULT_JUMP_MS;
 
@@ -21,7 +21,7 @@ const readTimeJumpMs = (): number => {
 
 const clampTime = (value: number) => Math.max(0, value);
 
-/** 다중 선택 nudge — 선택 행 start/end **둘 다** ±step (`/` multiClip parity). end는 truth일 때만 */
+/** 다중 선택 nudge — 선택 행 start/end **둘 다** ±step. end는 truth일 때만 */
 const nudgeTimelineByStep = (
   timeline: SheetTimelineItem,
   step: number,

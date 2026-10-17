@@ -18,7 +18,7 @@ describe('mapTimelinesToRows — SMI dur', () => {
     expect(rows[1].dur).toBe('1.000');
   });
 
-  it('SMI 마지막 행 dur는 빈값 (`/` renderRowsHtml parity)', () => {
+  it('SMI 마지막 행 dur는 빈값', () => {
     const rows = mapTimelinesToRows(
       timelines([
         { start: 0, end: 0, text: 'A' },
@@ -72,7 +72,7 @@ describe('mapTimelinesToRows — SRT dur', () => {
   });
 });
 
-describe('mapTimelinesToRows — isError (`/` convert.js parity)', () => {
+describe('mapTimelinesToRows — isError', () => {
   it('SMI: start > nextStart면 error (dur 음수)', () => {
     const rows = mapTimelinesToRows(
       timelines([

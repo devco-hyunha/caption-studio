@@ -16,7 +16,7 @@ describe('migrateLanguage', () => {
     expect(migrateLanguage('ja')).toBe('ja');
   });
 
-  it('레거시 KRCC/ENCC/JPCC를 신 로케일로 승격', () => {
+  it('구 KRCC/ENCC/JPCC를 로케일로 승격', () => {
     expect(migrateLanguage('KRCC')).toBe('ko');
     expect(migrateLanguage('ENCC')).toBe('en');
     expect(migrateLanguage('JPCC')).toBe('ja');
@@ -52,13 +52,13 @@ describe('useLocaleStore — t() · setLanguage', () => {
     expect(useLocaleStore.getState().t('toolbar.undo')).toBe('Undo');
   });
 
-  it('레거시 ENCC로 setLanguage — 승격 후 en 사전', () => {
+  it('ENCC로 setLanguage — 승격 후 en 사전', () => {
     useLocaleStore.getState().setLanguage('ENCC');
     expect(useLocaleStore.getState().locale).toBe('en');
     expect(useLocaleStore.getState().t('toolbar.redo')).toBe('Redo');
   });
 
-  it('미등록 키는 key fallback (`/` i18n.t parity)', () => {
+  it('미등록 키는 key fallback', () => {
     expect(useLocaleStore.getState().t('no-such-key')).toBe('no-such-key');
   });
 
@@ -84,7 +84,7 @@ describe('useLocaleStore — t() · setLanguage', () => {
 });
 
 describe('locale 영속 키', () => {
-  it('신 `locale` · 레거시 `language` 키 상수', () => {
+  it('`locale` · `language` 키 상수', () => {
     expect(STORAGE_KEY_LOCALE).toBe('locale');
     expect(STORAGE_KEY_LEGACY_LANGUAGE).toBe('language');
   });

@@ -1,6 +1,6 @@
 import type { LocaleDictionary } from '@/shared/types/locale';
 
-/** 신규 FE 라벨 기준 `ja` 사전 — 레거시 `jp.js` 복제 아님 */
+/** 라벨 기준 `ja` 사전 */
 const ja: LocaleDictionary = {
   'sheet.col.index': '#',
   'sheet.col.starttime.smi': '字幕開始時間',
@@ -121,6 +121,7 @@ const ja: LocaleDictionary = {
   'shell.confirm.lastContent': 'シートが初期化されます。<br />続行しますか？',
   'shell.confirm.formatTitle': '字幕形式を変換',
   'shell.confirm.formatContent': 'ヒストリが削除されます。<br />字幕形式を変換しますか？',
+  'shell.dialogClose': 'クローズ',
 };
 
 export { ja };

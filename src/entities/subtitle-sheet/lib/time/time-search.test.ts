@@ -66,7 +66,7 @@ describe('timeSearch', () => {
     });
   });
 
-  it('end가 0이면 falsy로 보고 다음 start를 쓴다 (`/` !row.end)', () => {
+  it('end가 0이면 falsy로 보고 다음 start를 쓴다', () => {
     const zeroEnd = rows([
       { start: 0, end: 0, text: 'a' },
       { start: 800, end: 900, text: 'b' },

@@ -8,7 +8,7 @@ import { useSheetSearchStore } from '../model/use-sheet-search-store';
 import type { SheetSearchPanelProps } from '../types';
 
 /**
- * 시트 검색 패널 — 쿼리·prev/next·결과 `n/m`·error-search(`/` search.js parity).
+ * 시트 검색 패널 — 쿼리·prev/next·결과 `n/m`·error-search.
  * 풀 검색 셸(i18n/툴바)은 후속(S6).
  */
 const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelProps) => {
@@ -90,7 +90,7 @@ const SheetSearchPanel = ({ format, timelines, rows, onJump }: SheetSearchPanelP
   const handleErrorSearchChange = () => {
     const wasActive = errorSearchActive;
     const hit = toggleErrorSearch(rows);
-    // 체크 시 input 비움 (`/` searchInput.value='' parity)
+    // 체크 시 input 비움
     if (!wasActive && inputRef.current) inputRef.current.value = '';
     if (hit) onJump(hit);
   };

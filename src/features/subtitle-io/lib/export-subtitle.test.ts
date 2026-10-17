@@ -3,7 +3,7 @@ import { decodeBytes } from '@/entities/subtitle';
 import { buildExportFile, buildFilename } from './export-subtitle';
 
 describe('buildFilename', () => {
-  it('`/` parity: 확장자를 무조건 append하고 빈 이름은 caption', () => {
+  it('확장자를 무조건 append하고 빈 이름은 caption', () => {
     expect(buildFilename('subtitle', 'smi')).toBe('subtitle.smi');
     expect(buildFilename('a.srt', 'srt')).toBe('a.srt.srt');
     expect(buildFilename('a.vtt', 'vtt')).toBe('a.vtt.vtt');

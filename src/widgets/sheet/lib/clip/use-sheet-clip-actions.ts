@@ -68,7 +68,7 @@ const useSheetClipActions = ({
     const sheet = store.sheets[store.active];
     if (!sheet) return;
 
-    // 다중 선택 — 선택 행 text 일괄 (multiClip parity) + multi.<cmd> history
+    // 다중 선택 — 선택 행 text 일괄 + multi.<cmd> history
     if (sheet.multipleActive) {
       const selected = sheet.selectedRows;
       if (selected.length === 0) return;

@@ -102,7 +102,7 @@ describe('useSheets clearSearchHits', () => {
   });
 });
 
-describe('useSheets 마지막 탭 삭제 — clearActive parity (`/` tabs.js removeAt)', () => {
+describe('useSheets 마지막 탭 삭제 — clearActive', () => {
   beforeEach(() => {
     resetSheets(1);
     resetSearch();

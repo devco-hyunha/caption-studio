@@ -1,6 +1,6 @@
 import type { LocaleDictionary } from '@/shared/types/locale';
 
-/** 신규 FE 라벨 기준 `ko` 사전 — 레거시 `kr.js` 복제 아님 */
+/** 라벨 기준 `ko` 사전 */
 const ko: LocaleDictionary = {
   'sheet.col.index': '#',
   'sheet.col.starttime.smi': '싱크',
@@ -122,6 +122,7 @@ const ko: LocaleDictionary = {
   'shell.confirm.lastContent': '시트가 초기화 됩니다.<br />계속하시겠습니까?',
   'shell.confirm.formatTitle': '자막 형식 변환',
   'shell.confirm.formatContent': '히스토리가 초기화 됩니다.<br />자막 형식을 변경하시겠습니까?',
+  'shell.dialogClose': '창 닫기',
 };
 
 export { ko };

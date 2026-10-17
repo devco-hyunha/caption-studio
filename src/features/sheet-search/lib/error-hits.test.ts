@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { countErrorRows, findErrorHits } from './error-hits';
 
 describe('findErrorHits', () => {
-  it('isError 행만 col 0 히트로 정렬해 만든다 (`/` errorRows parity)', () => {
+  it('isError 행만 col 0 히트로 정렬해 만든다', () => {
     const rows = [
       { index: 0, isError: false },
       { index: 1, isError: true },

@@ -14,7 +14,7 @@ import { downloadBytes } from './download-bytes';
 import { toSubtitleTimelines } from './to-subtitle-timeline';
 import type { BuiltExportFile, ExportSubtitleOptions, ExportWorkbookTab } from '../types';
 
-/** `/` parity: 기본명 `caption` + 확장자 무조건 append */
+/** 기본명 `caption` + 확장자 무조건 append */
 const buildFilename = (filename: string, exportFormat: SubtitleExportFormat) => {
   const name = filename.trim() || 'caption';
   const extension = exportFormat === 'excel' ? 'xlsx' : exportFormat;

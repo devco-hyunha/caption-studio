@@ -19,7 +19,7 @@ const resolveStart = (timeline: SheetTimelineItem) => {
 
 /**
  * 타임라인 → 행 뷰.
- * SMI: dur는 **다음 행 start − start** (`/` renderRowsHtml parity). 마지막 행은 dur 빈값.
+ * SMI: dur는 **다음 행 start − start**. 마지막 행은 dur 빈값.
  * SRT: storedEnd 우선, dur = storedEnd − start.
  */
 const mapTimelinesToRows = (
@@ -48,7 +48,7 @@ const mapTimelinesToRows = (
 
     const dur = isSmi && !hasNext ? '' : formatDurationSec(start, end);
 
-    // `/` convert.js errorRows parity — SMI: start > nextStart. SRT: end > nextStart · end < start
+    // errorRows — SMI: start > nextStart. SRT: end > nextStart · end < start
     const isError = isSmi
       ? hasNext && start > (nextStart as number)
       : (hasNext && storedEnd > (nextStart as number)) || storedEnd < start;

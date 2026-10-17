@@ -9,7 +9,7 @@ import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
 
 /**
  * time ±jump(Ctrl+Plus/Minus) — 다중 선택 일괄 nudge·single time 셀 nudge.
- * 다중·time 타깃 분기는 actions 훅에서 처리 (customKeys parity).
+ * 다중·time 타깃 분기는 actions 훅에서 처리.
  */
 const registerSheetTimeKeys = (shortcuts: ShortcutsApi, getActions: () => SheetShortkeyActions) => {
   registerSheetKeys(shortcuts, [

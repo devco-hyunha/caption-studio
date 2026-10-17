@@ -20,7 +20,7 @@ import { getActiveSheetRows, toSheetTabs } from './subtitle-sheets';
  * 셀 커밋 시 history push · 탭 CRUD 시 history 스택 동기화.
  * @param format 시트 포맷 — SMI dur는 다음 행 start 기준
  * @param closeSearchPanel 검색 패널 닫기 래퍼 (canonical prop)
- * @param confirm confirm 셸 진입점 — 삭제는 confirm 게이트 후 mutate (`/` tabs.js removeAt parity)
+ * @param confirm confirm 셸 진입점 — 삭제는 confirm 게이트 후 mutate
  */
 const useSheets = (
   format: SubtitleFormat,
@@ -84,7 +84,7 @@ const useSheets = (
     bodyScrollTopRef.current = 0;
   };
 
-  /** 마지막 탭 삭제 — 활성 시트 초기화 (`/` tabs.js `clearActive` parity) */
+  /** 마지막 탭 삭제 — 활성 시트 초기화 */
   const clearActiveSheet = () => {
     useSheetStore.getState().setActiveTimelines([]);
     useSheetHistoryStore.getState().resetActiveStack();
@@ -93,7 +93,7 @@ const useSheets = (
     bodyScrollTopRef.current = 0;
   };
 
-  /** 탭 삭제 — confirm 게이트 후 mutate. 마지막 탭이면 초기화 확인 (`/` tabs.js removeAt parity) */
+  /** 탭 삭제 — confirm 게이트 후 mutate. 마지막 탭이면 초기화 확인 */
   const handleDeleteTab = (index: number) => {
     const t = (key: string) => useLocaleStore.getState().t(key);
 

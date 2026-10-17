@@ -6,7 +6,7 @@ import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 /** `subtitleSheets` 타임라인 행 — canonical Partial + sync */
 export type SheetTimelineItem = Partial<SubtitleTimeline> & { sync?: number };
 
-/** `timeSearch` 결과 — 재생 ms → 행 매핑 (`/` sheet.seek.timeSearch parity) */
+/** `timeSearch` 결과 — 재생 ms → 행 매핑 */
 export interface TimeSearchHit {
   index: number;
   /** 구간 안이면 true, start 이전 갭이면 false */
