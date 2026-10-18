@@ -35,6 +35,7 @@ const createShortcuts = (): ShortcutsApi => {
       ctrl: event.ctrlKey,
       alt: event.altKey,
       shift: event.shiftKey,
+      meta: event.metaKey,
       code: event.code,
     };
     const key = getKey(type, maskObj);

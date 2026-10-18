@@ -152,3 +152,40 @@ describe('createShortcuts matching', () => {
     shortcuts.removeAll();
   });
 });
+
+describe('meta modifier support', () => {
+  const codeMap = createCodeMap();
+
+  it('parses meta token into key string', () => {
+    expect(getMaskObject('meta+b', codeMap)).toEqual({ meta: true, code: 'KeyB' });
+    expect(getKey('hold', getMaskObject('meta+b', codeMap))).toBe('hold_meta_KeyB');
+    expect(getKey('down', getMaskObject('ctrl+b', codeMap))).toBe('down_ctrl_KeyB');
+    expect(getKey('down', getMaskObject('meta+alt+left', codeMap))).toBe('down_alt_meta_ArrowLeft');
+  });
+
+  it('meta alone does not produce a code key', () => {
+    expect(getMaskObject('meta', codeMap)).toEqual({ meta: true });
+    expect(getKey('down', getMaskObject('meta', codeMap))).toBe('down_meta');
+  });
+
+  it('dual mask fires ctrl and meta events, plain key does not', () => {
+    const shortcuts = createShortcuts();
+    const handler = vi.fn();
+    shortcuts.add({ mask: 'ctrl+b,meta+b', type: 'down', handler });
+    shortcuts.start();
+
+    dispatchKey('keydown', { code: 'KeyB', key: 'b', ctrlKey: true });
+    expect(handler).toHaveBeenCalledTimes(1);
+
+    dispatchKey('keyup', { code: 'KeyB', key: 'b' });
+    dispatchKey('keydown', { code: 'KeyB', key: 'b', metaKey: true });
+    expect(handler).toHaveBeenCalledTimes(2);
+
+    dispatchKey('keyup', { code: 'KeyB', key: 'b' });
+    dispatchKey('keydown', { code: 'KeyB', key: 'b' });
+    expect(handler).toHaveBeenCalledTimes(2);
+
+    shortcuts.stop();
+    shortcuts.removeAll();
+  });
+});

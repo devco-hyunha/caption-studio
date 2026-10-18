@@ -27,6 +27,7 @@ export interface MaskObject {
   ctrl?: boolean;
   alt?: boolean;
   shift?: boolean;
+  meta?: boolean;
   code?: string | string[];
 }
 

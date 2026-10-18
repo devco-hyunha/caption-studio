@@ -22,6 +22,19 @@ describe('useShortkeyStore', () => {
     expect(useShortkeyStore.getState().masks).toEqual(DEFAULT_SHEET_SHORTKEY_MASKS);
   });
 
+  it('custom ctrl keys register dual ctrl+meta masks', () => {
+    expect(DEFAULT_SHEET_SHORTKEY_MASKS[SHORTKEY_IDS.SHEET_INSERT]).toBe(
+      'ctrl+shift+a,meta+shift+a',
+    );
+    expect(DEFAULT_SHEET_SHORTKEY_MASKS[SHORTKEY_IDS.SEARCH]).toBe('ctrl+?,meta+?');
+    expect(DEFAULT_SHEET_SHORTKEY_MASKS[SHORTKEY_IDS.VOLUME_UP]).toBe('ctrl+up,meta+up');
+  });
+
+  it('fixed non-ctrl keys keep single mask', () => {
+    expect(DEFAULT_SHEET_SHORTKEY_MASKS[SHORTKEY_IDS.NEXT_ROW_MOVE]).toBe('tab');
+    expect(DEFAULT_SHEET_SHORTKEY_MASKS[SHORTKEY_IDS.SHEET_JUMP]).toBe('alt+q');
+  });
+
   it('setMask updates one id with normalized mask', () => {
     useShortkeyStore.getState().setMask(SHORTKEY_IDS.NEXT_ROW_MOVE, 'Ctrl + Tab');
     expect(useShortkeyStore.getState().masks[SHORTKEY_IDS.NEXT_ROW_MOVE]).toBe('ctrl+tab');

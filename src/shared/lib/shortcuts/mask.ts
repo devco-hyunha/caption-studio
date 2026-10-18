@@ -17,7 +17,7 @@ const normalizeMask = (mask: string) => String(mask).toLowerCase().replace(/\s+/
 const getMaskObject = (mask: string, codeMap: CodeMap): MaskObject => {
   const obj: MaskObject = {};
   mask.split('+').forEach((item) => {
-    if (item === 'ctrl' || item === 'alt' || item === 'shift') {
+    if (item === 'ctrl' || item === 'alt' || item === 'shift' || item === 'meta') {
       obj[item] = true;
       return;
     }
@@ -27,7 +27,13 @@ const getMaskObject = (mask: string, codeMap: CodeMap): MaskObject => {
 };
 
 const getKey = (type: ShortcutType | string, maskObj: MaskObject) => {
-  const key = [type, maskObj.ctrl && 'ctrl', maskObj.alt && 'alt', maskObj.shift && 'shift']
+  const key = [
+    type,
+    maskObj.ctrl && 'ctrl',
+    maskObj.alt && 'alt',
+    maskObj.shift && 'shift',
+    maskObj.meta && 'meta',
+  ]
     .filter(Boolean)
     .join('_');
 
