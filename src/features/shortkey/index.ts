@@ -5,4 +5,5 @@ export type {
   SheetTextFormatCommand,
 } from './types';
 export type { ShortcutKeyHandler } from '@/shared/types/shortkey';
-export { useSheetShortkey } from './lib/use-sheet-shortkey';
+export { useSheetShortkey } from './lib/engine/use-sheet-shortkey';
+export { ShortkeySettings } from './ui/shortkey-settings';

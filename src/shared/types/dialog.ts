@@ -10,4 +10,6 @@ export interface DialogShellProps {
   children: ReactNode;
   /** 다이얼로그 진입 시 저장된 에딧창 포커스 — 닫힘 시 복원 */
   prevFocusRef: RefObject<HTMLElement | null>;
+  /** Esc 인터셉트 — preventDefault 시 dismiss(닫힘) 막음. Radix capture 지점이라 내부 input보다 먼저 발동 */
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
 }

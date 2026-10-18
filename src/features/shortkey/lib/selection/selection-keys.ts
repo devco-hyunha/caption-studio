@@ -1,7 +1,7 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import { SHORTKEY_IDS } from '../../model/default-sheet-shortkey-masks';
-import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
+import { SHORTKEY_IDS } from '../../model/keys/ids';
+import { defineSheetKey, registerSheetKeys } from '../engine/shortkey-keys';
 
 /** Space — 다중 선택 중 현재 행 토글. 에딧 중에는 문자 입력에 양보 */
 const registerSheetSelectionKeys = (

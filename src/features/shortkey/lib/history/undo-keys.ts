@@ -1,11 +1,8 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import {
-  SHORTKEY_IDS,
-  SHORTKEY_PLACEHOLDERS,
-  SHORTKEY_TYPES,
-} from '../../model/default-sheet-shortkey-masks';
-import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
+import { SHORTKEY_IDS, SHORTKEY_TYPES } from '../../model/keys/ids';
+import { SHORTKEY_PLACEHOLDERS } from '../../model/keys/labels';
+import { defineSheetKey, registerSheetKeys } from '../engine/shortkey-keys';
 
 /**
  * undo/redo (Ctrl+Z/Y, Ctrl+Shift+Z).

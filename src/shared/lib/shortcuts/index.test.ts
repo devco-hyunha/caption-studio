@@ -1,11 +1,17 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   checkIsInput,
+  convertEventToMask,
   createCodeMap,
   createShortcuts,
   getKey,
   getMaskObject,
+  isImeKeyEvent,
+  isMac,
+  maskToLabel,
+  maskToPrimaryLabel,
   normalizeMask,
+  pickPrimaryMask,
 } from '.';
 
 const dispatchKey = (type: 'keydown' | 'keyup', init: KeyboardEventInit & { code: string }) => {
@@ -17,6 +23,46 @@ const dispatchKey = (type: 'keydown' | 'keyup', init: KeyboardEventInit & { code
 describe('normalizeMask', () => {
   it('lowercases and strips spaces', () => {
     expect(normalizeMask('Ctrl + Z')).toBe('ctrl+z');
+  });
+});
+
+describe('isImeKeyEvent', () => {
+  it('false for plain keydown', () => {
+    expect(isImeKeyEvent(new KeyboardEvent('keydown', { code: 'KeyZ', key: 'z' }))).toBe(false);
+  });
+
+  it('true when composing, keyCode 229, Process, Unidentified', () => {
+    const composing = new KeyboardEvent('keydown', { code: 'KeyZ', key: 'z' });
+    Object.defineProperty(composing, 'isComposing', { value: true });
+    expect(isImeKeyEvent(composing)).toBe(true);
+    expect(isImeKeyEvent(new KeyboardEvent('keydown', { keyCode: 229 }))).toBe(true);
+    expect(isImeKeyEvent(new KeyboardEvent('keydown', { key: 'Process' }))).toBe(true);
+    expect(isImeKeyEvent(new KeyboardEvent('keydown', { key: 'Unidentified' }))).toBe(true);
+  });
+});
+
+describe('maskToPrimaryLabel', () => {
+  const setNavigator = (props: Record<string, unknown>) => {
+    Object.entries(props).forEach(([key, value]) => {
+      Object.defineProperty(navigator, key, { value, configurable: true });
+    });
+  };
+
+  afterEach(() => {
+    setNavigator({ userAgentData: undefined, platform: 'Win32', userAgent: '' });
+  });
+
+  it('dual mask → ctrl label on non-Mac, meta label on Mac', () => {
+    setNavigator({ userAgentData: { platform: 'Windows' } });
+    expect(maskToPrimaryLabel('ctrl+shift+a,meta+shift+a')).toBe('Ctrl + Shift + a');
+
+    setNavigator({ userAgentData: { platform: 'macOS' } });
+    expect(maskToPrimaryLabel('ctrl+shift+a,meta+shift+a')).toBe('⌘ + Shift + a');
+  });
+
+  it('single mask — label as-is', () => {
+    setNavigator({ userAgentData: { platform: 'Windows' } });
+    expect(maskToPrimaryLabel('alt+q')).toBe('Alt + q');
   });
 });
 
@@ -168,6 +214,52 @@ describe('meta modifier support', () => {
     expect(getKey('down', getMaskObject('meta', codeMap))).toBe('down_meta');
   });
 
+  it('convertEventToMask builds mask from event including meta', () => {
+    const codeMap = createCodeMap();
+
+    expect(
+      convertEventToMask(
+        { code: 'KeyK', key: 'k', ctrlKey: true, altKey: false, shiftKey: false, metaKey: false },
+        codeMap,
+      ),
+    ).toBe('ctrl+k');
+    expect(
+      convertEventToMask(
+        { code: 'Slash', key: '/', ctrlKey: true, altKey: false, shiftKey: false, metaKey: true },
+        codeMap,
+      ),
+    ).toBe('ctrl+meta+?');
+    expect(
+      convertEventToMask(
+        { code: 'Space', key: ' ', ctrlKey: false, altKey: false, shiftKey: false, metaKey: true },
+        codeMap,
+      ),
+    ).toBe('meta+space');
+    expect(
+      convertEventToMask(
+        {
+          code: 'ShiftLeft',
+          key: 'Shift',
+          ctrlKey: false,
+          altKey: false,
+          shiftKey: false,
+          metaKey: false,
+        },
+        codeMap,
+      ),
+    ).toBe('');
+  });
+
+  it('pickPrimaryMask picks platform main mask, maskToLabel renders kbd label', () => {
+    const dual = 'ctrl+shift+a,meta+shift+a';
+    expect(pickPrimaryMask(dual, true)).toBe('meta+shift+a');
+    expect(pickPrimaryMask(dual, false)).toBe('ctrl+shift+a');
+    expect(pickPrimaryMask('alt+q', true)).toBe('alt+q');
+    expect(maskToLabel(pickPrimaryMask(dual, true))).toBe('⌘ + Shift + a');
+    expect(maskToLabel(pickPrimaryMask(dual, false))).toBe('Ctrl + Shift + a');
+    expect(maskToLabel('ctrl+up')).toBe('Ctrl + up');
+  });
+
   it('dual mask fires ctrl and meta events, plain key does not', () => {
     const shortcuts = createShortcuts();
     const handler = vi.fn();
@@ -187,5 +279,37 @@ describe('meta modifier support', () => {
 
     shortcuts.stop();
     shortcuts.removeAll();
+  });
+});
+
+describe('isMac', () => {
+  const setNavigator = (props: Record<string, unknown>) => {
+    Object.entries(props).forEach(([key, value]) => {
+      Object.defineProperty(navigator, key, { value, configurable: true });
+    });
+  };
+
+  afterEach(() => {
+    setNavigator({ userAgentData: undefined, platform: 'Win32', userAgent: '' });
+  });
+
+  it('prefers userAgentData platform over navigator.platform — Windows webview reports Windows', () => {
+    setNavigator({ platform: 'MacIntel', userAgentData: { platform: 'Windows' } });
+    expect(isMac()).toBe(false);
+  });
+
+  it('userAgentData macOS — true', () => {
+    setNavigator({ userAgentData: { platform: 'macOS' } });
+    expect(isMac()).toBe(true);
+  });
+
+  it('no userAgentData — falls back to UA string', () => {
+    setNavigator({
+      userAgentData: undefined,
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X)',
+    });
+    expect(isMac()).toBe(true);
+    setNavigator({ userAgent: 'Mozilla/5.0 (Windows NT 10.0)' });
+    expect(isMac()).toBe(false);
   });
 });

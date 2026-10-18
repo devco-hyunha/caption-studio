@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet, Link } from '@tanstack/react-router';
 import { useCallback } from 'react';
 import { useSheetFormatStore } from '@/features/sheet-format';
 import { useSheetHistoryStore } from '@/features/sheet-history';
@@ -20,6 +20,8 @@ const EditPage = () => {
   const title = useT('edit.title');
   const subtitle = useT('edit.subtitle');
   const formatAria = useT('edit.formatAria');
+  const settingsLabel = useT('shortkey.button');
+  const settingsAria = useT('shortkey.buttonAria');
   const locale = useLocaleStore((state) => state.locale);
   const setLanguage = useLocaleStore((state) => state.setLanguage);
   const langAria = useT('lang.aria');
@@ -90,6 +92,11 @@ const EditPage = () => {
           >
             SRT
           </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/edit/settings" aria-label={settingsAria}>
+              {settingsLabel}
+            </Link>
+          </Button>
         </div>
         <label className="flex items-center gap-1 text-sm">
           <span className="text-muted-foreground">{langAria}</span>
@@ -134,6 +141,8 @@ const EditPage = () => {
         options={options}
         prevFocusRef={prevFocusRef}
       />
+      {/* `/edit/settings` 자식 라우트 셸 — 부모 마운트 유지, Dialog는 Portal로 팝업 */}
+      <Outlet />
     </main>
   );
 };

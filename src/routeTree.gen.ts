@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EditRouteImport } from './routes/edit'
 import { Route as DevFontsRouteImport } from './routes/dev/fonts'
+import { Route as EditSettingsRouteImport } from './routes/edit/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +29,42 @@ const DevFontsRoute = DevFontsRouteImport.update({
   path: '/dev/fonts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditSettingsRoute = EditSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => EditRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/edit': typeof EditRoute
+  '/edit': typeof EditRouteWithChildren
   '/dev/fonts': typeof DevFontsRoute
+  '/edit/settings': typeof EditSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/edit': typeof EditRoute
+  '/edit': typeof EditRouteWithChildren
   '/dev/fonts': typeof DevFontsRoute
+  '/edit/settings': typeof EditSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/edit': typeof EditRoute
+  '/edit': typeof EditRouteWithChildren
   '/dev/fonts': typeof DevFontsRoute
+  '/edit/settings': typeof EditSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/edit' | '/dev/fonts'
+  fullPaths: '/' | '/edit' | '/dev/fonts' | '/edit/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/edit' | '/dev/fonts'
-  id: '__root__' | '/' | '/edit' | '/dev/fonts'
+  to: '/' | '/edit' | '/dev/fonts' | '/edit/settings'
+  id: '__root__' | '/' | '/edit' | '/dev/fonts' | '/edit/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EditRoute: typeof EditRoute
+  EditRoute: typeof EditRouteWithChildren
   DevFontsRoute: typeof DevFontsRoute
 }
 
@@ -82,12 +91,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevFontsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/edit/settings': {
+      id: '/edit/settings'
+      path: '/settings'
+      fullPath: '/edit/settings'
+      preLoaderRoute: typeof EditSettingsRouteImport
+      parentRoute: typeof EditRoute
+    }
   }
 }
 
+interface EditRouteChildren {
+  EditSettingsRoute: typeof EditSettingsRoute
+}
+
+const EditRouteChildren: EditRouteChildren = {
+  EditSettingsRoute: EditSettingsRoute,
+}
+
+const EditRouteWithChildren = EditRoute._addFileChildren(EditRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EditRoute: EditRoute,
+  EditRoute: EditRouteWithChildren,
   DevFontsRoute: DevFontsRoute,
 }
 export const routeTree = rootRouteImport

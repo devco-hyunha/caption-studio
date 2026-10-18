@@ -1,11 +1,16 @@
 /** shortkey 시트 키 바인딩 타입 (S2: 이동·에딧·선택·CRUD) — 엔진 규격은 shared */
 
+import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
 import type { ShortcutKeyHandler } from '@/shared/types/shortkey';
-import type { SHORTKEY_IDS } from './model/default-sheet-shortkey-masks';
+import type { SHORTKEY_IDS } from './model/keys/ids';
+import type { SHORTKEY_LABEL_KEYS } from './model/keys/labels';
 
 /** 시트 shortkey id — `SHORTKEY_IDS` 값 집합에서 파생 */
 export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
+
+/** 라벨 있는 키 id — `SHORTKEY_LABEL_KEYS` 키 집합에서 파생 (설정 UI kbd 렌더 대상). labels는 types를 import하지 않아 사이클 없음 */
+export type ShortkeyLabelId = Extract<SheetShortkeyId, keyof typeof SHORTKEY_LABEL_KEYS>;
 
 /** 서식 명령 — bold/italic/underline */
 export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline';
@@ -108,4 +113,39 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
 
 export interface UseSheetShortkeyParams {
   getActions: Fn<SheetShortkeyActions>;
+}
+
+/** 설정 패널 props — 열림 상태는 라우트 셸이 소유, 닫기는 라우트 navigate */
+export interface ShortkeySettingsProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** 다이얼로그 진입 시 저장 포커스 — 닫힘 시 복원 */
+  prevFocusRef: RefObject<HTMLElement | null>;
+}
+
+/** 고정키 행 props — kbd 렌더 대상은 라벨 있는 키 */
+export interface ShortkeyFixedRowProps {
+  id: ShortkeyLabelId;
+}
+
+/** 커스텀키 행 props — 변경 상태(editing·raw)는 부모 패널이 소유 (Esc 게이트가 패널 수준). base는 fixed 행 props */
+export interface ShortkeyCustomRowProps extends ShortkeyFixedRowProps {
+  /** 이 행의 변경 UI 노출 중 */
+  editing: boolean;
+  /** 입력된 raw mask — 변경 UI 노출 중에만 부모가 유지 */
+  raw: string;
+  onStartEdit: Fn<void>;
+  onRawChange: (raw: string) => void;
+  onCancelEdit: Fn<void>;
+}
+
+/** 커스텀 키 변경 폼 — submit 검증 결과 */
+export type CustomMaskValidation = 'empty' | 'single' | 'conflict' | 'ok';
+
+/** submit 검증 입력 — normalize 전 raw mask + 스토어 현재 masks */
+export interface CustomMaskCheck {
+  rawMask: string;
+  masks: Record<SheetShortkeyId, string>;
+  /** 검사에서 제외할 자기 id */
+  selfId: SheetShortkeyId;
 }

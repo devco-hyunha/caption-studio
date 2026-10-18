@@ -1,7 +1,8 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import { SHORTKEY_IDS, SHORTKEY_PLACEHOLDERS } from '../../model/default-sheet-shortkey-masks';
-import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
+import { SHORTKEY_IDS } from '../../model/keys/ids';
+import { SHORTKEY_PLACEHOLDERS } from '../../model/keys/labels';
+import { defineSheetKey, registerSheetKeys } from '../engine/shortkey-keys';
 
 /** Ctrl+Shift+A/D — 포커스 행 기준 삽입·삭제 (다중 선택 중에는 동작하지 않음) */
 const registerSheetMutateKeys = (

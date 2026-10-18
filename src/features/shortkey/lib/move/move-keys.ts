@@ -1,7 +1,8 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import { SHORTKEY_IDS, SHORTKEY_PLACEHOLDERS } from '../../model/default-sheet-shortkey-masks';
-import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
+import { SHORTKEY_IDS } from '../../model/keys/ids';
+import { SHORTKEY_PLACEHOLDERS } from '../../model/keys/labels';
+import { defineSheetKey, registerSheetKeys } from '../engine/shortkey-keys';
 
 /** Tab / Shift+Tab / Page / Arrow 이동 — Shift 여부는 move 핸들러가 event.shiftKey로 판단 */
 const registerSheetMoveKeys = (shortcuts: ShortcutsApi, getActions: () => SheetShortkeyActions) => {

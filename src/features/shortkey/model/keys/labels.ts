@@ -1,0 +1,66 @@
+/** placeholder · 사전 라벨 키 — ids 의존. types의 ShortkeyLabelId가 이 키 집합에서 파생되므로 labels는 types를 import하지 않는다(cycle 방지) */
+
+import type { DictionaryKey } from '@/shared/lib/i18n/dictionaries/keys';
+import { SHORTKEY_IDS } from './ids';
+
+/** placeholder — 있는 키만 */
+export const SHORTKEY_PLACEHOLDERS = {
+  NEXT_ROW_MOVE: 'next-row-move',
+  PREV_ROW_MOVE: 'prev-row-move',
+  SHEET_EDIT_ON: 'sheet-edit-on',
+  SHEET_EDIT_OFF: 'sheet-edit-off',
+  SHEET_INSERT: 'sheet-insert',
+  SHEET_REMOVE: 'sheet-remove',
+  FONT_BOLD: 'font-bold',
+  FONT_ITALIC: 'font-italic',
+  FONT_UNDERLINE: 'font-underline',
+  CUT: 'cut',
+  COPY: 'copy',
+  PASTE: 'paste',
+  TIME_PLUS: 'time-plus',
+  TIME_MINUS: 'time-minus',
+  SEARCH: 'search',
+  UNDO: 'undo',
+  REDO: 'redo',
+  TIME_CARVE: 'time-carve',
+  VIDEO_JUMP: 'timeline-current',
+  SHEET_JUMP: 'move-current',
+  VIDEO_PLAY: 'play-stop',
+  VIDEO_SEEK_PREV: 'video-prev',
+  VIDEO_SEEK_NEXT: 'video-next',
+  VOLUME_UP: 'volume-up',
+  VOLUME_DOWN: 'volume-down',
+  CUE_PREV: 'cue-prev',
+  CUE_NEXT: 'cue-next',
+} as const;
+
+/** id → 사전 라벨 키 (`shortkey.<id>`) — 라벨 있는 키만 */
+export const SHORTKEY_LABEL_KEYS = {
+  [SHORTKEY_IDS.NEXT_ROW_MOVE]: 'shortkey.nextRowMove',
+  [SHORTKEY_IDS.PREV_ROW_MOVE]: 'shortkey.prevRowMove',
+  [SHORTKEY_IDS.SHEET_EDIT_ON]: 'shortkey.sheetEditOn',
+  [SHORTKEY_IDS.SHEET_EDIT_OFF]: 'shortkey.sheetEditOff',
+  [SHORTKEY_IDS.FONT_BOLD]: 'shortkey.fontBold',
+  [SHORTKEY_IDS.FONT_ITALIC]: 'shortkey.fontItalic',
+  [SHORTKEY_IDS.FONT_UNDERLINE]: 'shortkey.fontUnderline',
+  [SHORTKEY_IDS.CUT]: 'shortkey.cut',
+  [SHORTKEY_IDS.COPY]: 'shortkey.copy',
+  [SHORTKEY_IDS.PASTE]: 'shortkey.paste',
+  [SHORTKEY_IDS.UNDO]: 'shortkey.undo',
+  [SHORTKEY_IDS.REDO]: 'shortkey.redo',
+  [SHORTKEY_IDS.VOLUME_UP]: 'shortkey.volumeUp',
+  [SHORTKEY_IDS.VOLUME_DOWN]: 'shortkey.volumeDown',
+  [SHORTKEY_IDS.SHEET_INSERT]: 'shortkey.sheetInsert',
+  [SHORTKEY_IDS.SHEET_REMOVE]: 'shortkey.sheetRemove',
+  [SHORTKEY_IDS.TIME_PLUS]: 'shortkey.timePlus',
+  [SHORTKEY_IDS.TIME_MINUS]: 'shortkey.timeMinus',
+  [SHORTKEY_IDS.SEARCH]: 'shortkey.search',
+  [SHORTKEY_IDS.TIME_CARVE]: 'shortkey.timeCarve',
+  [SHORTKEY_IDS.VIDEO_JUMP]: 'shortkey.videoJump',
+  [SHORTKEY_IDS.SHEET_JUMP]: 'shortkey.sheetJump',
+  [SHORTKEY_IDS.VIDEO_PLAY]: 'shortkey.videoPlay',
+  [SHORTKEY_IDS.VIDEO_SEEK_PREV]: 'shortkey.videoSeekPrev',
+  [SHORTKEY_IDS.VIDEO_SEEK_NEXT]: 'shortkey.videoSeekNext',
+  [SHORTKEY_IDS.CUE_PREV]: 'shortkey.cuePrev',
+  [SHORTKEY_IDS.CUE_NEXT]: 'shortkey.cueNext',
+} as const satisfies Record<string, DictionaryKey>;

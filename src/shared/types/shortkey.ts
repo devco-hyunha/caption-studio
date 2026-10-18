@@ -22,6 +22,23 @@ export interface CodeMap {
   [token: string]: string | string[];
 }
 
+/** mask modifier 토큰 — 순서 = mask 빌드 순(ctrl·alt·shift·meta) */
+export type ModifierToken = 'ctrl' | 'alt' | 'shift' | 'meta';
+
+/** keydown modifier presses — convertEventToMask 입력 필드 */
+export interface ModifierState {
+  ctrlKey: boolean;
+  altKey: boolean;
+  shiftKey: boolean;
+  metaKey: boolean;
+}
+
+/** keydown 입력 — code·key + modifier presses (설정 UI 커스텀 키 변환 입력) */
+export interface KeyEventInput extends ModifierState {
+  code: string;
+  key: string;
+}
+
 /** mask 문자열을 파싱한 결과 — modifier · event.code */
 export interface MaskObject {
   ctrl?: boolean;

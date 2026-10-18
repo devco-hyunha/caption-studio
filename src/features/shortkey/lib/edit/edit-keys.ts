@@ -1,7 +1,8 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import { SHORTKEY_IDS, SHORTKEY_PLACEHOLDERS } from '../../model/default-sheet-shortkey-masks';
-import { defineSheetKey, registerSheetKeys } from '../shortkey-keys';
+import { SHORTKEY_IDS } from '../../model/keys/ids';
+import { SHORTKEY_PLACEHOLDERS } from '../../model/keys/labels';
+import { defineSheetKey, registerSheetKeys } from '../engine/shortkey-keys';
 
 /** F2 편집 진입 · Esc 취소(다중 선택은 토글 off) · Enter 줄바꿈/진입 */
 const registerSheetEditKeys = (shortcuts: ShortcutsApi, getActions: () => SheetShortkeyActions) => {

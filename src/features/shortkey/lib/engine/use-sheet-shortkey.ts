@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import type { UseSheetShortkeyParams } from '../types';
-import { useShortkeyStore } from '../model/use-shortkey-store';
-import { bindPrintableEditCallback } from './edit/printable-edit';
+import type { UseSheetShortkeyParams } from '../../types';
+import { useShortkeyStore } from '../../model/store/use-shortkey-store';
+import { bindPrintableEditCallback } from '../edit/printable-edit';
 import { registerSheetNavigationKeys } from './bind-sheet-keys';
 import { createShortcuts } from '@/shared/lib/shortcuts';
 

@@ -1,23 +1,13 @@
 import type { CodeMap, MaskObject, ShortcutParams, ShortcutType } from '@/shared/types/shortkey';
 import { resolveTokenCodes } from './code-map';
-
-const MODIFIER_CODES = new Set([
-  'ControlLeft',
-  'ControlRight',
-  'AltLeft',
-  'AltRight',
-  'ShiftLeft',
-  'ShiftRight',
-  'MetaLeft',
-  'MetaRight',
-]);
+import { MODIFIER_CODES, MODIFIER_TOKENS, isModifierToken } from './modifiers';
 
 const normalizeMask = (mask: string) => String(mask).toLowerCase().replace(/\s+/g, '');
 
 const getMaskObject = (mask: string, codeMap: CodeMap): MaskObject => {
   const obj: MaskObject = {};
   mask.split('+').forEach((item) => {
-    if (item === 'ctrl' || item === 'alt' || item === 'shift' || item === 'meta') {
+    if (isModifierToken(item)) {
       obj[item] = true;
       return;
     }
@@ -27,15 +17,7 @@ const getMaskObject = (mask: string, codeMap: CodeMap): MaskObject => {
 };
 
 const getKey = (type: ShortcutType | string, maskObj: MaskObject) => {
-  const key = [
-    type,
-    maskObj.ctrl && 'ctrl',
-    maskObj.alt && 'alt',
-    maskObj.shift && 'shift',
-    maskObj.meta && 'meta',
-  ]
-    .filter(Boolean)
-    .join('_');
+  const key = [type, ...MODIFIER_TOKENS.filter((token) => maskObj[token])].join('_');
 
   const keyMaker = (base: string, code?: string) => {
     if (code && !MODIFIER_CODES.has(code)) return `${base}_${code}`;
@@ -55,8 +37,8 @@ const forEachMaskKey = (
   iterate: (listName: string, key: string) => void,
 ) => {
   const type = params.type || 'down';
-  const listNames = params.list ? params.list.replace(/\s+/g, '').split(',') : ['default'];
-  const masks = params.mask.toLowerCase().replace(/\s+/g, '').split(',');
+  const listNames = params.list ? normalizeMask(params.list).split(',') : ['default'];
+  const masks = normalizeMask(params.mask).split(',');
 
   listNames.forEach((listName) => {
     masks.forEach((mask) => {

@@ -1,13 +1,10 @@
 import type { ShortcutsApi } from '@/shared/types/shortkey';
 import type { SheetShortkeyActions } from '../../types';
-import { checkIsInput } from '@/shared/lib/shortcuts';
-import { isImeKeyEvent } from '../shortkey-keys';
+import { checkIsInput, isImeKeyEvent } from '@/shared/lib/shortcuts';
 
 const isPrintableShortcutEvent = (event: KeyboardEvent) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return false;
   if (event.key.length === 1 || event.code === 'Space') return true;
-  if (event.key === 'Process' || event.keyCode === 229) return true;
-  if (event.isComposing) return true;
   return false;
 };
 

@@ -1,50 +1,8 @@
-/** 시트 네비·에딧·선택·CRUD 키 — id · mask · placeholder · type 상수 (S2) */
+/** mask 문자열 · 커스텀 dual · default mask 맵 — ids 의존 */
 
-import type { SheetShortkeyId } from '../types';
+import type { SheetShortkeyId } from '../../types';
+import { SHORTKEY_IDS } from './ids';
 
-export const SHORTKEY_IDS = {
-  NEXT_ROW_MOVE: 'nextRowMove',
-  PREV_ROW_MOVE: 'prevRowMove',
-  SHEET_EDIT_ON: 'sheetEditOn',
-  SHEET_EDIT_OFF: 'sheetEditOff',
-  SHEET_EDIT_ENTER: 'sheetEditEnter',
-  PAGE_UP: 'pageUp',
-  PAGE_DOWN: 'pageDown',
-  ROW_UP: 'rowUp',
-  ROW_DOWN: 'rowDown',
-  COL_LEFT: 'colLeft',
-  COL_RIGHT: 'colRight',
-  ROW_UP_SELECT: 'rowUpSelect',
-  ROW_DOWN_SELECT: 'rowDownSelect',
-  ROW_SELECT_TOGGLE: 'rowSelectToggle',
-  SHEET_INSERT: 'sheetInsert',
-  SHEET_REMOVE: 'sheetRemove',
-  FONT_BOLD: 'fontBold',
-  FONT_ITALIC: 'fontItalic',
-  FONT_UNDERLINE: 'fontUnderline',
-  CELL_CLEAR_BACKSPACE: 'cellClearBackspace',
-  CELL_CLEAR_DELETE: 'cellClearDelete',
-  CUT: 'cut',
-  COPY: 'copy',
-  PASTE: 'paste',
-  TIME_PLUS: 'timePlus',
-  TIME_MINUS: 'timeMinus',
-  SEARCH: 'search',
-  UNDO: 'undo',
-  REDO: 'redo',
-  TIME_CARVE: 'timeCarve',
-  VIDEO_JUMP: 'videoJump',
-  SHEET_JUMP: 'sheetJump',
-  VIDEO_PLAY: 'videoPlay',
-  VIDEO_SEEK_PREV: 'videoSeekPrev',
-  VIDEO_SEEK_NEXT: 'videoSeekNext',
-  VOLUME_UP: 'volumeUp',
-  VOLUME_DOWN: 'volumeDown',
-  CUE_PREV: 'cuePrev',
-  CUE_NEXT: 'cueNext',
-} as const;
-
-/** defaultKeys mask 문자열 */
 export const SHORTKEY_MASKS = {
   TAB: 'tab',
   SHIFT_TAB: 'shift+tab',
@@ -102,10 +60,9 @@ export const SHORTKEY_MASKS = {
   META_BACKQUOTE: 'meta+`',
 } as const;
 
-/** 커스텀 키 dual mask — `ctrl+*`와 `meta+*`를 comma 병행 등록 (M3 redo 선례) */
+/** 커스텀 키 dual mask — `ctrl+*`와 `meta+*`를 comma 병행 등록 */
 const dualMask = (ctrlMask: string, metaMask: string) => `${ctrlMask},${metaMask}`;
 
-/** S2 defaultKeys mask */
 export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
   [SHORTKEY_IDS.NEXT_ROW_MOVE]: SHORTKEY_MASKS.TAB,
   [SHORTKEY_IDS.PREV_ROW_MOVE]: SHORTKEY_MASKS.SHIFT_TAB,
@@ -135,11 +92,11 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
   [SHORTKEY_IDS.TIME_MINUS]: dualMask(SHORTKEY_MASKS.CTRL_MINUS, SHORTKEY_MASKS.META_MINUS),
   [SHORTKEY_IDS.SEARCH]: dualMask(SHORTKEY_MASKS.CTRL_SLASH, SHORTKEY_MASKS.META_SLASH),
   [SHORTKEY_IDS.UNDO]: SHORTKEY_MASKS.CTRL_Z,
-  // M3: ctrl+y + ctrl+Shift+Z 병행 (mask comma → 엔진이 두 mask 등록)
+  // ctrl+y + ctrl+Shift+Z 병행 (mask comma → 엔진이 두 mask 등록)
   [SHORTKEY_IDS.REDO]: `${SHORTKEY_MASKS.CTRL_Y},${SHORTKEY_MASKS.CTRL_SHIFT_Z}`,
   [SHORTKEY_IDS.TIME_CARVE]: dualMask(SHORTKEY_MASKS.CTRL_BACKQUOTE, SHORTKEY_MASKS.META_BACKQUOTE),
   [SHORTKEY_IDS.VIDEO_JUMP]: dualMask(SHORTKEY_MASKS.CTRL_Q, SHORTKEY_MASKS.META_Q),
-  // sheetJump는 alt+q — alt 계열은 dual 대상이 아니다 (승인 범위: ctrl+* 커스텀 키)
+  // sheetJump는 alt+q — alt 계열은 dual 대상이 아니다 (커스텀 dual은 ctrl+* 한정)
   [SHORTKEY_IDS.SHEET_JUMP]: SHORTKEY_MASKS.ALT_Q,
   [SHORTKEY_IDS.VIDEO_PLAY]: dualMask(SHORTKEY_MASKS.CTRL_SPACE, SHORTKEY_MASKS.META_SPACE),
   [SHORTKEY_IDS.VIDEO_SEEK_PREV]: dualMask(SHORTKEY_MASKS.CTRL_LEFT, SHORTKEY_MASKS.META_LEFT),
@@ -149,39 +106,3 @@ export const DEFAULT_SHEET_SHORTKEY_MASKS: Record<SheetShortkeyId, string> = {
   [SHORTKEY_IDS.CUE_PREV]: dualMask(SHORTKEY_MASKS.CTRL_ALT_LEFT, SHORTKEY_MASKS.META_ALT_LEFT),
   [SHORTKEY_IDS.CUE_NEXT]: dualMask(SHORTKEY_MASKS.CTRL_ALT_RIGHT, SHORTKEY_MASKS.META_ALT_RIGHT),
 };
-
-/** placeholder (i18n) — 있는 키만 */
-export const SHORTKEY_PLACEHOLDERS = {
-  NEXT_ROW_MOVE: 'next-row-move',
-  PREV_ROW_MOVE: 'prev-row-move',
-  SHEET_EDIT_ON: 'sheet-edit-on',
-  SHEET_EDIT_OFF: 'sheet-edit-off',
-  SHEET_INSERT: 'sheet-insert',
-  SHEET_REMOVE: 'sheet-remove',
-  FONT_BOLD: 'font-bold',
-  FONT_ITALIC: 'font-italic',
-  FONT_UNDERLINE: 'font-underline',
-  CUT: 'cut',
-  COPY: 'copy',
-  PASTE: 'paste',
-  TIME_PLUS: 'time-plus',
-  TIME_MINUS: 'time-minus',
-  SEARCH: 'search',
-  UNDO: 'undo',
-  REDO: 'redo',
-  TIME_CARVE: 'time-carve',
-  VIDEO_JUMP: 'timeline-current',
-  SHEET_JUMP: 'move-current',
-  VIDEO_PLAY: 'play-stop',
-  VIDEO_SEEK_PREV: 'video-prev',
-  VIDEO_SEEK_NEXT: 'video-next',
-  VOLUME_UP: 'volume-up',
-  VOLUME_DOWN: 'volume-down',
-  CUE_PREV: 'cue-prev',
-  CUE_NEXT: 'cue-next',
-} as const;
-
-export const SHORTKEY_TYPES = {
-  HOLD: 'hold',
-  DOWN: 'down',
-} as const;
