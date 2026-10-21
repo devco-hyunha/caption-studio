@@ -1,3 +1,4 @@
+import { DEFAULT_SMI_TITLE, SMI_EMPTY_TEXT } from '../smi-constants';
 import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import type { SerializeSmiOptions } from '../../types';
 
@@ -24,13 +25,13 @@ const serializeSmi = (
   const classStyle = options.classStyle ?? DEFAULT_SMI_CLASS_STYLE;
   const signatureRaw = options.signature ?? '';
   const signature = signatureRaw ? `<!--\r\n${signatureRaw}\r\n-->\r\n` : '';
-  const title = options.title ?? 'Caption Studio - (c)2017 DEVCO Studio';
+  const title = options.title ?? DEFAULT_SMI_TITLE;
 
   const captionBody = data
     .map((timeline) => {
       let text = timeline.text;
       if (text == null || text === '') {
-        text = '&nbsp;';
+        text = SMI_EMPTY_TEXT;
       } else {
         text = restoreSmiEntities(String(text));
       }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SheetTimelineItem } from '../../types';
-import { OPEN_END_MS } from './time-range';
+import { OPEN_END_MS } from '@/shared/lib/constants';
 import { timeSearch } from './time-search';
 
 const rows = (

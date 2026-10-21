@@ -5,7 +5,7 @@ import type {
   TimeSearchHit,
   TimeSlotIndex,
 } from '../../types';
-import { OPEN_END_MS, isActiveAt, resolveEndMs } from './time-range';
+import { isActiveAt, resolveEndMs } from './time-range';
 import { candidateRowIndicesAt } from './time-slot-index';
 
 /**
@@ -63,4 +63,4 @@ const timeSearchAll = (
   return { indices };
 };
 
-export { OPEN_END_MS, resolveEndMs, timeSearch, timeSearchAll };
+export { resolveEndMs, timeSearch, timeSearchAll };

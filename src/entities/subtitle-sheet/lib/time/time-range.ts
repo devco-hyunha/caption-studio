@@ -1,7 +1,5 @@
+import { OPEN_END_MS } from '@/shared/lib/constants';
 import type { SheetTimelineItem } from '../../types';
-
-/** end 없을 때 쓰는 열린 구간 상한 */
-const OPEN_END_MS = 999_999;
 
 /** 행 시작 ms. start → sync → 0. 행 없으면 null */
 const resolveStartMs = (row: SheetTimelineItem | undefined): number | null => {
@@ -39,4 +37,4 @@ const isActiveAt = (
   return start <= ms && end > ms;
 };
 
-export { OPEN_END_MS, isActiveAt, resolveEndMs, resolveStartMs };
+export { isActiveAt, resolveEndMs, resolveStartMs };

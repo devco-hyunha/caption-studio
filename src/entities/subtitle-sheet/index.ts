@@ -73,7 +73,7 @@ export {
 
 export { loadState } from './lib/storage/storage';
 
-export { OPEN_END_MS, resolveEndMs, timeSearch, timeSearchAll } from './lib/time/time-search';
+export { resolveEndMs, timeSearch, timeSearchAll } from './lib/time/time-search';
 
 export { resolveStartMs } from './lib/time/time-range';
 

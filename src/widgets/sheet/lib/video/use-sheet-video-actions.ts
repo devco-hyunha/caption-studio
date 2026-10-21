@@ -7,7 +7,9 @@ import {
   seekPlayerToRowIndex,
   seekVideoBySeconds,
   toggleVideoPlayback,
+  VIDEO_SEEK_STEP_SEC,
   useVideoSyncStore,
+  VOLUME_STEP,
 } from '@/features/video-sync';
 import { secondsToMs } from '@/shared/lib/timecode';
 import type { UseSheetVideoActionsParams, UseSheetVideoActionsResult } from '../../types';
@@ -62,10 +64,10 @@ const useSheetVideoActions = ({
       toggleVideoPlayback();
     },
     videoSeekPrev: () => {
-      seekVideoBySeconds(-10);
+      seekVideoBySeconds(-VIDEO_SEEK_STEP_SEC);
     },
     videoSeekNext: () => {
-      seekVideoBySeconds(10);
+      seekVideoBySeconds(VIDEO_SEEK_STEP_SEC);
     },
     cuePrev: () => {
       seekPlayerToPrevCue();
@@ -74,10 +76,10 @@ const useSheetVideoActions = ({
       seekPlayerToNextCue();
     },
     volumeUp: () => {
-      adjustVideoVolume(0.1);
+      adjustVideoVolume(VOLUME_STEP);
     },
     volumeDown: () => {
-      adjustVideoVolume(-0.1);
+      adjustVideoVolume(-VOLUME_STEP);
     },
   };
 };

@@ -5,8 +5,9 @@ import { serializeSmi } from '../serialize/serialize-smi';
 import { serializeSrt } from '../serialize/serialize-srt';
 import { serializeVtt } from '../serialize/serialize-vtt';
 import { serializeJsonWorkbook } from '../serialize/serialize-json';
+import { OPEN_END_MS } from '@/shared/lib/constants';
 import { parseSmiString } from './parse-smi';
-import { parseSrtString } from './parse-srt';
+import { parseSrtString, srtFromSmiArray } from './parse-srt';
 
 describe('parseSrtString', () => {
   it('한글·특수문자가 있는 SRT를 ms·text로 파싱한다', () => {
@@ -66,6 +67,43 @@ describe('parseSmiString', () => {
     expect(timelines[0]?.start).toBe(1000);
     expect(timelines[0]?.text).toContain('안녕하세요');
     expect(timelines[1]?.start).toBe(2000);
+  });
+});
+
+describe('srtFromSmiArray', () => {
+  it('빈 캡션(`&nbsp;`·빈 문자열)은 행을 만들지 않는다', () => {
+    const timelines = srtFromSmiArray([
+      { start: 1000, end: 0, text: '자막', memo: '' },
+      { start: 2000, end: 0, text: '&nbsp;', memo: '' },
+      { start: 3000, end: 0, text: '', memo: '' },
+      { start: 4000, end: 0, text: '마지막', memo: '' },
+    ]);
+
+    expect(timelines.map((row) => row.text)).toEqual(['자막', '마지막']);
+  });
+
+  it('end 없는 마지막 cue 종료는 직전 start + OPEN_END_MS (99999와 통일)', () => {
+    const timelines = srtFromSmiArray([
+      { start: 1000, end: 0, text: '자막', memo: '' },
+      { start: 5000, end: 0, text: '마지막', memo: '' },
+    ]);
+
+    expect(timelines[0]?.end).toBe(5000);
+    expect(timelines[1]?.end).toBe(5000 + OPEN_END_MS);
+  });
+});
+
+describe('serializeSmi — 기본 상수', () => {
+  it('기본 제목 문자열이 SMI `<Title>`에 들어간다', () => {
+    const out = serializeSmi([{ start: 500, end: 0, text: '자막', memo: '' }]);
+
+    expect(out).toContain('<Title>Caption Studio - (c)2017 DEVCO Studio</Title>');
+  });
+
+  it('빈 텍스트 행은 `&nbsp;`으로 직렬화된다', () => {
+    const out = serializeSmi([{ start: 500, end: 0, text: '', memo: '' }]);
+
+    expect(out).toContain('<P Class=KRCC>&nbsp;</P>');
   });
 });
 

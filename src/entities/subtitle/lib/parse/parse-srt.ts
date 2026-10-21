@@ -1,5 +1,7 @@
+import { OPEN_END_MS } from '@/shared/lib/constants';
 import { parseTimecode } from '@/shared/lib/timecode';
 import { valid } from '../html/valid';
+import { SMI_EMPTY_TEXT } from '../smi-constants';
 import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import type { SrtParseDraft } from '../../types';
 
@@ -96,7 +98,7 @@ const srtFromSmiArray = (data: readonly SubtitleTimeline[]): SubtitleTimeline[] 
 
     setSmiConvertedLastEnd(result, start);
 
-    if (text === '&nbsp;' || text === '') return;
+    if (text === SMI_EMPTY_TEXT || text === '') return;
 
     result.push({
       start,
@@ -107,7 +109,7 @@ const srtFromSmiArray = (data: readonly SubtitleTimeline[]): SubtitleTimeline[] 
   });
 
   const lastItem = result.at(-1);
-  if (lastItem && lastItem.end === 0) lastItem.end = lastItem.start + 99999;
+  if (lastItem && lastItem.end === 0) lastItem.end = lastItem.start + OPEN_END_MS;
 
   return result;
 };

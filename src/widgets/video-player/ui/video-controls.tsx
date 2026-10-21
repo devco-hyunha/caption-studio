@@ -1,7 +1,9 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { VIDEO_SEEK_STEP_SEC } from '@/features/video-sync';
 import { useT } from '@/shared/lib/i18n';
 import { formatTime, secondsToMs } from '@/shared/lib/timecode';
 import { Button } from '@/shared/ui/button';
+import { SEEK_SLIDER_STEP, VOLUME_SLIDER_STEP } from '../lib/constants';
 import type { VideoControlsHandle, VideoControlsProps } from '../types';
 
 /** timeupdate 시 부모 리렌더 없이 내부 state로 진행 시각만 갱신 */
@@ -83,7 +85,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             variant="outline"
             disabled={disabled}
             aria-label={videoPrev}
-            onClick={() => onSeekBy(-10)}
+            onClick={() => onSeekBy(-VIDEO_SEEK_STEP_SEC)}
           >
             {videoPrev}
           </Button>
@@ -93,7 +95,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             variant="outline"
             disabled={disabled}
             aria-label={videoNext}
-            onClick={() => onSeekBy(10)}
+            onClick={() => onSeekBy(VIDEO_SEEK_STEP_SEC)}
           >
             {videoNext}
           </Button>
@@ -120,7 +122,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
             type="range"
             min={0}
             max={progressMax}
-            step={0.1}
+            step={SEEK_SLIDER_STEP}
             value={Math.min(currentTime, progressMax)}
             disabled={disabled || safeDuration <= 0}
             aria-label={seekAria}
@@ -146,7 +148,7 @@ const VideoControls = forwardRef<VideoControlsHandle, VideoControlsProps>(
               type="range"
               min={0}
               max={1}
-              step={0.05}
+              step={VOLUME_SLIDER_STEP}
               value={sliderVolume}
               disabled={disabled}
               aria-label={volumeAria}

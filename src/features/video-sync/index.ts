@@ -33,6 +33,8 @@ export {
   toggleVideoPlayback,
 } from './lib/video-playback-controls';
 
+export { VIDEO_SEEK_STEP_SEC, VOLUME_STEP } from './lib/constants';
+
 export {
   registerSheetTimeCarveHandler,
   requestSheetTimeCarve,
