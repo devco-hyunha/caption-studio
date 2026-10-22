@@ -26,6 +26,11 @@ const ko: LocaleDictionary = {
   'toolbar.undo': '실행취소',
   'toolbar.redo': '재실행',
   'toolbar.aria': '확인용 툴바',
+  'toolbar.bold': '두껍게',
+  'toolbar.italic': '기울임',
+  'toolbar.underline': '밑줄',
+  'toolbar.editOn': '자막편집 ON',
+  'toolbar.editOff': '자막편집 OFF',
 
   'search.label': '자막 검색',
   'search.input': '검색어 입력',

@@ -36,6 +36,8 @@ export type {
   SheetTabMenuState,
   SheetTabProps,
   SheetToolbarButtonsProps,
+  SheetToolbarFormatActions,
+  SheetToolbarFormatProps,
   SheetToolbarIoProps,
   SheetToolbarSearchProps,
 } from './props';

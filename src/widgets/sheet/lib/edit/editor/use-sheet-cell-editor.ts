@@ -1,4 +1,8 @@
-import { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
+import {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  useState,
+} from 'react';
 import type { ShortcutKeyHandler } from '@/features/shortkey';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type {
@@ -50,11 +54,15 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
 
   const { markBootstrap } = useEditInputSync({ mode, target, inputRef, modeRef });
 
+  /** 편집 surface 노출 React 신호 — IME typing은 setMode 유예해도 toolbar가 즉시 ON 표시 */
+  const [isEditSurface, setIsEditSurface] = useState(false);
+
   /** mode 전이 한 곳 — ref mutate + surface style 복귀 + React sync, 필요 시 포커스 복귀 */
   const setEditorMode = (next: SheetCellEditorMode, restoreFocus = false) => {
     modeRef.current = next;
     clearEditingSurfaceStyles(wrapRef.current);
     setMode(next);
+    setIsEditSurface(next === 'edit');
     if (restoreFocus) {
       requestAnimationFrame(() => focusSelectionTarget());
     }
@@ -71,6 +79,7 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
     markBootstrap(true);
     modeRef.current = 'edit';
     showEditingSurface(wrapRef.current);
+    setIsEditSurface(true);
 
     const flushMode = () => {
       if (modeRef.current === 'edit') setEditorMode('edit');
@@ -241,6 +250,7 @@ const useSheetCellEditor = (params: UseSheetCellEditorParams): UseSheetCellEdito
     beginEdit,
     beginEditOnCurrent,
     beginEditFromTyping,
+    isEditSurface,
     isEditing,
     isTextTarget,
     isTimeTarget,

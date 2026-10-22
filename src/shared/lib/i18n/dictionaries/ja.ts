@@ -26,6 +26,11 @@ const ja: LocaleDictionary = {
   'toolbar.undo': '元に戻す',
   'toolbar.redo': 'やり直し',
   'toolbar.aria': 'ツールバー',
+  'toolbar.bold': '太字',
+  'toolbar.italic': 'イタリック',
+  'toolbar.underline': '下線',
+  'toolbar.editOn': 'シート編集 ON',
+  'toolbar.editOff': 'シート編集 OFF',
 
   'search.label': '字幕検索',
   'search.input': 'ワード検索',

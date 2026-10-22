@@ -115,3 +115,50 @@ describe('useSheetCellEditor search gate', () => {
     expect(modeRef.current).toBe('edit');
   });
 });
+
+describe('useSheetCellEditor IME typing — isEditSurface 즉시 신호', () => {
+  const dispatchImeTyping = () =>
+    new KeyboardEvent('keydown', {
+      key: 'g',
+      code: 'KeyG',
+      keyCode: 229,
+      isComposing: true,
+      bubbles: true,
+      cancelable: true,
+    });
+
+  it('IME typing 진입 — mode는 focus 유지, isEditSurface true (toolbar 즉시 ON)', () => {
+    const { hook, modeRef } = renderEditor({});
+
+    act(() => hook.result.current.beginEditFromTyping(dispatchImeTyping()));
+
+    expect(modeRef.current).toBe('edit');
+    expect(hook.result.current.isEditSurface).toBe(true);
+  });
+
+  it('IME 진입 후 compositionend — mode edit flush, isEditSurface true 유지', () => {
+    const { hook, modeRef } = renderEditor({});
+    const input = document.createElement('div');
+    hook.result.current.inputRef.current = input;
+    hook.result.current.wrapRef.current = document.createElement('div');
+
+    act(() => hook.result.current.beginEditFromTyping(dispatchImeTyping()));
+    act(() => {
+      input.dispatchEvent(new Event('compositionend'));
+    });
+
+    expect(modeRef.current).toBe('edit');
+    expect(hook.result.current.isEditSurface).toBe(true);
+  });
+
+  it('IME 진입 후 cancelEdit(Esc) — isEditSurface false 복귀', () => {
+    const { hook } = renderEditor({});
+    hook.result.current.wrapRef.current = document.createElement('div');
+    hook.result.current.inputRef.current = document.createElement('div');
+
+    act(() => hook.result.current.beginEditFromTyping(dispatchImeTyping()));
+    act(() => hook.result.current.cancelEdit());
+
+    expect(hook.result.current.isEditSurface).toBe(false);
+  });
+});

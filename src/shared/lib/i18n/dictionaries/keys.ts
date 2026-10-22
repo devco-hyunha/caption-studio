@@ -35,6 +35,11 @@ const DICTIONARY_KEYS = [
   'toolbar.undo',
   'toolbar.redo',
   'toolbar.aria',
+  'toolbar.bold',
+  'toolbar.italic',
+  'toolbar.underline',
+  'toolbar.editOn',
+  'toolbar.editOff',
   // search — 검색 패널
   'search.label',
   'search.input',

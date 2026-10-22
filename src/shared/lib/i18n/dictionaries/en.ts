@@ -26,6 +26,11 @@ const en: LocaleDictionary = {
   'toolbar.undo': 'Undo',
   'toolbar.redo': 'Redo',
   'toolbar.aria': 'Toolbar',
+  'toolbar.bold': 'Bold',
+  'toolbar.italic': 'Italic',
+  'toolbar.underline': 'Underline',
+  'toolbar.editOn': 'Edit Subtitle ON',
+  'toolbar.editOff': 'Edit Subtitles OFF',
 
   'search.label': 'Search subtitle',
   'search.input': 'Enter search term',

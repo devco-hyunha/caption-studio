@@ -4,6 +4,7 @@ import { useT } from '@/shared/lib/i18n';
 import { cn } from '@/shared/lib/utils';
 import type { SheetBodyToolbarProps } from '../../../types';
 import { ToolbarButtons } from './toolbar-buttons';
+import { ToolbarFormat } from './toolbar-format';
 import { ToolbarIo } from './toolbar-io';
 import { ToolbarSearch } from './toolbar-search';
 
@@ -47,6 +48,7 @@ const SheetBodyToolbar = ({
       )}
     >
       <ToolbarButtons actions={actions} />
+      <ToolbarFormat actions={actions} />
       <ToolbarSearch
         format={format}
         timelines={timelines}

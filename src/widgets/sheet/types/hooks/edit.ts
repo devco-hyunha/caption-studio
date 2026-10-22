@@ -36,6 +36,8 @@ interface EditResultShared {
   wrapRef: RefObject<HTMLDivElement | null>;
   /** shortkey용 — `mode === 'edit'` 동기 판별 */
   isEditing: Fn<boolean>;
+  /** 편집 surface 노출 React 신호 — IME typing은 compositionend 전 setMode 유예, toolbar 즉시 표시용 */
+  isEditSurface: boolean;
   /** shortkey용 — text/memo 타깃 */
   isTextTarget: Fn<boolean>;
   /** shortkey용 — starttime/endtime 타깃 */

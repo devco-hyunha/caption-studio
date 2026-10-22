@@ -15,6 +15,7 @@ import type { SmiMeta } from '@/shared/types/smi-meta';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { ErrorRowLike } from '@/features/sheet-search';
 import type { ExportWorkbookTab } from '@/features/subtitle-io';
+import type { SheetTextFormatCommand } from '@/features/shortkey';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import type { SheetCellEditorMode, SheetCellRect, SheetRowView, SheetTabView } from './primitives';
 
@@ -77,8 +78,18 @@ export interface SheetBodyRowsProps {
 }
 
 /** 시트 상단 툴바 — 다중 선택·행 CRUD·undo/redo. timelines·workbookTabs는 툴바 내부 생성 */
+/** toolbar 서식 섹션 소비 필드 번들 — 서식 버튼이 쓰는 부분만 (ISP) */
+export interface SheetToolbarFormatActions {
+  /** 에디터 편집 중 — `sheet-edit` 버튼 토글 표시 */
+  isEditing: boolean;
+  /** F2와 동일 경로 — 현재 포커스 셀 편집 진입/취소 토글 */
+  handleEditToggleClick: Fn<void>;
+  /** B/I/U 버튼 — clip 훅 applyTextFormat (에딧·다중·단건 분기 내장) */
+  handleFormatClick: (command: SheetTextFormatCommand) => void;
+}
+
 /** toolbar 소비 필드 번들 — composite action 결과 중 toolbar가 쓰는 부분만 (ISP) */
-export interface SheetBodyToolbarActions {
+export interface SheetBodyToolbarActions extends SheetToolbarFormatActions {
   multipleActive: boolean;
   handleToggleMultipleClick: Fn<void>;
   handleInsertAtFocus: Fn<void>;
@@ -104,6 +115,11 @@ export interface SheetBodyToolbarProps {
 /** toolbar 버튼 섹션 — 다중 선택·행 CRUD·undo/redo (번들 소비) */
 export interface SheetToolbarButtonsProps {
   actions: SheetBodyToolbarActions;
+}
+
+/** toolbar 서식 섹션 — sheet-edit 토글·B/I/U (번들 소비) */
+export interface SheetToolbarFormatProps {
+  actions: SheetToolbarFormatActions;
 }
 
 /** toolbar 검색 섹션 — timelines는 툴바 생성, 점프는 body 콜백 */

@@ -1,4 +1,5 @@
 import type { UseSheetBodyActionsParams, UseSheetBodyActionsResult } from '../../types';
+import type { SheetTextFormatCommand } from '@/features/shortkey';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { useSheetStore } from '@/entities/subtitle-sheet';
 import { useSheetHistoryStore } from '@/features/sheet-history';
@@ -30,6 +31,7 @@ const useSheetBodyActions = ({
   isSearchPanelOpen,
 }: UseSheetBodyActionsParams): UseSheetBodyActionsResult => {
   const {
+    isEditSurface,
     isEditing,
     isTextTarget,
     isTimeTarget,
@@ -162,7 +164,24 @@ const useSheetBodyActions = ({
     redo: handleRedo,
   });
 
+  /** `sheet-edit` 버튼 토글 — 비에딧 beginEdit(F2와 동일), 에딧 중 cancelEdit(Esc와 동일) */
+  const handleEditToggleClick = () => {
+    if (isEditing()) {
+      cancelEdit();
+      return;
+    }
+    beginEdit();
+  };
+
+  /** B/I/U 버튼 — clip 훅 소비 (에딧 execCommand·다중 일괄·단건 분기 내장) */
+  const handleFormatClick = (command: SheetTextFormatCommand) => {
+    clip.applyTextFormat(command);
+  };
+
   const toolbarActions = {
+    isEditing: isEditSurface,
+    handleEditToggleClick,
+    handleFormatClick,
     multipleActive,
     handleToggleMultipleClick,
     handleInsertAtFocus,

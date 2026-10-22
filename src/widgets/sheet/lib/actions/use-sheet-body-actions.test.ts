@@ -58,6 +58,7 @@ const makeCellEdit = (overrides: Partial<UseSheetCellEditResult> = {}): UseSheet
   wrapRef: { current: null },
   currentRowIndex: 1,
   currentColumn: 'text',
+  isEditSurface: false,
   isEditing: vi.fn(() => false),
   isTextTarget: vi.fn(() => true),
   isTimeTarget: vi.fn(() => false),
