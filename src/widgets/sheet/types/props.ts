@@ -11,6 +11,7 @@ import type {
 import type { Fn } from '@/shared/types/fn';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SheetCursor } from '@/shared/types/sheet-cursor';
+import type { SmiMeta } from '@/shared/types/smi-meta';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { ErrorRowLike } from '@/features/sheet-search';
 import type { ExportWorkbookTab } from '@/features/subtitle-io';
@@ -113,12 +114,15 @@ export interface SheetToolbarSearchProps {
   onJump: (hit: SheetCursor) => void;
 }
 
-/** toolbar I/O 섹션 — timelines·workbookTabs는 툴바 생성, import는 body 콜백 */
+/** toolbar I/O 섹션 — timelines·workbookTabs는 툴바 생성, import·SMI meta는 시트 스토어 반영 */
 export interface SheetToolbarIoProps {
   sheetFormat: SubtitleFormat;
   timelines: readonly SheetTimelineItem[];
+  /** json/excel·시트 피커 — 자막 탭 전체 (SMI 메타 포함) */
   workbookTabs: readonly ExportWorkbookTab[];
+  activeIndex: number;
   onImported: (timelines: SheetTimelineItem[]) => void;
+  onSmiMetaChange: (index: number, meta: SmiMeta) => void;
 }
 
 export interface SheetFooterProps {

@@ -1,5 +1,6 @@
 import type { Fn } from '@/shared/types/fn';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
+import type { SmiMeta } from '@/shared/types/smi-meta';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 
@@ -40,12 +41,10 @@ export interface SheetsState {
   sheets: Sheet[];
 }
 
-/** localStorage에 기록되는 시트 */
-export interface SavedSheet {
+/** localStorage에 기록되는 시트 — SMI 메타는 shared 정본 `SmiMeta` */
+export interface SavedSheet extends SmiMeta {
   name: string;
   timelines: SheetTimelineItem[];
-  smiName: string;
-  smiLang: string;
 }
 
 /** localStorage `subtitleSheets` 저장 스키마 */
@@ -99,4 +98,6 @@ export interface SheetStore extends SheetsState {
   ) => boolean;
   /** import — 활성 탭 timelines 통째 교체 (multiple·스크롤·포커스 초기화) */
   setActiveTimelines: (timelines: readonly SheetTimelineItem[]) => boolean;
+  /** SMI 메타 갱신 — 탭 영속 필드 (shared 정본 `SmiMeta`) */
+  setSheetSmiMeta: (index: number, meta: SmiMeta) => boolean;
 }

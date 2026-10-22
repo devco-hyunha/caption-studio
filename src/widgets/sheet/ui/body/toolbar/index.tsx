@@ -23,10 +23,18 @@ const SheetBodyToolbar = ({
     (state) => state.sheets[state.active]?.timelines ?? EMPTY_TIMELINES,
   );
   const storeSheets = useSheetStore((state) => state.sheets);
+  const activeIndex = useSheetStore((state) => state.active);
   const workbookTabs = useMemo(
-    () => storeSheets.map((sheet) => ({ name: sheet.name, timelines: sheet.timelines })),
+    () =>
+      storeSheets.map((sheet) => ({
+        name: sheet.name,
+        timelines: sheet.timelines,
+        smiName: sheet.smiName,
+        smiLang: sheet.smiLang,
+      })),
     [storeSheets],
   );
+  const setSheetSmiMeta = useSheetStore((state) => state.setSheetSmiMeta);
 
   return (
     <div
@@ -49,7 +57,9 @@ const SheetBodyToolbar = ({
         sheetFormat={format}
         timelines={timelines}
         workbookTabs={workbookTabs}
+        activeIndex={activeIndex}
         onImported={onImported}
+        onSmiMetaChange={setSheetSmiMeta}
       />
     </div>
   );

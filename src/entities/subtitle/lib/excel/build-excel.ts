@@ -189,4 +189,4 @@ const buildExcel = ({ sheetFormat, columnFormat, tabs }: BuildExcelOptions): Uin
   return zipStore(zipEntries);
 };
 
-export { buildExcel, buildExcelRows, sanitizeSheetTabName };
+export { buildExcel, buildExcelRows, sanitizeSheetTabName, uniqueSheetNames };

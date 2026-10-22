@@ -1,5 +1,5 @@
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
-import { parseSubtitleFile } from '@/entities/subtitle';
+import { converters, parseSubtitleFile } from '@/entities/subtitle';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { readFileText } from './read-file';
 import type { ImportSubtitleResult } from '../types';
@@ -50,4 +50,16 @@ const importSubtitleFile = async (
   return importSubtitleText(text, fileFormat, sheetFormat);
 };
 
-export { detectFileFormat, importSubtitleFile, importSubtitleText };
+/** 자막 텍스트 입력 → 활성 시트 포맷 타임라인 */
+const importSheetText = (sheetFormat: SubtitleFormat, text: string): ImportSubtitleResult => {
+  const converted = converters[sheetFormat]('string', text);
+  const timelines: SheetTimelineItem[] = converted.timelines.map((item) => ({
+    start: item.start,
+    end: item.end,
+    text: item.text,
+    memo: item.memo,
+  }));
+  return { format: converted.format, timelines };
+};
+
+export { detectFileFormat, importSheetText, importSubtitleFile, importSubtitleText };

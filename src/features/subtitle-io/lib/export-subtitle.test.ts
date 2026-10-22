@@ -170,4 +170,79 @@ describe('buildExportFile (export encoding)', () => {
     expect(zipText).toContain('sheet1.xml');
     expect(zipText).toContain('sheet2.xml');
   });
+
+  it('SMI 단일 탭 선택은 단일 파일 · Class는 탭 메타 우선', () => {
+    const built = buildExportFile({
+      sheetFormat: 'smi',
+      exportFormat: 'smi',
+      timelines: [{ start: 1000, text: '혼자', memo: '' }],
+      selectedTabs: [{ name: 'solo', timelines: [{ start: 1000, text: '혼자', memo: '' }] }],
+      encoding: 'EUC-KR',
+      filename: 'one',
+      locale: 'ko',
+    });
+
+    expect(built.filename).toBe('one.smi');
+    expect(built.payload).toContain('Class=KRCC');
+    expect(built.payload).toContain('.KRCC {Name:Korean; lang:ko-KR; SAMIType:CC;}');
+  });
+
+  it('SMI 탭 메타가 있으면 Name/lang이 프리셋을 대체한다', () => {
+    const built = buildExportFile({
+      sheetFormat: 'smi',
+      exportFormat: 'smi',
+      timelines: [],
+      selectedTabs: [
+        {
+          name: 'en',
+          timelines: [{ start: 1000, text: 'hi', memo: '' }],
+          smiName: 'English',
+          smiLang: 'en-US',
+        },
+      ],
+      encoding: 'UTF-8',
+      filename: 'meta',
+      locale: 'ko',
+    });
+
+    expect(built.payload).toContain('.KRCC {Name:English; lang:en-US; SAMIType:CC;}');
+  });
+
+  it('다중 탭 선택은 zip · 탭별 파일명·각 탭 자막이 들어 있다', () => {
+    const built = buildExportFile({
+      sheetFormat: 'srt',
+      exportFormat: 'srt',
+      timelines: [{ start: 0, end: 1, text: '무시', memo: '' }],
+      selectedTabs: [
+        { name: 'A', timelines: [{ start: 1000, end: 2000, text: '탭A 한글', memo: '' }] },
+        { name: 'B', timelines: [{ start: 500, end: 1500, text: '탭B 한글', memo: '' }] },
+      ],
+      encoding: 'UTF-8',
+      filename: 'many',
+      locale: 'ko',
+    });
+
+    expect(built.filename).toBe('many.zip');
+    const zipText = new TextDecoder().decode(built.bytes);
+    expect(zipText).toContain('A.srt');
+    expect(zipText).toContain('B.srt');
+    expect(zipText).toContain('탭A 한글');
+    expect(zipText).toContain('탭B 한글');
+  });
+
+  it('다중 선택·빈 이름은 caption.zip', () => {
+    const built = buildExportFile({
+      sheetFormat: 'srt',
+      exportFormat: 'srt',
+      timelines: [],
+      selectedTabs: [
+        { name: 'X', timelines: [{ start: 1000, end: 2000, text: 'x', memo: '' }] },
+        { name: 'Y', timelines: [{ start: 3000, end: 4000, text: 'y', memo: '' }] },
+      ],
+      encoding: 'UTF-8',
+      filename: '  ',
+    });
+
+    expect(built.filename).toBe('caption.zip');
+  });
 });

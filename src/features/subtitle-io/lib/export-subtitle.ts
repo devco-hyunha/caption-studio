@@ -1,23 +1,23 @@
 import type { SubtitleExportFormat, SubtitleFormat } from '@/shared/types/subtitle-format';
-import type { SubtitleTimeline } from '@/shared/types/subtitle-timeline';
 import {
   buildExcel,
   DEFAULT_ENCODING,
   encodeText,
   formatExportData,
   serializeJsonWorkbook,
-  serializeSmi,
-  serializeSrt,
-  serializeVtt,
 } from '@/entities/subtitle';
+import { toUpperFormat } from '@/shared/lib/format';
 import { downloadBytes } from './download-bytes';
 import { toSubtitleTimelines } from './to-subtitle-timeline';
+import { buildSubtitleZip, buildTabPayload } from './build-zip';
+import { EXTENSION_BY_FORMAT, ZIP_EXTENSION } from './constants';
 import type { BuiltExportFile, ExportSubtitleOptions, ExportWorkbookTab } from '../types';
 
-/** 기본명 `caption` + 확장자 무조건 append */
-const buildFilename = (filename: string, exportFormat: SubtitleExportFormat) => {
+/** 기본명 `caption` + 확장자 append */
+const buildFilename = (filename: string, exportFormat: SubtitleExportFormat | 'zip') => {
   const name = filename.trim() || 'caption';
-  const extension = exportFormat === 'excel' ? 'xlsx' : exportFormat;
+  const extension =
+    exportFormat === 'zip' ? ZIP_EXTENSION : EXTENSION_BY_FORMAT[toUpperFormat(exportFormat)];
   return `${name}.${extension}`;
 };
 
@@ -26,6 +26,8 @@ const resolveWorkbookTabs = (options: ExportSubtitleOptions): ExportWorkbookTab[
     return options.workbookTabs.map((tab) => ({
       name: tab.name,
       timelines: tab.timelines,
+      smiName: tab.smiName,
+      smiLang: tab.smiLang,
     }));
   }
   return [{ name: 'Sheet1', timelines: options.timelines }];
@@ -48,17 +50,11 @@ const buildJsonWorkbookPayload = (
   return serializeJsonWorkbook({ sheets });
 };
 
-const serializePayload = (
-  exportFormat: SubtitleExportFormat,
-  exportData: SubtitleTimeline[],
-  removeStyle: boolean,
-): string => {
-  if (exportFormat === 'smi') return serializeSmi(exportData);
-  if (exportFormat === 'vtt') {
-    return serializeVtt(exportData, { removeStyle });
-  }
-  return serializeSrt(exportData, { removeStyle });
-};
+const exportEncoding = (exportFormat: SubtitleExportFormat, encoding: string) =>
+  exportFormat === 'smi' ? encoding : DEFAULT_ENCODING;
+
+const resolveRemoveStyle = (exportFormat: SubtitleExportFormat, removeStyle?: boolean) =>
+  exportFormat === 'srt' || exportFormat === 'vtt' ? removeStyle === true : false;
 
 /** 시트 → serialize → encode (다운로드 없음 · Vitest용) */
 const buildExportFile = (options: ExportSubtitleOptions): BuiltExportFile => {
@@ -90,21 +86,37 @@ const buildExportFile = (options: ExportSubtitleOptions): BuiltExportFile => {
     };
   }
 
-  const sheetData = toSubtitleTimelines(options.timelines);
-  const exportData = formatExportData({
-    exportFormat: options.exportFormat,
-    sheetFormat: options.sheetFormat,
-    sheetData,
-  });
+  const locale = options.locale ?? 'ko';
+  const removeStyle = resolveRemoveStyle(options.exportFormat, options.removeStyle);
+  const encoding = exportEncoding(options.exportFormat, options.encoding);
 
-  const removeStyle =
-    options.exportFormat === 'srt' || options.exportFormat === 'vtt'
-      ? options.removeStyle === true
-      : false;
+  const tabs =
+    options.selectedTabs && options.selectedTabs.length > 0
+      ? options.selectedTabs
+      : [{ name: 'Sheet1', timelines: options.timelines }];
 
-  const payload = serializePayload(options.exportFormat, exportData, removeStyle);
+  if (tabs.length > 1) {
+    const bytes = buildSubtitleZip(tabs, {
+      exportFormat: options.exportFormat,
+      sheetFormat: options.sheetFormat,
+      locale,
+      encoding,
+      removeStyle,
+    });
+    return {
+      filename: buildFilename(options.filename, 'zip'),
+      bytes,
+      payload: '',
+    };
+  }
 
-  const encoding = options.exportFormat === 'smi' ? options.encoding : DEFAULT_ENCODING;
+  const payload = buildTabPayload(
+    options.exportFormat,
+    options.sheetFormat,
+    tabs[0],
+    locale,
+    removeStyle,
+  );
 
   return {
     filename: buildFilename(options.filename, options.exportFormat),

@@ -15,6 +15,7 @@ import {
   deleteSheet,
   renameSheet,
   selectSheet,
+  setSmiMeta,
   updateActiveCell,
   updateSheetScroll,
 } from '../lib/mutate/sheet-mutate';
@@ -160,6 +161,14 @@ const useSheetStore = create<SheetStore>()(
       setActiveTimelines: (timelines) => {
         const next = setActiveTimelines(get(), timelines);
         if (!next) return false;
+        set(next);
+        return true;
+      },
+
+      /** SMI 메타 — 탭 영속 필드 갱신 */
+      setSheetSmiMeta: (index, meta) => {
+        const next = setSmiMeta(get(), index, meta);
+        if (next === get()) return false;
         set(next);
         return true;
       },

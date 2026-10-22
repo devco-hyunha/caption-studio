@@ -1,4 +1,5 @@
 import type { EditableColumn, Sheet, SheetsState } from '../../types';
+import type { SmiMeta } from '@/shared/types/smi-meta';
 import { parseTimecode } from '@/shared/lib/timecode';
 import { cloneTimeline, createSheet } from '../core/sheet-core';
 import { createCopyName, createTabName, isValidTabName, normalizeTabName } from '../core/tab-names';
@@ -98,6 +99,21 @@ const copySheet = (state: SheetsState, index: number): SheetsState => {
   return { ...state, sheets, active: index + 1 };
 };
 
+/** SMI 메타 갱신 — 영속 필드. 탭 없으면 상태 유지 */
+const setSmiMeta = (state: SheetsState, index: number, meta: SmiMeta) => {
+  const sheet = state.sheets[index];
+  if (!sheet) return state;
+
+  return {
+    ...state,
+    sheets: [
+      ...state.sheets.slice(0, index),
+      { ...sheet, ...meta },
+      ...state.sheets.slice(index + 1),
+    ],
+  };
+};
+
 /** 활성 시트 타임라인 셀 값 갱신 */
 const updateActiveCell = (
   state: SheetsState,
@@ -152,6 +168,7 @@ export {
   getActiveScroll,
   renameSheet,
   selectSheet,
+  setSmiMeta,
   updateActiveCell,
   updateSheetScroll,
 };

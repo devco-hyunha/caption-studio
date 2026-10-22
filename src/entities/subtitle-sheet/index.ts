@@ -36,6 +36,7 @@ export {
   getActiveScroll,
   renameSheet,
   selectSheet,
+  setSmiMeta,
   updateActiveCell,
   updateSheetScroll,
 } from './lib/mutate/sheet-mutate';
