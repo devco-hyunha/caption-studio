@@ -88,22 +88,23 @@ const createColumnWidths = (fontSize = DEFAULT_FONT_SIZE) =>
 
 const COLUMN_WIDTHS = createColumnWidths();
 
+/** memo 이전 열 너비 누적 합 (memo 포함) — widths 인자 순수 함수 */
+const sumUntilMemo = (format: SubtitleFormat, widths: Record<SheetColumnId, number>): number => {
+  let total = 0;
+  for (const id of FORMAT_COLUMNS[format]) {
+    total += widths[id];
+    if (id === 'memo') break;
+  }
+  return total;
+};
+
 /** format별 시트 본문 min-width (memo 이전 열 합 + memo) */
 const createContainMinWidth = (fontSize = DEFAULT_FONT_SIZE) => {
   const widths = createColumnWidths(fontSize);
 
-  const sumUntilMemo = (format: SubtitleFormat) => {
-    let total = 0;
-    for (const id of FORMAT_COLUMNS[format]) {
-      total += widths[id];
-      if (id === 'memo') break;
-    }
-    return total;
-  };
-
   return {
-    smi: sumUntilMemo('smi'),
-    srt: sumUntilMemo('srt'),
+    smi: sumUntilMemo('smi', widths),
+    srt: sumUntilMemo('srt', widths),
   } as const;
 };
 

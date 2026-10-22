@@ -15,7 +15,6 @@ export type {
 export { EDITABLE_COLUMN_IDS, isEditableColumn } from './lib/column/editable-column';
 
 export {
-  TAB_NAME_RE,
   createCopyName,
   createTabName,
   isValidTabName,

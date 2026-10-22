@@ -21,7 +21,7 @@ const cloneTimeline = (timeline: SheetTimelineItem = EMPTY_TIMELINE): SheetTimel
 });
 
 /** 빈 시트 생성 — 행 1개, 다중 선택 off */
-const createSheet = (name = 'sheet1'): Sheet => ({
+const createSheet = (name = createTabName([])): Sheet => ({
   name: normalizeTabName(name),
   timelines: [cloneTimeline()],
   smiName: '',
@@ -62,14 +62,14 @@ const normalizeState = (raw: unknown): SheetsState => {
         : [cloneTimeline()];
     return {
       active: 0,
-      sheets: [normalizeSheet({ name: 'sheet1', timelines })],
+      sheets: [normalizeSheet({ name: createTabName([]), timelines })],
     };
   }
 
   if (raw && typeof raw === 'object' && Array.isArray((raw as SheetsState).sheets)) {
     const source = raw as Partial<SheetsState>;
     if (!source.sheets || source.sheets.length === 0) {
-      return { active: 0, sheets: [createSheet('sheet1')] };
+      return { active: 0, sheets: [createSheet()] };
     }
 
     const sheets = source.sheets.map((sheet) => normalizeSheet(sheet));
@@ -89,7 +89,7 @@ const normalizeState = (raw: unknown): SheetsState => {
 
   return {
     active: 0,
-    sheets: [createSheet('sheet1')],
+    sheets: [createSheet()],
   };
 };
 
