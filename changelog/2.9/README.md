@@ -36,3 +36,5 @@
 | dev.15 | [2.9.0-dev.15.md](./2.9.0-dev.15.md) | 커스텀 키 설정 UI(`/edit/settings`) · 엔진 engine/input/label 계층 분리 |
 | dev.16 | [2.9.0-dev.16.md](./2.9.0-dev.16.md) | 상수 정본 분리 · SRT 상한 통일 (C1~C7·D3·D7·D8·E 해소) |
 | dev.17 | [2.9.0-dev.17.md](./2.9.0-dev.17.md) | I/O 모달 · 다중 탭 zip · 인코딩 localStorage 영속 · SmiMeta shared 정본 |
+| dev.18 | [2.9.0-dev.18.md](./2.9.0-dev.18.md) | 편집 surface toolbar — 자막편집 토글 · B/I/U · IME surface ON |
+| dev.19 | [2.9.0-dev.19.md](./2.9.0-dev.19.md) | 글자색 feature · 팔레트/피커 · color0~7/clear 단축키 · CaptionColorTemp |
