@@ -43,6 +43,21 @@ const ja: LocaleDictionary = {
   'search.errorCount': '件のエラー',
   'search.noError': 'エラーなし',
 
+  'color.select': 'カラーセレクト',
+  'color.apply': 'カラー適用',
+  'color.reset': 'カラーリセット',
+  'color.paletteAria': '文字色リスト',
+  'color.hexLabel': 'Hex color',
+  'color.channelAria': 'チャンネル入力',
+  'color.slot1': 'カラー1',
+  'color.slot2': 'カラー2',
+  'color.slot3': 'カラー3',
+  'color.slot4': 'カラー4',
+  'color.slot5': 'カラー5',
+  'color.slot6': 'カラー6',
+  'color.slot7': 'カラー7',
+  'color.slot8': 'カラー8',
+
   'io.import': '字幕開く',
   'io.export': 'エクスポート字幕',
   'io.importEncoding': '読み込みエンコード',
@@ -172,6 +187,15 @@ const ja: LocaleDictionary = {
   'shortkey.videoSeekNext': '10秒進む',
   'shortkey.cuePrev': '前の字幕へ移動',
   'shortkey.cueNext': '次の字幕へ移動',
+  'shortkey.color0': 'カラー1',
+  'shortkey.color1': 'カラー2',
+  'shortkey.color2': 'カラー3',
+  'shortkey.color3': 'カラー4',
+  'shortkey.color4': 'カラー5',
+  'shortkey.color5': 'カラー6',
+  'shortkey.color6': 'カラー7',
+  'shortkey.color7': 'カラー8',
+  'shortkey.colorClear': 'カラーリセット',
 };
 
 export { ja };

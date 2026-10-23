@@ -4,7 +4,9 @@ import type {
   SheetShortkeyMoveActions,
   SheetTextFormatCommand,
 } from '@/features/shortkey';
+import type { SheetColorCommand } from '@/shared/types/color-command';
 import type { UseSheetClipActionsResult } from './clip';
+import type { UseSheetColorWiringResult } from './color';
 import type { UseSheetTimeActionsResult } from './time';
 import type { UseSheetVideoActionsResult } from './video';
 
@@ -12,6 +14,7 @@ import type { UseSheetVideoActionsResult } from './video';
 export interface UseSheetBodyShortkeyActionsParams {
   move: SheetShortkeyMoveActions;
   clip: UseSheetClipActionsResult;
+  color: UseSheetColorWiringResult;
   time: UseSheetTimeActionsResult;
   video: UseSheetVideoActionsResult;
   isEditing: Fn<boolean>;
@@ -53,6 +56,7 @@ export interface BuildSheetShortkeyActionsParams {
   insertRow: Fn<void>;
   removeRow: Fn<void>;
   applyTextFormat: (command: SheetTextFormatCommand) => void;
+  applyColor: (command: SheetColorCommand) => void;
   clearCell: Fn<void>;
   clipCut: Fn<void>;
   clipCopy: Fn<void>;

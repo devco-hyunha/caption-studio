@@ -43,6 +43,21 @@ const ko: LocaleDictionary = {
   'search.errorCount': '건의 오류',
   'search.noError': '오류 없음',
 
+  'color.select': '색상 선택',
+  'color.apply': '적용',
+  'color.reset': '글자 색 초기화',
+  'color.paletteAria': '글자 색 리스트',
+  'color.hexLabel': 'Hex color',
+  'color.channelAria': '채널 입력',
+  'color.slot1': '색상 1',
+  'color.slot2': '색상 2',
+  'color.slot3': '색상 3',
+  'color.slot4': '색상 4',
+  'color.slot5': '색상 5',
+  'color.slot6': '색상 6',
+  'color.slot7': '색상 7',
+  'color.slot8': '색상 8',
+
   'io.import': '자막 가져오기',
   'io.export': '자막 내려받기',
   'io.importEncoding': '가져오기 인코딩',
@@ -173,6 +188,15 @@ const ko: LocaleDictionary = {
   'shortkey.videoSeekNext': '10초 앞으로',
   'shortkey.cuePrev': '이전 자막으로 이동',
   'shortkey.cueNext': '다음 자막으로 이동',
+  'shortkey.color0': '색상 1',
+  'shortkey.color1': '색상 2',
+  'shortkey.color2': '색상 3',
+  'shortkey.color3': '색상 4',
+  'shortkey.color4': '색상 5',
+  'shortkey.color5': '색상 6',
+  'shortkey.color6': '색상 7',
+  'shortkey.color7': '색상 8',
+  'shortkey.colorClear': '글자 색 초기화',
 };
 
 export { ko };

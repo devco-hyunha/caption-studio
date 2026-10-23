@@ -2,6 +2,7 @@
 
 import type { RefObject } from 'react';
 import type { Fn } from '@/shared/types/fn';
+import type { SheetColorCommand } from '@/shared/types/color-command';
 import type { ShortcutKeyHandler } from '@/shared/types/shortkey';
 import type { SHORTKEY_IDS } from './model/keys/ids';
 import type { SHORTKEY_LABEL_KEYS } from './model/keys/labels';
@@ -12,8 +13,8 @@ export type SheetShortkeyId = (typeof SHORTKEY_IDS)[keyof typeof SHORTKEY_IDS];
 /** 라벨 있는 키 id — `SHORTKEY_LABEL_KEYS` 키 집합에서 파생 (설정 UI kbd 렌더 대상). labels는 types를 import하지 않아 사이클 없음 */
 export type ShortkeyLabelId = Extract<SheetShortkeyId, keyof typeof SHORTKEY_LABEL_KEYS>;
 
-/** 서식 명령 — bold/italic/underline */
-export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline';
+/** 서식 명령 — bold/italic/underline · colorClear(color-reset) */
+export type SheetTextFormatCommand = 'bold' | 'italic' | 'underline' | 'colorClear';
 
 /** mask 저장 맵 — 부분집합 (persist merge·승격용) */
 export type ShortkeyMasks = Partial<Record<SheetShortkeyId, string>>;
@@ -65,6 +66,8 @@ export interface SheetShortkeyActions extends SheetShortkeyMoveActions {
   removeRow: Fn<void>;
   /** bold / italic / underline — multiple·에딧·단건 clip */
   applyTextFormat: (command: SheetTextFormatCommand) => void;
+  /** color0~7·color_clear — 다중·에딧·단건 분기(훅 내장) */
+  applyColor: (command: SheetColorCommand) => void;
   /** Backspace/Delete — text/memo 셀 비우기 (비에딧) */
   clearCell: Fn<void>;
   /** Ctrl+X — 비에딧 text/memo cut */

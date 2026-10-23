@@ -40,6 +40,15 @@ export const SHORTKEY_IDS = {
   VOLUME_DOWN: 'volumeDown',
   CUE_PREV: 'cuePrev',
   CUE_NEXT: 'cueNext',
+  COLOR_0: 'color0',
+  COLOR_1: 'color1',
+  COLOR_2: 'color2',
+  COLOR_3: 'color3',
+  COLOR_4: 'color4',
+  COLOR_5: 'color5',
+  COLOR_6: 'color6',
+  COLOR_7: 'color7',
+  COLOR_CLEAR: 'colorClear',
 } as const;
 
 export const SHORTKEY_TYPES = {

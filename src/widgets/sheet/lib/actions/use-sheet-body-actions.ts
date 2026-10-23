@@ -1,4 +1,5 @@
 import type { UseSheetBodyActionsParams, UseSheetBodyActionsResult } from '../../types';
+import type { SheetColorCommand } from '@/shared/types/color-command';
 import type { SheetTextFormatCommand } from '@/features/shortkey';
 import type { SheetTimelineItem } from '@/entities/subtitle-sheet';
 import { useSheetStore } from '@/entities/subtitle-sheet';
@@ -8,6 +9,7 @@ import { rebuildVideoTimeSlotsFromActiveSheet } from '@/features/video-sync';
 import { useSheetSearchActions } from '../search/use-sheet-search-actions';
 import { useSheetSelectionActions } from '../selection/use-sheet-selection-actions';
 import { useSheetClipActions } from '../clip/use-sheet-clip-actions';
+import { useSheetColorWiring } from '../color/use-sheet-color-wiring';
 import { useSheetTimeActions } from '../time/use-sheet-time-actions';
 import { useSheetVideoActions } from '../video/use-sheet-video-actions';
 import { useSheetUndoActions } from '../undo/use-sheet-undo-actions';
@@ -99,6 +101,17 @@ const useSheetBodyActions = ({
     closeSearchPanel,
   });
 
+  const color = useSheetColorWiring({
+    format,
+    currentRowIndex,
+    currentColumn,
+    isEditing,
+    isTextTarget,
+    inputRef,
+    onUpdateCell,
+    closeSearchPanel,
+  });
+
   const time = useSheetTimeActions({
     format,
     currentRowIndex,
@@ -142,6 +155,7 @@ const useSheetBodyActions = ({
   const getShortkeyActions = useSheetBodyShortkeyActions({
     move,
     clip,
+    color,
     time,
     video,
     isEditing,
@@ -178,10 +192,22 @@ const useSheetBodyActions = ({
     clip.applyTextFormat(command);
   };
 
+  /** color-reset 버튼 — color wiring applyColor('color_clear'), execCommand 매핑은 color 훅 정본 */
+  const handleColorReset = () => {
+    color.applyColor('color_clear');
+  };
+
+  /** 팔레트 스와치 버튼 — color0..7, color wiring applyColor (에딧·다중·단건 분기 내장) */
+  const handleColorClick = (command: SheetColorCommand) => {
+    color.applyColor(command);
+  };
+
   const toolbarActions = {
     isEditing: isEditSurface,
     handleEditToggleClick,
     handleFormatClick,
+    handleColorReset,
+    handleColorClick,
     multipleActive,
     handleToggleMultipleClick,
     handleInsertAtFocus,

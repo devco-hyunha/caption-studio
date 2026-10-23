@@ -51,6 +51,21 @@ const DICTIONARY_KEYS = [
   'search.findAria',
   'search.errorCount',
   'search.noError',
+  // color — 팔레트·피커·selector dialog 라벨
+  'color.select',
+  'color.apply',
+  'color.reset',
+  'color.paletteAria',
+  'color.hexLabel',
+  'color.channelAria',
+  'color.slot1',
+  'color.slot2',
+  'color.slot3',
+  'color.slot4',
+  'color.slot5',
+  'color.slot6',
+  'color.slot7',
+  'color.slot8',
   // io — 가져오기/내보내기 모달
   'io.import',
   'io.export',
@@ -180,6 +195,15 @@ const DICTIONARY_KEYS = [
   'shortkey.videoSeekNext',
   'shortkey.cuePrev',
   'shortkey.cueNext',
+  'shortkey.color0',
+  'shortkey.color1',
+  'shortkey.color2',
+  'shortkey.color3',
+  'shortkey.color4',
+  'shortkey.color5',
+  'shortkey.color6',
+  'shortkey.color7',
+  'shortkey.colorClear',
 ] as const;
 
 export type DictionaryKey = (typeof DICTIONARY_KEYS)[number];

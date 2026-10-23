@@ -9,7 +9,7 @@ export interface SheetRowView {
   dur: string;
   text: string;
   memo: string;
-  /** convert.js rowInfo.height와 동일 기준(사전 계산) */
+  /** rowInfo.height 기준(사전 계산) */
   height: number;
   isError?: boolean;
   isSelected?: boolean;

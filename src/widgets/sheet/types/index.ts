@@ -60,6 +60,8 @@ export type {
   UseSheetCellFocusResult,
   UseSheetClipActionsParams,
   UseSheetClipActionsResult,
+  UseSheetColorWiringParams,
+  UseSheetColorWiringResult,
   UseSheetMoveParams,
   UseSheetMoveResult,
   UseSheetSearchActionsParams,

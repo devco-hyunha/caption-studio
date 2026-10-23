@@ -43,6 +43,21 @@ const en: LocaleDictionary = {
   'search.errorCount': ' errors',
   'search.noError': 'No errors',
 
+  'color.select': 'Select Color',
+  'color.apply': 'Apply',
+  'color.reset': 'Initialize Text Color',
+  'color.paletteAria': 'Font Color List',
+  'color.hexLabel': 'Hex color',
+  'color.channelAria': 'Channel input',
+  'color.slot1': 'Color 1',
+  'color.slot2': 'Color 2',
+  'color.slot3': 'Color 3',
+  'color.slot4': 'Color 4',
+  'color.slot5': 'Color 5',
+  'color.slot6': 'Color 6',
+  'color.slot7': 'Color 7',
+  'color.slot8': 'Color 8',
+
   'io.import': 'Import subtitles',
   'io.export': 'Download subtitles',
   'io.importEncoding': 'Import encoding',
@@ -175,6 +190,15 @@ const en: LocaleDictionary = {
   'shortkey.videoSeekNext': 'Forward 10 seconds',
   'shortkey.cuePrev': 'Move to previous caption',
   'shortkey.cueNext': 'Move to next caption',
+  'shortkey.color0': 'Color 1',
+  'shortkey.color1': 'Color 2',
+  'shortkey.color2': 'Color 3',
+  'shortkey.color3': 'Color 4',
+  'shortkey.color4': 'Color 5',
+  'shortkey.color5': 'Color 6',
+  'shortkey.color6': 'Color 7',
+  'shortkey.color7': 'Color 8',
+  'shortkey.colorClear': 'Initialize Text Color',
 };
 
 export { en };

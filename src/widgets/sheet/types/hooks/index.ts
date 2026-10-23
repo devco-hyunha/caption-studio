@@ -24,6 +24,8 @@ export type {
 
 export type { UseSheetClipActionsParams, UseSheetClipActionsResult } from './clip';
 
+export type { UseSheetColorWiringParams, UseSheetColorWiringResult } from './color';
+
 export type { UseSheetTimeActionsParams, UseSheetTimeActionsResult } from './time';
 
 export type { UseSheetVideoActionsParams, UseSheetVideoActionsResult } from './video';

@@ -14,6 +14,7 @@ const useSheetBodyShortkeyActions =
   ({
     move,
     clip,
+    color,
     time,
     video,
     isEditing,
@@ -54,6 +55,7 @@ const useSheetBodyShortkeyActions =
       insertRow,
       removeRow,
       applyTextFormat: clip.applyTextFormat,
+      applyColor: color.applyColor,
       clearCell: clip.clearCell,
       clipCut: clip.clipCut,
       clipCopy: clip.clipCopy,

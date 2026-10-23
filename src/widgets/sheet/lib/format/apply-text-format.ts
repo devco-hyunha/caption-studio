@@ -1,11 +1,17 @@
 import type { SheetTextFormatCommand } from '@/features/shortkey';
 import { encodeCellHtml } from '../edit/encode/encode-cell-html';
 
-const FORMAT_TAGS: Record<SheetTextFormatCommand, 'b' | 'i' | 'u'> = {
+const FORMAT_TAGS: Record<Exclude<SheetTextFormatCommand, 'colorClear'>, 'b' | 'i' | 'u'> = {
   bold: 'b',
   italic: 'i',
   underline: 'u',
 };
+
+/** colorClear 폴백(jsdom) — `<font color>`·`color:` style 제거 (removeFormat 근사) */
+const stripColorMarkup = (html: string): string =>
+  html
+    .replace(/<font[^>]*>([\s\S]*?)<\/font>/gi, '$1')
+    .replace(/style="[^"]*\bcolor:[^"]*"/gi, 'style=""');
 
 /**
  * selectAll + execCommand 토글의 단순 근사 — 전체가 한 태그로 감싸면 해제, 아니면 감쌈.
@@ -22,10 +28,14 @@ const toggleWrapTag = (html: string, tag: 'b' | 'i' | 'u'): string => {
 /**
  * multiClip(selectAll → execCommand → encode) 근사.
  * 문서에 임시 contenteditable을 붙여 bold/italic/underline을 토글한다.
+ * colorClear는 colorClear의 단일 호출과 동일 — removeFormat(value=foreColor 무시).
  */
 const applyTextFormatCommand = (html: string, command: SheetTextFormatCommand): string => {
+  const isColorClear = command === 'colorClear';
+  const execName = isColorClear ? 'removeFormat' : command;
+
   if (typeof document === 'undefined') {
-    return toggleWrapTag(html, FORMAT_TAGS[command]);
+    return isColorClear ? stripColorMarkup(html) : toggleWrapTag(html, FORMAT_TAGS[command]);
   }
 
   const host = document.createElement('div');
@@ -46,10 +56,13 @@ const applyTextFormatCommand = (html: string, command: SheetTextFormatCommand): 
     }
 
     const supported =
-      typeof document.execCommand === 'function' && document.execCommand(command, false);
+      typeof document.execCommand === 'function' &&
+      document.execCommand(execName, false, isColorClear ? 'foreColor' : undefined);
 
     if (!supported) {
-      host.innerHTML = toggleWrapTag(html, FORMAT_TAGS[command]);
+      host.innerHTML = isColorClear
+        ? stripColorMarkup(html)
+        : toggleWrapTag(html, FORMAT_TAGS[command]);
     }
 
     return encodeCellHtml(host);

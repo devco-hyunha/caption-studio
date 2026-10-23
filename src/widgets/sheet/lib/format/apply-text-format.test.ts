@@ -32,4 +32,10 @@ describe('applyTextFormatCommand', () => {
     const next = applyTextFormatCommand('abc', 'underline');
     expect(next.toLowerCase()).toMatch(/<u>|<span style="text-decoration:underline">/);
   });
+
+  it('colorClear는 font color 태그를 제거한다 (jsdom 폴백)', () => {
+    const next = applyTextFormatCommand('<font color="#ff0000">hello</font>', 'colorClear');
+    expect(next.toLowerCase()).not.toContain('font');
+    expect(next.toLowerCase()).toContain('hello');
+  });
 });

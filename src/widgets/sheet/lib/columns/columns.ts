@@ -2,7 +2,7 @@ import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SubtitleFormat } from '@/shared/types/subtitle-format';
 import type { SheetColumnDef } from '../../types';
 
-/** `columns.js` COLUMN_WIDTH_RATE: width = ceil(fontSize * rate) */
+/** COLUMN_WIDTH_RATE: width = ceil(fontSize * rate) */
 const COLUMN_WIDTH_RATE = {
   index: 3.5625,
   starttime: 7.1875,

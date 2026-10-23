@@ -20,6 +20,15 @@ export const CUSTOM_SHORTKEY_IDS = [
   SHORTKEY_IDS.VIDEO_SEEK_NEXT,
   SHORTKEY_IDS.CUE_PREV,
   SHORTKEY_IDS.CUE_NEXT,
+  SHORTKEY_IDS.COLOR_0,
+  SHORTKEY_IDS.COLOR_1,
+  SHORTKEY_IDS.COLOR_2,
+  SHORTKEY_IDS.COLOR_3,
+  SHORTKEY_IDS.COLOR_4,
+  SHORTKEY_IDS.COLOR_5,
+  SHORTKEY_IDS.COLOR_6,
+  SHORTKEY_IDS.COLOR_7,
+  SHORTKEY_IDS.COLOR_CLEAR,
 ] as const satisfies readonly SheetShortkeyId[];
 
 /** 고정키 id (설정 UI kbd 라벨만) — 라벨 있는 고정키. volumeUp/Down 포함. key 집합 정본은 labels — 캐스트 target을 labels에서 파생 */

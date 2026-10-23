@@ -55,10 +55,12 @@ describe('useShortkeyStore', () => {
     expect(readPersisted()).toEqual({});
   });
 
-  it('isCustomShortkeyId covers the approved 13 ids and excludes fixed keys', () => {
-    expect(CUSTOM_SHORTKEY_IDS).toHaveLength(13);
+  it('isCustomShortkeyId covers the approved 22 ids and excludes fixed keys', () => {
+    expect(CUSTOM_SHORTKEY_IDS).toHaveLength(22);
     expect(isCustomShortkeyId(SHORTKEY_IDS.SEARCH, CUSTOM_SHORTKEY_IDS)).toBe(true);
     expect(isCustomShortkeyId(SHORTKEY_IDS.CUE_NEXT, CUSTOM_SHORTKEY_IDS)).toBe(true);
+    expect(isCustomShortkeyId(SHORTKEY_IDS.COLOR_0, CUSTOM_SHORTKEY_IDS)).toBe(true);
+    expect(isCustomShortkeyId(SHORTKEY_IDS.COLOR_CLEAR, CUSTOM_SHORTKEY_IDS)).toBe(true);
     expect(isCustomShortkeyId(SHORTKEY_IDS.VOLUME_UP, CUSTOM_SHORTKEY_IDS)).toBe(false);
     expect(isCustomShortkeyId(SHORTKEY_IDS.SHEET_EDIT_ON, CUSTOM_SHORTKEY_IDS)).toBe(false);
   });

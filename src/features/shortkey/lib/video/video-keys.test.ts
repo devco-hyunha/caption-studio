@@ -25,6 +25,7 @@ const baseActions = (overrides: Partial<SheetShortkeyActions> = {}): SheetShortk
   insertRow: vi.fn(),
   removeRow: vi.fn(),
   applyTextFormat: vi.fn(),
+  applyColor: vi.fn(),
   clearCell: vi.fn(),
   clipCut: vi.fn(),
   clipCopy: vi.fn(),

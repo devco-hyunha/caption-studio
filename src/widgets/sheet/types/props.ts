@@ -9,6 +9,7 @@ import type {
   UIEvent,
 } from 'react';
 import type { Fn } from '@/shared/types/fn';
+import type { SheetColorCommand } from '@/shared/types/color-command';
 import type { SheetColumnId } from '@/shared/types/sheet-column';
 import type { SheetCursor } from '@/shared/types/sheet-cursor';
 import type { SmiMeta } from '@/shared/types/smi-meta';
@@ -86,6 +87,10 @@ export interface SheetToolbarFormatActions {
   handleEditToggleClick: Fn<void>;
   /** B/I/U 버튼 — clip 훅 applyTextFormat (에딧·다중·단건 분기 내장) */
   handleFormatClick: (command: SheetTextFormatCommand) => void;
+  /** color-reset 버튼 — color 훅 applyColor('color_clear') (execCommand 매핑 color 정본) */
+  handleColorReset: Fn<void>;
+  /** 팔레트 스와치 버튼 — color0..7 command, color 훅 applyColor (에딧·다중·단건 분기 내장) */
+  handleColorClick: (command: SheetColorCommand) => void;
 }
 
 /** toolbar 소비 필드 번들 — composite action 결과 중 toolbar가 쓰는 부분만 (ISP) */

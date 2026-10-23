@@ -32,6 +32,15 @@ export const SHORTKEY_PLACEHOLDERS = {
   VOLUME_DOWN: 'volume-down',
   CUE_PREV: 'cue-prev',
   CUE_NEXT: 'cue-next',
+  COLOR_0: 'color-1',
+  COLOR_1: 'color-2',
+  COLOR_2: 'color-3',
+  COLOR_3: 'color-4',
+  COLOR_4: 'color-5',
+  COLOR_5: 'color-6',
+  COLOR_6: 'color-7',
+  COLOR_7: 'color-8',
+  COLOR_CLEAR: 'color-reset',
 } as const;
 
 /** id → 사전 라벨 키 (`shortkey.<id>`) — 라벨 있는 키만 */
@@ -63,4 +72,13 @@ export const SHORTKEY_LABEL_KEYS = {
   [SHORTKEY_IDS.VIDEO_SEEK_NEXT]: 'shortkey.videoSeekNext',
   [SHORTKEY_IDS.CUE_PREV]: 'shortkey.cuePrev',
   [SHORTKEY_IDS.CUE_NEXT]: 'shortkey.cueNext',
+  [SHORTKEY_IDS.COLOR_0]: 'shortkey.color0',
+  [SHORTKEY_IDS.COLOR_1]: 'shortkey.color1',
+  [SHORTKEY_IDS.COLOR_2]: 'shortkey.color2',
+  [SHORTKEY_IDS.COLOR_3]: 'shortkey.color3',
+  [SHORTKEY_IDS.COLOR_4]: 'shortkey.color4',
+  [SHORTKEY_IDS.COLOR_5]: 'shortkey.color5',
+  [SHORTKEY_IDS.COLOR_6]: 'shortkey.color6',
+  [SHORTKEY_IDS.COLOR_7]: 'shortkey.color7',
+  [SHORTKEY_IDS.COLOR_CLEAR]: 'shortkey.colorClear',
 } as const satisfies Record<string, DictionaryKey>;
